@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  -->
+<mapper namespace="com.bda.bdaqm.electric.mapper.ThreePersonMapper">
+	
+	<select id="getThreePersonData" resultType="com.bda.bdaqm.electric.model.ThreePerson">
+	
+		select idd,
+		       unitName,
+		       deptmentName,
+		       groupName,
+		       specialty,
+		       classes,
+		       personName,
+		       ticketSign,
+		       workPrincipal,
+		       workPermission,
+		       rigthTime,
+		       remark,
+	           max(theLast) theLast
+		 from
+		(
+		select * from
+		(select 
+		        t.id idd,t.unit_name unitName,
+		        t.deptment_name deptmentName, t.group_name groupName,
+		        t.specialty specialty,t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,t.remark remark,
+		        case when t.approval = 1 then null
+		             when org.work_end_time between #{updateTimeBegin}||' 00:00:00' and #{updateTimeEnd}||' 23:59:59'
+		                   and(org.work_principal_uid is not null)then null 
+		              else org.ticket_no
+		         end theLast ,
+		         row_number() over(partition by t.id order by org.work_end_time desc) rn
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select work_principal_uid,ticket_no ,work_end_time,user_name
+		             from o_gea_lcam_sc_sp_pd_wticket_base 
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user
+		             ON work_principal_uid = user_id
+		             ) org
+		on t.person_name = org.user_name)
+		where rn = 1
+		
+		union all
+		
+		select * from
+		(select 
+		        t.id idd,t.unit_name unitName,
+		        t.deptment_name deptmentName, t.group_name groupName,
+		        t.specialty specialty,t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,t.remark remark,
+		        case when t.approval = 1 then null
+		             when org.work_end_time between #{updateTimeBegin}||' 00:00:00' and #{updateTimeEnd}||' 23:59:59'
+		                   and(org.ticket_sign_uid is not null)then null   
+		              else org.ticket_no
+		         end theLast ,
+		         row_number() over(partition by t.id order by org.work_end_time desc) rn
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select ticket_sign_uid,ticket_no ,work_end_time,user_name
+		             from o_gea_lcam_sc_sp_pd_wticket_base 
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user
+		             ON ticket_sign_uid = user_id
+		             ) org
+		on t.person_name = org.user_name)
+		where rn = '1'
+		
+		union all
+		
+		select * from 
+		(select 
+		        t.id idd,t.unit_name unitName,
+		        t.deptment_name deptmentName, t.group_name groupName,
+		        t.specialty specialty,t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,t.remark remark,
+		        case when t.approval = 1 then null
+		             when org.work_end_time between #{updateTimeBegin}||' 00:00:00' and #{updateTimeEnd}||' 23:59:59'
+		                   and(org.watch_uid is not null)then null            
+		              else org.ticket_no
+		         end theLast ,
+		         row_number() over(partition by t.id order by org.work_end_time desc) rn
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select watch_uid,ticket_no ,work_end_time,user_name
+		             from o_gea_lcam_sc_sp_pd_wticket_base 
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user
+		             ON watch_uid = user_id
+		             ) org
+		on t.person_name = org.user_name)
+		where rn ='1'
+		
+		union all
+		
+		select * from
+		(select 
+		        t.id idd,t.unit_name unitName,
+		        t.deptment_name deptmentName, t.group_name groupName,
+		        t.specialty specialty,t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,t.remark remark,
+		        case when t.approval = 1 then null
+		             when org.work_end_time between #{updateTimeBegin}||' 00:00:00' and #{updateTimeEnd}||' 23:59:59'
+		                   and(org.work_end_permission_uid is not null)then null            
+		              else org.ticket_no
+		         end theLast ,
+		         row_number() over(partition by t.id order by org.work_end_time desc) rn
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select work_end_permission_uid,ticket_no ,work_end_time,user_name
+		             from o_gea_lcam_sc_sp_pd_wticket_base 
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user
+		             ON work_end_permission_uid = user_id
+		             ) org
+		on t.person_name = org.user_name)
+		where rn = '1'
+		
+		union all
+		
+		select * from
+		(select 
+		        t.id idd,t.unit_name unitName,
+		        t.deptment_name deptmentName, t.group_name groupName,
+		        t.specialty specialty,t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,t.remark remark,
+		        case when t.approval = 1 then null
+		             when org.work_end_time between #{updateTimeBegin}||' 00:00:00' and #{updateTimeEnd}||' 23:59:59'
+		                   and(org.work_permission_uid is not null)then null            
+		              else org.ticket_no
+		         end theLast ,
+		         row_number() over(partition by t.id order by org.work_end_time desc) rn
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select work_permission_uid,ticket_no ,work_end_time,user_name
+		             from o_gea_lcam_sc_sp_pd_wticket_base 
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user
+		             ON work_permission_uid = user_id
+		             ) org
+		on t.person_name = org.user_name)
+		where rn = '1'
+		)
+	  <where>
+	  1=1
+	       <if test="unitName != null and unitName != '' and unitName != '广州供电局有限公司'">
+	       		
+	          <!-- unitName like '%'||#{unitName}||'%' -->
+	         <choose>
+	          	<when test="unitName != '外协单位' and  unitName != '其他单位' ">
+					<if test="level lte 3">
+	          			and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(unitName||'.*') 
+	          		</if>
+	          		<if test="level == 4">
+	          			and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(unitName||'/'||deptmentName||'.*') 
+	          		</if>
+	          		<if test="level gte 5">
+	          		and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(unitName||'.*/'||deptmentName||'.*/'||groupName||'.*') 
+	          		</if>	         		
+	          	</when>
+	          	<otherwise>
+	          	<!-- <when test="unitName != '外协单位' and  unitName != '其他单位' ">
+	         		and instr(#{unitName},unitName) > 0 
+	          	</when> -->
+	          	
+	          		<if test="unitName == '其他单位'">
+	          			and unitName NOT IN (select CASE WHEN instr(t1.org_name,'广州') > 0 
+						THEN (SUBSTRING(t1.org_name,instr(t1.org_name,'广州')+2))
+						ELSE (t1.org_name) END AS name  FROM 
+						gzpfx01.bda_work_dept t2 INNER JOIN o_gea_lcam_sys_top_organization t1
+						ON t1.org_id=SUBSTRING(t2.department_id,12))
+	          		</if>
+	          		<if test="unitName == '外协单位'">
+	          			and unitName NOT IN (select CASE WHEN instr(t1.org_name,'广州') > 0 
+						THEN (SUBSTRING(t1.org_name,instr(t1.org_name,'广州')+2))
+						ELSE (t1.org_name) END AS name  FROM 
+						gzpfx01.bda_work_dept t2 INNER JOIN o_gea_lcam_sys_top_organization t1
+						ON t1.org_id=SUBSTRING(t2.department_id,12))
+						or unitName = '南方电力建设企业集团'
+	          		</if>
+	          		 </otherwise>
+	          </choose>
+	      </if>
+	      <if test="specialty != null and specialty != ''">
+	          and specialty like '%'||#{specialty}||'%'
+	      </if>
+	      <if test="threeType != null and threeType != ''">
+	          <choose>
+	              <when test="threeType == '工作票签发人'">and ticketSign = 1</when>
+	              <when test="threeType == '工作负责人'">and workPrincipal = 1</when>
+	              <when test="threeType == '工作许可人'">and workPermission = 1</when>
+	              <otherwise></otherwise>
+	          </choose>
+	      </if>
+	      <if test="personName != null and personName != ''">
+	          and personName like '%'||#{personName}||'%'
+	      </if>
+	  </where>
+	  group by idd,
+	           unitName,
+	           deptmentName, 
+	           groupName,
+	           specialty,
+	           classes,
+	           personName,
+	           ticketSign,
+		       workPrincipal,
+		       workPermission,
+	           rigthTime,
+	           remark
+	  order by to_number (idd)
+	</select>
+	
+	<select id="getKeepTicketAmount" resultType="com.bda.bdaqm.electric.model.ThreePerson">
+	
+		select idd,
+		       unitName,
+		       deptmentName,
+			   groupName,
+		       specialty,
+		       classes,
+		       personName,
+		       ticketSign,
+		       workPrincipal,
+		       workPermission,
+		       rigthTime,
+		       remark,
+		       sum(case when ticket_no is not null 
+		                then 1
+		                else 0 end 
+		       ) as keepTicketAmount
+		       
+		 from(
+		 select distinct tt.idd,
+		       tt.unitName,
+		       tt.specialty,
+		       tt.deptmentName,
+			   tt.groupName,
+		       tt.classes,
+		       tt.personName,
+		       tt.ticketSign,
+		       tt.workPrincipal,
+		       tt.workPermission,
+		       tt.rigthTime,
+		       tt.remark,
+		       tt.ticket_no from
+		(
+		select 
+		        t.id idd,
+		        t.unit_name unitName,
+		        t.specialty specialty,
+		        t.deptment_name deptmentName,
+		        t.group_name groupName,
+		        t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,
+		        t.remark remark,
+		        org.id ticket_no
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select base.work_principal_uid,base.id ,base.work_end_time,u.user_name
+		
+		             from (SELECT *,row_number() over(partition by id order by work_end_time desc) rn FROM o_gea_lcam_sc_sp_pd_wticket_base ) base
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user u
+		             ON base.work_principal_uid = u.user_id
+		             
+			             where base.work_end_time between #{updateTimeBegin}||' 00:00:00' 
+			               and #{updateTimeEnd}||' 23:59:59'
+		        	       and base.rn = 1
+		             ) org
+		on t.person_name = org.user_name
+		
+		union all
+		
+		select 
+		        t.id idd,
+		        t.unit_name unitName,
+		        t.specialty specialty,
+		        t.deptment_name deptmentName,
+		        t.group_name groupName,
+		        t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,
+		        t.remark remark,
+		        org.id ticket_no
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select base.ticket_sign_uid,base.id ,base.work_end_time,u.user_name
+		
+		             from (SELECT *,row_number() over(partition by id order by work_end_time desc) rn FROM o_gea_lcam_sc_sp_pd_wticket_base ) base 
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user u
+		             ON base.ticket_sign_uid = u.user_id
+		             
+			             where base.work_end_time between #{updateTimeBegin}||' 00:00:00' 
+			               and #{updateTimeEnd}||' 23:59:59'
+			               and base.rn = 1
+		        	   
+		             ) org
+		on t.person_name = org.user_name
+		
+		union all
+		
+		select 
+		        t.id idd,
+		        t.unit_name unitName,
+		        t.specialty specialty,
+		        t.deptment_name deptmentName,
+		        t.group_name groupName,
+		        t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,
+		        t.remark remark,
+		        org.id ticket_no
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select base.watch_uid,base.id ,base.work_end_time,u.user_name
+		
+		             from (SELECT *,row_number() over(partition by id order by work_end_time desc) rn FROM o_gea_lcam_sc_sp_pd_wticket_base ) base
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user u
+		             ON base.watch_uid = u.user_id
+		             
+			             where base.work_end_time between #{updateTimeBegin}||' 00:00:00' 
+			               and #{updateTimeEnd}||' 23:59:59'
+			               and base.rn = 1
+		        	 
+		             ) org
+		on t.person_name = org.user_name
+		
+		union all
+		
+		select 
+		        t.id idd,
+		        t.unit_name unitName,
+		        t.specialty specialty,
+		        t.deptment_name deptmentName,
+		        t.group_name groupName,
+		        t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,
+		        t.remark remark,
+		        org.id ticket_no
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select base.work_end_permission_uid,base.id ,base.work_end_time,u.user_name
+		
+		             from (SELECT *,row_number() over(partition by id order by work_end_time desc) rn FROM o_gea_lcam_sc_sp_pd_wticket_base ) base
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user u
+		             ON base.work_end_permission_uid = u.user_id
+		             
+			             where base.work_end_time between #{updateTimeBegin}||' 00:00:00' 
+			               and #{updateTimeEnd}||' 23:59:59'
+			               and base.rn = 1
+		        	 
+		             ) org
+		on t.person_name = org.user_name
+		
+		union all
+		
+		select 
+		        t.id idd,
+		        t.unit_name unitName,
+		        t.specialty specialty,
+		        t.deptment_name deptmentName,
+		        t.group_name groupName,
+		        t.classes classes,
+		        t.person_name personName,
+		        t.ticket_sign ticketSign,
+		        t.work_principal workPrincipal,
+		        t.work_permission workPermission,
+		        t.rigth_time rigthTime,
+		        t.remark remark,
+		        org.id ticket_no
+		from gzpfx01.bda_three_person_temp t
+		
+		left join (select base.work_permission_uid,base.id ,base.work_end_time,u.user_name
+		
+		             from (SELECT *,row_number() over(partition by id order by work_end_time desc) rn FROM o_gea_lcam_sc_sp_pd_wticket_base ) base
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user u
+		             ON base.work_permission_uid = u.user_id
+		             
+			             where base.work_end_time between #{updateTimeBegin}||' 00:00:00' 
+			               and #{updateTimeEnd}||' 23:59:59'
+			               and base.rn = 1
+		        	
+		             ) org
+		on t.person_name = org.user_name
+		)tt
+		)
+	  <where>
+	  1=1
+	       <if test="unitName != null and unitName != '' and unitName != '广州供电局有限公司'">
+	       		
+	          <!-- unitName like '%'||#{unitName}||'%' -->
+	         <choose>
+	          	<when test="unitName != '外协单位' and  unitName != '其他单位' ">
+					<if test="level lte 3">
+	          			and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(unitName||'.*') 
+	          		</if>
+	          		<if test="level == 4">
+	          			and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(unitName||'/'||deptmentName||'.*') 
+	          		</if>
+	          		<if test="level gte 5">
+	          		and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(unitName||'.*/'||deptmentName||'.*/'||groupName||'.*') 
+	          		</if>	         		
+	          	</when>
+	          	<otherwise>
+	          	<!-- <when test="unitName != '外协单位' and  unitName != '其他单位' ">
+	         		and instr(#{unitName},unitName) > 0 
+	          	</when> -->
+	          	
+	          		<if test="unitName == '其他单位'">
+	          			and unitName NOT IN (select CASE WHEN instr(t1.org_name,'广州') > 0 
+						THEN (SUBSTRING(t1.org_name,instr(t1.org_name,'广州')+2))
+						ELSE (t1.org_name) END AS name  FROM 
+						gzpfx01.bda_work_dept t2 INNER JOIN o_gea_lcam_sys_top_organization t1
+						ON t1.org_id=SUBSTRING(t2.department_id,12))
+	          		</if>
+	          		<if test="unitName == '外协单位'">
+	          			and unitName NOT IN (select CASE WHEN instr(t1.org_name,'广州') > 0 
+						THEN (SUBSTRING(t1.org_name,instr(t1.org_name,'广州')+2))
+						ELSE (t1.org_name) END AS name  FROM 
+						gzpfx01.bda_work_dept t2 INNER JOIN o_gea_lcam_sys_top_organization t1
+						ON t1.org_id=SUBSTRING(t2.department_id,12))
+						or unitName = '南方电力建设企业集团'
+	          		</if>
+	          		 </otherwise>
+	          </choose>
+	      </if>
+	      <if test="specialty != null and specialty != ''">
+	          and specialty like '%'||#{specialty}||'%'
+	      </if>
+	      <if test="threeType != null and threeType != ''">
+	          <choose>
+	              <when test="threeType == '工作票签发人'">and ticketSign = 1</when>
+	              <when test="threeType == '工作负责人'">and workPrincipal = 1</when>
+	              <when test="threeType == '工作许可人'">and workPermission = 1</when>
+	              <otherwise></otherwise>
+	          </choose>
+	      </if>
+	      <if test="personName != null and personName != ''">
+	          and personName like '%'||#{personName}||'%'
+	      </if>
+	  </where>
+	  group by idd,
+	           unitName,
+	           deptmentName,
+	           groupName,
+	           specialty,
+	           classes,
+	           personName,
+	           ticketSign,
+		       workPrincipal,
+		       workPermission,
+	           rigthTime,
+	           remark
+	  order by to_number (idd)
+	</select>
+	
+	<select id="getOriginalData" resultType="com.bda.bdaqm.electric.model.ThpsDialogDetail">
+	    select t.work_task workTask,
+			   t.ticket_type ticketType,
+			   (select u.user_name from o_gea_lcam_sc_sp_pd_wticket_user u where u.user_id = t.work_principal_uid) workPri,
+			   t.department_oname unit,
+			   t.function_location_name line,
+			   to_char(t.plan_start_time,'yyyy-MM-dd hh:mm:ss') planStart,
+			   to_char(t.plan_end_time,'yyyy-MM-dd hh:mm:ss') planEnd,
+			   t.work_place workPlace,
+			   t.work_state ticketStatus,
+			   t.ticket_no ticketNum,
+			   (select u.user_name from o_gea_lcam_sc_sp_pd_wticket_user u where u.user_id = t.ticket_sign_uid) ticketLssue,
+			   to_char(t.ticket_sign_time,'yyyy-MM-dd hh:mm:ss') lssueTime,
+			   (select u.user_name from o_gea_lcam_sc_sp_pd_wticket_user u where u.user_id = t.watch_uid) attendance,
+			   (select u.user_name from o_gea_lcam_sc_sp_pd_wticket_user u where u.user_id = t.work_permission_uid) workLicensor,
+			   to_char(t.permission_time,'yyyy-MM-dd hh:mm:ss') licensTime,
+			   (select u.user_name from o_gea_lcam_sc_sp_pd_wticket_user u where u.user_id = t.work_end_permission_uid) workLastPerson,
+			   to_char(t.work_end_time,'yyyy-MM-dd hh:mm:ss') workLastTime
+	      from o_gea_lcam_sc_sp_pd_wticket_base t
+		 where t.ticket_no = #{ticketNum}
+		   and (
+		         t.work_principal_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+		      or t.ticket_sign_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+		      or t.watch_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+		      or t.work_permission_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+		      or t.work_end_permission_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+		  )
+	</select>
+	
+	<select id="getAmountOfTypeFromKeep" resultType="map">
+	    select sum(case when ticket_type = '11' then 1 else 0 end) stationOne,
+	           sum(case when ticket_type = '12' then 1 else 0 end) stationTwo,
+	           sum(case when ticket_type = '13' then 1 else 0 end) stationThree,
+	           sum(case when ticket_type = '21' then 1 else 0 end) lineOne,
+	           sum(case when ticket_type = '22' then 1 else 0 end) lineTwo,
+	           sum(case when ticket_type = '31' then 1 else 0 end) fireOne,
+	           sum(case when ticket_type = '32' then 1 else 0 end) fireTwo,
+	           sum(case when ticket_type = '41' then 1 else 0 end) pdOne,
+	           sum(case when ticket_type = '42' then 1 else 0 end) pdTwo,
+	           sum(case when ticket_type = '43' then 1 else 0 end) ddzy,
+	           sum(case when ticket_type = '44' then 1 else 0 end) dypdw,
+	           sum(case when ticket_type = '51' then 1 else 0 end) jjqx,
+	           sum(case when ticket_type = '61' then 1 else 0 end) safty,
+	           sum(case when ticket_type = '71' then 1 else 0 end) twice,
+	           sum(case when ticket_type = '81' then 1 else 0 end) writtenForm,
+	           sum(case when ticket_type = '91' then 1 else 0 end) xckcjl,
+	           sum(case when ticket_type is null or ticket_type = '' then 1 else 0 end) isEmpty
+	           
+	      from o_gea_lcam_sc_sp_pd_wticket_base
+	     where (work_principal_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+             OR work_permission_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName}) 
+    		 OR ticket_sign_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+    		 OR watch_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+    		 OR work_end_permission_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name = #{personName})
+    		 )
+           AND (work_end_time BETWEEN #{startTime}||' 00:00:00' AND #{endTime}||' 23:59:59') 
+	</select>
+	
+</mapper>

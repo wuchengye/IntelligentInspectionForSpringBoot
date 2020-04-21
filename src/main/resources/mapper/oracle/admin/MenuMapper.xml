@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.admin.mapper.MyMenuMapper">
+	
+	<resultMap type="com.bda.admin.model.Menu" id="MenuRM">
+		<id column="MENU_ID" property="menuId" />
+		<collection property="subMenu" ofType="com.bda.admin.model.Menu" column="MENU_ID" select="selectAllRecursiveByParentId" />
+	</resultMap>
+	<!-- 递归获取所有菜单 -->
+	<select id="selectAllRecursiveByParentId" resultMap="MenuRM">
+		select * from BDA_MENU where parent_id = #{parentId} ORDER BY CAST(MENU_ORDER AS SIGNED INTEGER)
+	</select>
+	
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.mission.mapper.MissionMapper">
+    <select id="getListMission" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+        select * from inspection_mission  t
+        where mission_createrid = #{userId}
+    </select>
+
+    <insert id="createMission">
+		insert into inspection_mission(mission_name,mission_describe,mission_type,
+		                                mission_status,mission_begintime,mission_istaboo,
+		                                mission_isrisk,mission_isnodubious,mission_upload_status,
+		                                mission_transfer_status,mission_inspection_status,
+		                                mission_level,mission_istransfer,mission_isinspection,
+		                                mission_filepath,mission_createrid,mission_totalnum)
+		values(#{missionName},#{missionDescribe},#{missionType},#{missionStatus},
+				#{missionBegintime},#{missionIstaboo},#{missionIsrisk},#{missionIsnodubious},
+				#{missionUploadStatus},#{missionTransferStatus},#{missionInspectionStatus},
+				#{missionLevel},#{missionIstransfer},#{missionIsinspection},#{missionFilepath},
+				#{missionCreaterid},#{missionTotalNum})
+	</insert>
+</mapper>

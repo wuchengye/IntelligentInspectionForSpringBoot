@@ -1,0 +1,61 @@
+[{
+	modelId: '0',
+	modelName: '识别推销术语的模型_主推套餐',
+	modelType: '1',
+	modelStatus: '0',
+	orgName: "区域1",
+	lastModifiedBy: '张三',
+	lastModifiedTime: '2018-03-14 09:59:23',
+	description: "用于识别主推套餐的推销术语。",
+	combineRule: "1|2|3",
+	combineItems: [{
+		id: "1",
+		content: "新的4G飞享套餐"
+	}, {
+		id: "2",
+		content: "只需58元"
+	}, {
+		id: "3",
+		content: "升级新套餐"
+	}]
+}, {
+	modelId: '1',
+	modelName: '识别礼貌用语的模型_推销过程',
+	modelType: '2',
+	modelStatus: '1',
+	orgName: "区域2",
+	lastModifiedBy: '李四',
+	lastModifiedTime: '2018-03-14 10:30:30',
+	description: "用于识别推销过程中的礼貌用语。",
+	combineRule: "1&2&3",
+	combineItems: [{
+		id: "1",
+		content: "你好|您好"
+	}, {
+		id: "2",
+		content: "很高兴为您服务"
+	}, {
+		id: "3",
+		content: "感谢您的接听"
+	}]
+}, {
+	modelId: '2',
+	modelName: '识别礼貌用语的模型_处理投诉',
+	modelType: '3',
+	modelStatus: '1',
+	orgName: "区域3",
+	lastModifiedBy: '王五',
+	lastModifiedTime: '2018-03-14 10:31:45',
+	description: "用于识别处理投诉过程中的礼貌用语。",
+	combineRule: "1|!2|3",
+	combineItems: [{
+		id: "4",
+		content: "很高兴为您服务"
+	}, {
+		id: "5",
+		content: "深感抱歉"
+	}, {
+		id: "10",
+		content: "我们尽快帮您解决"
+	}]
+}]

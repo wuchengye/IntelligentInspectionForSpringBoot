@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.electric.mapper.StatisticsMapper">
+	<select id = "getAllData" resultType="com.bda.bdaqm.electric.model.Statistics">
+		select * from BDA_STATISTICS 
+		<where>
+		 1=1
+		 <if test="timeBegin !=null and timeBegin !=''">
+				and MONTH <![CDATA[>=]]> #{timeBegin}
+		 </if>
+		 <if test="timeEnd !=null and timeEnd !=''">
+				and MONTH <![CDATA[<=]]> #{timeEnd}
+		</if>
+		<if test="type !=null and type !=''">
+			    and UNIT = #{type}
+		</if>
+		</where>
+		order by month desc,unit desc
+	</select>
+	
+	<select id ="getOriginData" resultType="com.bda.bdaqm.electric.model.Original">
+	 <bind name="pattern" value="'%' + unit + '%'" />
+		select * from BDA_ORIGINAL 
+		where work_last_time_new =#{date} and operation like #{pattern} and ticket_type = #{type} 
+	</select>
+	
+</mapper>

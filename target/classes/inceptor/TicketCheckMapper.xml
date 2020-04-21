@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.electric.mapper.TicketCheckMapper">
+	
+	
+		<select id="getTicketsData" parameterType="com.bda.bdaqm.electric.model.QueryParams" resultType="map">
+	    select * from (
+	    
+	    SELECT
+	            base.ticket_no,
+			  	base.function_location_name,
+			  	base.src_operation_type,
+				base.opration_time,
+			  	ROW_NUMBER() over(partition by base.id order by base.opration_time desc) as new_index,
+			 	base.work_task,
+			 	base.work_place,
+				to_char(base.permission_time,'yyyy-MM-dd HH:mm:ss') permission_time,
+				to_char(base.work_end_time,'yyyy-MM-dd HH:mm:ss') work_end_time,
+				safty.pull_breaker,
+				safty.dcpower_lowp_circle,
+				safty.switch_earthwire_insulation,
+				base.whether_outer_dept,
+				base.ticket_counter_sign_uid,
+				base.ticket_sign_uid,
+				to_char(base.ticket_sign_time,'yyyy-MM-dd HH:mm:ss') ticket_sign_time,
+				to_char(base.ticket_counter_sign_time,'yyyy-MM-dd HH:mm:ss') ticket_counter_sign_time,
+				to_char(base.plan_start_time,'yyyy-MM-dd HH:mm:ss') plan_start_time,
+				to_char(base.plan_end_time,'yyyy-MM-dd HH:mm:ss') plan_end_time,
+				to_char(exe.delay_time,'yyyy-MM-dd HH:mm:ss') delay_time,
+				to_char(exe.delay_fill_time,'yyyy-MM-dd HH:mm:ss') delay_fill_time,
+				to_char(workinggap.gap_time,'yyyy-MM-dd HH:mm:ss') gap_time,
+				to_char(workinggap.gap_start_time,'yyyy-MM-dd HH:mm:ss') gap_start_time,
+				exe.work_end_principal_uid,
+				exe.measure_end_per_uid,
+				to_char(exe.measure_end_fill_time,'yyyy-MM-dd HH:mm:ss') measure_end_fill_time,
+				exe.dispatch_earthwire_count,
+				exe.dispatch_earthwire_code,
+				exe.dispatch_switch_code,
+				exe.dispatch_switch_count,
+				base.work_member_count,
+				base.secondbill_count,
+				base.whether_secondbill,
+				base.ticket_type,
+				safty.billboard,
+				safty.other_care,
+				per.other_care permission_other_care,
+				base.id,
+				to_char(base.ticket_end_time,'yyyy-MM-dd HH:mm:ss') ticket_end_time,
+				base.department_oname,
+				base.work_principal_uid,
+				base.work_permission_uid,
+				(select u1.user_name from o_gea_lcam_sc_sp_pd_wticket_user u1 where u1.user_id = base.ticket_sign_uid ) sign_name,
+				(select u2.user_name from o_gea_lcam_sc_sp_pd_wticket_user u2 where u2.user_id = base.work_principal_uid ) pri_name,
+				(select u3.user_name from o_gea_lcam_sc_sp_pd_wticket_user u3 where u3.user_id = base.work_permission_uid ) permis_name,
+				(select u4.user_name from o_gea_lcam_sc_sp_pd_wticket_user u4 where u4.user_id = base.work_end_permission_uid ) end_pmis_name,
+				(select u5.user_name from o_gea_lcam_sc_sp_pd_wticket_user u5 where u5.user_id = base.ticket_counter_sign_uid ) counter_name
+		FROM
+			o_gea_lcam_sc_sp_pd_wticket_base base 
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_permission per ON base.id = per.wticket_id
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_saftymeasures safty ON base.id = safty.wticket_id
+			LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_execute exe ON (base.id = exe.wticket_id)
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_workinggap workinggap ON workinggap.wticket_id = base.id 
+	    <where>
+	        base.src_operation_type <![CDATA[ <> ]]> 'D'
+	        AND base.work_state in ('7','8')
+	        <if test="ticket.ticketId != null and ticket.ticketId != ''">
+	            AND base.id LIKE concat('%',#{ticket.ticketId},'%')
+	        </if>
+	        <if test="ticket.ticketNo != null and ticket.ticketNo != ''">
+	            AND base.ticket_no LIKE concat('%',#{ticket.ticketNo},'%')
+	        </if>
+	        <if test="ticket.ticketType != null and ticket.ticketType != ''">
+	            <!-- AND base.ticket_type LIKE concat('%',#{ticket.ticketType},'%') -->
+	            AND base.ticket_type = #{ticket.ticketType}
+	        </if>
+	        <if test="ticket.stationLineName != null and ticket.stationLineName != ''">
+	            AND base.function_location_name LIKE concat('%',#{ticket.stationLineName},'%')
+	        </if>
+	        <if test="ticket.workPrincipal != null and ticket.workPrincipal != ''">
+	            AND base.work_principal_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.workPrincipal},'%'))
+	        </if>
+	        <if test="ticket.ticketSigner != null and ticket.ticketSigner != ''">
+	            AND base.ticket_sign_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.ticketSigner},'%'))
+	        </if>
+	        <if test="ticket.workLicensor != null and ticket.workLicensor != ''">
+	            AND base.work_permission_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.workLicensor},'%'))
+	        </if>
+	        <if test="ticket.workEndLicensor != null and ticket.workEndLicensor != ''">
+	            AND base.work_end_permission_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.workEndLicensor},'%'))
+	        </if>
+	        
+	        <!-- <if test="ticket.department != null and ticket.department != ''">
+	            AND base.department_oname LIKE concat('%',#{ticket.department},'%')
+	        </if> -->
+	        
+	        <if test="ticket.department != null and ticket.department != '' and ticket.department != '广州供电局有限公司'">
+	       		and base.department_oid in (${ticket.orgIds})
+	        </if>
+	        
+	        
+	        
+	        <!-- <if test="ticket.planStartTime != null and ticket.planStartTime != ''">
+	            AND base.plan_start_time &gt;= #{ticket.planStartTime}
+	        </if>
+	        <if test="ticket.planEndTime != null and ticket.planEndTime != ''">
+	            AND base.plan_end_time &lt; #{ticket.planEndTime}
+	        </if> -->
+	        <if test="ticket.isOuterDept != null and ticket.isOuterDept != ''">
+	            AND base.whether_outer_dept = #{ticket.isOuterDept}
+	        </if>
+	        <if test="ticket.ticketCounterSigner != null and ticket.ticketCounterSigner != ''">
+	            AND base.ticket_counter_sign_uid in (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.ticketCounterSigner},'%'))
+	        </if>
+	        <if test="ticket.ticketEndTime1 != null and ticket.ticketEndTime1 != ''">
+	            AND base.work_end_time &gt;= #{ticket.ticketEndTime1}
+	        </if>
+	        <if test="ticket.ticketEndTime2 != null and ticket.ticketEndTime2 != ''">
+	            AND base.work_end_time &lt; #{ticket.ticketEndTime2}
+	        </if>
+	        <if test="ticket.permissionTime1 != null and ticket.permissionTime1 != ''">
+	            AND base.permission_time &gt;= #{ticket.permissionTime1}
+	        </if>
+	        <if test="ticket.permissionTime2 != null and ticket.permissionTime2 != ''">
+	            AND base.permission_time &lt; #{ticket.permissionTime2}
+	        </if>
+	    </where>
+	    ) tab
+	    where tab.new_index=1 <!-- and tab.ticket_no IS NOT NULL -->
+	</select>
+	 
+	 <select id="getQuartzTicketsData"  resultType="java.lang.String">
+	    select base.id 
+		FROM
+			o_gea_lcam_sc_sp_pd_wticket_base base 
+	    <where>
+	        base.src_operation_type <![CDATA[ <> ]]> 'D'
+	        AND base.work_state in ('7','8') 
+	        <if test="beginTime != null and beginTime != ''">
+	            AND SUBSTRING( base.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+	        </if>
+	        <if test="endTime != null and endTime != ''">
+	         AND SUBSTRING( base.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+	        </if>
+	    </where>
+	</select>
+	 
+	 <select id="getTicketsDataIsNull" parameterType="com.bda.bdaqm.electric.model.QueryParams" resultType="map">
+	    SELECT
+	            base.ticket_no,
+			  	base.function_location_name,
+			  	base.src_operation_type,
+				base.opration_time,
+			 	base.work_task,
+			 	base.work_place,
+				to_char(base.permission_time,'yyyy-MM-dd HH:mm:ss') permission_time,
+				to_char(base.work_end_time,'yyyy-MM-dd HH:mm:ss') work_end_time,
+				safty.pull_breaker,
+				safty.dcpower_lowp_circle,
+				safty.switch_earthwire_insulation,
+				base.whether_outer_dept,
+				base.ticket_counter_sign_uid,
+				base.ticket_sign_uid,
+				to_char(base.ticket_sign_time,'yyyy-MM-dd HH:mm:ss') ticket_sign_time,
+				to_char(base.ticket_counter_sign_time,'yyyy-MM-dd HH:mm:ss') ticket_counter_sign_time,
+				to_char(base.plan_start_time,'yyyy-MM-dd HH:mm:ss') plan_start_time,
+				to_char(base.plan_end_time,'yyyy-MM-dd HH:mm:ss') plan_end_time,
+				to_char(exe.delay_time,'yyyy-MM-dd HH:mm:ss') delay_time,
+				to_char(exe.delay_fill_time,'yyyy-MM-dd HH:mm:ss') delay_fill_time,
+				to_char(workinggap.gap_time,'yyyy-MM-dd HH:mm:ss') gap_time,
+				to_char(workinggap.gap_start_time,'yyyy-MM-dd HH:mm:ss') gap_start_time,
+				exe.work_end_principal_uid,
+				exe.measure_end_per_uid,
+				to_char(exe.measure_end_fill_time,'yyyy-MM-dd HH:mm:ss') measure_end_fill_time,
+				exe.dispatch_earthwire_count,
+				exe.dispatch_earthwire_code,
+				exe.dispatch_switch_code,
+				exe.dispatch_switch_count,
+				base.work_member_count,
+				base.secondbill_count,
+				base.whether_secondbill,
+				base.ticket_type,
+				safty.billboard,
+				safty.other_care,
+				per.other_care permission_other_care,
+				base.id,
+				to_char(base.ticket_end_time,'yyyy-MM-dd HH:mm:ss') ticket_end_time,
+				base.department_oname,
+				base.work_principal_uid,
+				base.work_permission_uid,
+				(select u1.user_name from o_gea_lcam_sc_sp_pd_wticket_user u1 where u1.user_id = base.ticket_sign_uid ) sign_name,
+				(select u2.user_name from o_gea_lcam_sc_sp_pd_wticket_user u2 where u2.user_id = base.work_principal_uid ) pri_name,
+				(select u3.user_name from o_gea_lcam_sc_sp_pd_wticket_user u3 where u3.user_id = base.work_permission_uid ) permis_name,
+				(select u4.user_name from o_gea_lcam_sc_sp_pd_wticket_user u4 where u4.user_id = base.work_end_permission_uid ) end_pmis_name,
+				(select u5.user_name from o_gea_lcam_sc_sp_pd_wticket_user u5 where u5.user_id = base.ticket_counter_sign_uid ) counter_name
+		FROM
+			o_gea_lcam_sc_sp_pd_wticket_base base 
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_permission per ON base.id = per.wticket_id
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_saftymeasures safty ON base.id = safty.wticket_id
+			LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_execute exe ON (base.id = exe.wticket_id)
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_workinggap workinggap ON workinggap.wticket_id = base.id 
+	    <where>
+	    	base.ticket_no is null
+	        <if test="ticket.ticketId != null and ticket.ticketId != ''">
+	            AND base.id LIKE concat('%',#{ticket.ticketId},'%')
+	        </if>
+	        <if test="ticket.ticketType != null and ticket.ticketType != ''">
+	            <!-- AND base.ticket_type LIKE concat('%',#{ticket.ticketType},'%') -->
+	            AND base.ticket_type = #{ticket.ticketType}
+	        </if>
+	        <if test="ticket.stationLineName != null and ticket.stationLineName != ''">
+	            AND base.function_location_name LIKE concat('%',#{ticket.stationLineName},'%')
+	        </if>
+	        <if test="ticket.workPrincipal != null and ticket.workPrincipal != ''">
+	            AND base.work_principal_uid = (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.workPrincipal},'%'))
+	        </if>
+	        <if test="ticket.ticketSigner != null and ticket.ticketSigner != ''">
+	            AND base.ticket_sign_uid = (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.ticketSigner},'%'))
+	        </if>
+	        <if test="ticket.workLicensor != null and ticket.workLicensor != ''">
+	            AND base.work_permission_uid = (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.workLicensor},'%'))
+	        </if>
+	        <if test="ticket.workEndLicensor != null and ticket.workEndLicensor != ''">
+	            AND base.work_end_permission_uid = (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.workEndLicensor},'%'))
+	        </if>
+	        <if test="ticket.department != null and ticket.department != ''">
+	            AND base.department_oname LIKE concat('%',#{ticket.department},'%')
+	        </if>
+	        <!-- <if test="ticket.planStartTime != null and ticket.planStartTime != ''">
+	            AND base.plan_start_time &gt;= #{ticket.planStartTime}
+	        </if>
+	        <if test="ticket.planEndTime != null and ticket.planEndTime != ''">
+	            AND base.plan_end_time &lt; #{ticket.planEndTime}
+	        </if> -->
+	        <if test="ticket.isOuterDept != null and ticket.isOuterDept != ''">
+	            AND base.whether_outer_dept = #{ticket.isOuterDept}
+	        </if>
+	        <if test="ticket.ticketCounterSigner != null and ticket.ticketCounterSigner != ''">
+	            AND base.ticket_counter_sign_uid = (select user_id from o_gea_lcam_sc_sp_pd_wticket_user where user_name like concat('%',#{ticket.ticketCounterSigner},'%'))
+	        </if>
+	        <if test="ticket.ticketEndTime1 != null and ticket.ticketEndTime1 != ''">
+	            AND base.ticket_end_time &gt;= #{ticket.ticketEndTime1}
+	        </if>
+	        <if test="ticket.ticketEndTime2 != null and ticket.ticketEndTime2 != ''">
+	            AND base.ticket_end_time &lt; #{ticket.ticketEndTime2}
+	        </if>
+	    </where>
+	</select>
+	 
+	 
+	 
+	 
+	 
+	<select id="getTicketInfo" resultType="map">
+		SELECT
+				base.function_location_name,
+			 	base.work_task,
+			 	base.work_place,
+				to_char(base.permission_time,'yyyy-MM-dd HH:mm:ss') permission_time,
+				to_char(base.work_end_time,'yyyy-MM-dd HH:mm:ss') work_end_time,
+				safty.pull_breaker,
+				safty.dcpower_lowp_circle,
+				safty.switch_earthwire_insulation,
+				base.whether_outer_dept,
+				base.ticket_counter_sign_uid,
+				base.ticket_sign_uid,
+				to_char(base.ticket_sign_time,'yyyy-MM-dd HH:mm:ss') ticket_sign_time,
+				to_char(base.ticket_counter_sign_time,'yyyy-MM-dd HH:mm:ss') ticket_counter_sign_time,
+				to_char(base.plan_end_time,'yyyy-MM-dd HH:mm:ss') plan_end_time,
+				to_char(exe.delay_time,'yyyy-MM-dd HH:mm:ss') delay_time,
+				to_char(exe.delay_fill_time,'yyyy-MM-dd HH:mm:ss') delay_fill_time,
+				to_char(workinggap.gap_time,'yyyy-MM-dd HH:mm:ss') gap_time,
+				to_char(workinggap.gap_start_time,'yyyy-MM-dd HH:mm:ss') gap_start_time,
+				exe.work_end_principal_uid,
+				exe.measure_end_per_uid,
+				to_char(exe.measure_end_fill_time,'yyyy-MM-dd HH:mm:ss') measure_end_fill_time,
+				exe.dispatch_earthwire_count,
+				exe.dispatch_earthwire_code,
+				exe.dispatch_switch_code,
+				exe.dispatch_switch_count,
+				base.work_member_count,
+				base.secondbill_count,
+				base.whether_secondbill,
+				base.ticket_type,
+				safty.billboard,
+				base.id,
+				base.department_oid,
+				base.ticket_no,
+				to_char(base.ticket_end_time,'yyyy-MM-dd HH:mm:ss') ticket_end_time,
+				base.department_oname,
+				base.work_principal_uid,
+				base.work_permission_uid,
+				exe.change_principal_uid,
+				exe.change_new_principal_uid,
+				exe.change_time, 
+				safty.other_care,
+				per.other_care permission_other_care,
+				base.work_principal_uid,
+				exe.add_content_detail,
+				exe.add_content_permission_uid,
+				(select u1.user_name from o_gea_lcam_sc_sp_pd_wticket_user u1 where u1.user_id = base.ticket_sign_uid ) sign_name,
+				(select u2.user_name from o_gea_lcam_sc_sp_pd_wticket_user u2 where u2.user_id = base.work_principal_uid ) pri_name,
+				(select u3.user_name from o_gea_lcam_sc_sp_pd_wticket_user u3 where u3.user_id = base.work_permission_uid ) permis_name,
+				(select u4.user_name from o_gea_lcam_sc_sp_pd_wticket_user u4 where u4.user_id = base.work_end_permission_uid ) end_pmis_name,
+				(select u5.user_name from o_gea_lcam_sc_sp_pd_wticket_user u5 where u5.user_id = base.ticket_counter_sign_uid ) counter_name,
+				(select u6.user_name from o_gea_lcam_sc_sp_pd_wticket_user u6 where u6.user_id = exe.work_end_principal_uid ) work_end_principal,
+				(select u7.user_name from o_gea_lcam_sc_sp_pd_wticket_user u7 where u7.user_id = per.work_principal_id ) permission_work_principal
+		FROM
+			o_gea_lcam_sc_sp_pd_wticket_base base 
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_permission per ON base.id = per.wticket_id
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_saftymeasures safty ON base.id = safty.wticket_id
+			LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_execute exe ON (base.id = exe.wticket_id)
+	 		LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_workinggap workinggap ON workinggap.wticket_id = base.id 
+		WHERE
+			base.id IN <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+	</select>
+	
+	
+
+	<select id = "getUser" resultType = "String">
+		select user_name from sp_pd_wticket_user
+	</select>
+
+	
+	<select id = "getUserType" resultType = "map">
+		select PERSON_NAME,THREE_TYPE from gzpfx01.bda_three_person 
+	</select>
+	
+	<delete id = "deleteResult" >
+		delete from gzpfx01.bda_ticket_check_result 
+		<where>
+			ticket_id in <foreach collection="resultList" item="item" index="index" open="(" separator="," close=")">#{item.ticketId}</foreach>
+		</where>
+	</delete>
+	
+	
+	<insert id = "insertResult">
+		insert into gzpfx01.bda_ticket_check_result (ticket_id,ticket_type,classes,ticket_final_time,work_principal,ticket_signer,
+		licensor,check_result,misuse_ticket,beyond_plan,keyword_error,work_member_count,fillin_task_error,fillin_safe_error,
+		double_issue_error,empty_permiss_time,handle_change,handle_delay,final_content_error,licensor_no_sign,keep_multiple,sign_error,standard_result,no_save,nonstandard_word,batch_time)
+		values
+		<foreach collection="resultList" item="item" index="index"  separator=",">
+		(#{item.ticketId},#{item.ticketType},#{item.classes},#{item.ticketFinalTime},#{item.workPrincipal},#{item.ticketSigner},#{item.licensor},#{item.checkResult},#{item.misuseTicket},#{item.beyondPlan},#{item.keywordError},#{item.workMemberCount},#{item.fillinTaskError},
+		#{item.fillinSafeError},#{item.doubleIssueError},#{item.emptyPermissTime},#{item.handleChange},#{item.handleDelay},#{item.finalContentError},#{item.licensorNoSign},#{item.keepMultiple},#{item.signError},#{item.standardResult},#{item.noSave},
+		#{item.nonstandardWord},#{item.batchTime})
+		
+		</foreach>
+	</insert>
+
+	<select id ="getLocation" resultType="String">
+		SELECT description FROM gzpfx01.cim_line 
+	
+	</select>
+	
+	<delete id = "deleteResultChildren" >
+		delete from gzpfx01.bda_ticket_check_result_children
+		<where>
+			ticket_id in <foreach collection="resultList" item="item" index="index" open="(" separator="," close=")">#{item.ticketId}</foreach>
+		</where>
+	</delete>
+	
+	
+	<insert id = "insertResultChildren">
+		insert into gzpfx01.bda_ticket_check_result_children (ticket_id,criterion,criterion_children,description,field,batch_time)
+		values
+		<foreach collection="resultList" item="item" index="index"  separator=",">
+		(#{item.ticketId},#{item.criterion},#{item.criterionChildren},#{item.description},#{item.field},#{item.batchTime})
+		</foreach>
+	</insert>
+	
+	
+	
+	<select id ="selectBySql" resultType="com.bda.bdaqm.electric.model.Criterion15Vo">
+		SELECT 
+		base.id ticketId,
+		base.ticket_type ticketType,
+		to_char(base.permission_time,'yyyy-MM-dd HH:mm:ss') permissionTime,
+		to_char(base.work_end_time,'yyyy-MM-dd HH:mm:ss') workEndTime,
+		(select u2.user_name from o_gea_lcam_sc_sp_pd_wticket_user u2 where u2.user_id = base.work_principal_uid ) userName
+		from o_gea_lcam_sc_sp_pd_wticket_base base WHERE base.work_principal_uid IN<foreach collection="list" item="item" index="index" open="(" separator="," close=")">#{item}</foreach> 
+				
+	</select>
+	
+	<insert id = "saveBatch">
+		insert into gzpfx01.bda_result_batch(id,save_time,save_user_id,count_of_batch)values(gzpfx01.seq_batch_id.NEXTVAL,#{time},#{userId},#{count})
+	</insert>
+	
+	<select id = "queryMax" resultType="string">
+		SELECT id FROM  gzpfx01.bda_result_batch 
+			ORDER BY id DESC
+			LIMIT 0,1
+	</select>
+	
+	<select id="getIsConnect" resultType="map">
+	  	SELECT
+	  		base.id,
+			tab.confirm_work_end_date,
+			tab.device_name 
+		FROM
+			o_gea_lcam_sc_sp_pd_wticket_base base,
+			(
+				SELECT
+					re.wticket_id,
+					re.ticket_type,
+					apply.confirm_work_end_date,
+					apply.device_name 
+				FROM
+					o_gea_lcam_sc_sp_pd_wticket_business_re re,
+					o_gea_lcam_sc_sp_so_outage_apply apply 
+				WHERE
+					re.business_id = apply.id 
+				AND re.business_type = 'outage' 
+			) tab
+		where base.id = tab.wticket_id and base.id in 
+	  <foreach collection="oids" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+	</select>
+	
+	
+</mapper>

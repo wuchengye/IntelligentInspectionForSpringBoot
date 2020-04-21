@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.admin.mapper.MyUserRoleMapper">
+	
+	<delete id="deleteUserRoleByRoleId">
+	    delete from bda_auth_user_role where role_id = #{roleId}
+	</delete>
+
+	<select id="selectUserRole" resultType="com.bda.bdaqm.admin.model.UserRole">
+	    select user_id as userId,role_id as roleId 
+	    from bda_auth_user_role 
+	    <where>
+	        <if test="params.userId != null and params.userId != '' ">user_id = ${params.userId}</if>
+	        <if test="params.roleId != null and params.roleId != '' ">role_id = ${params.roleId}</if>
+	    </where>
+	</select>
+	
+    <delete id="deleteUserRole">
+	    delete from bda_auth_user_role 
+	    <where>
+	        <if test="params.userId != null and params.userId != '' ">user_id = ${params.userId}</if>
+	        <if test="params.roleId != null and params.roleId != '' ">user_id = ${params.roleId}</if>
+	    </where>
+	</delete>
+
+    <insert id="insertUserRole">
+        insert into bda_auth_user_role
+        values(#{userRole.userId},#{userRole.roleId})
+    </insert>
+    
+    <select id="selectAllByEqField" resultType="com.bda.bdaqm.admin.model.UserRole">
+        select role_id roleId,
+               user_id userId
+          from bda_auth_user_role
+          <where>
+          1=1
+              <if test="field == 'userId'">and user_id = #{param}</if>
+              <if test="field == 'roleId'">and role_id = #{param}</if>
+          </where>
+    </select>
+</mapper>

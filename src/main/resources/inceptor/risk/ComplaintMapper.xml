@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.risk.mapper.ComplaintMapper">
+	<select id="getComplaintJudgeDetail" resultType="com.bda.bdaqm.risk.model.ComplaintSession">
+		select * from bdaqm_complaint_risk_monitor  t
+		where 1=1
+	
+		<if test="fileName != null and fileName != ''">
+			and file_name like CONCAT('%',#{fileName},'%')
+		</if>
+		<if test="recordStartDate != null and recordStartDate != ''">
+			and record_date <![CDATA[>=]]> #{recordStartDate}
+		</if>
+		<if test="recordEndDate != null and recordEndDate != ''">
+			and record_date <![CDATA[<=]]> #{recordEndDate}
+		</if>
+		<if test="checkStatus != null and checkStatus != ''">
+			and check_status = #{checkStatus}
+		</if>
+		<if test="personIsProblem != null and personIsProblem != ''">
+			and person_is_problem = #{personIsProblem}
+		</if>
+		order by record_date desc
+	</select>
+	
+	<select id="getComplaintSessionById" resultType="com.bda.bdaqm.risk.model.ComplaintSession">
+		select *  from bdaqm_complaint_risk_monitor t
+		where session_id=#{sessionId}
+	
+	</select>
+	
+	<update id="updateComplaintCheckResult">
+		update bdaqm_complaint_risk_monitor
+		set person_is_problem = #{personIsProblem},
+		transfer_istrue = #{transferIstrue},
+		problem_describe = #{problemDescribe},
+		true_transfer_content = #{trueTransferContent},
+		remark = #{remark},
+		check_accounts=#{checkAccounts},
+		check_status = '已复核'
+		where session_id = #{sessionId}
+	</update>
+	
+	<insert id="insertCheckHistory">
+		insert into bdaqm_service_check_history
+		values(#{sessionId},#{personIsProblem},#{transferIstrue},#{problemDescribe},
+				#{checkAccounts},now())
+	</insert>
+	
+</mapper>
