@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  -->
+<mapper namespace="com.bda.bdaqm.electric.mapper.ThreePersonMapper">
+	
+	<select id="getThreePersonData" resultType="com.bda.bdaqm.electric.model.ThreePerson">
+	
+	select al.unitName,
+	       al.specialty,
+	       al.classes,
+	       al.personName,
+	       al.threeType,
+	       al.rigthTime,
+	       al.remark,
+           max(al.theLast) theLast
+	 from
+	(
+	select all_1.* from
+	(select tt1.*,
+       @rownum:=@rownum+1 rownum,<!-- 每一行在上行@rownum变量值的基础上+1 -->
+			 if(
+				<!-- 每一行判断，当前行的unitName（单位）是否等于上一个@unitName变量值：如果是，在上一个@rank变量值基础上+1，否则@rank赋值1 -->
+				@id=tt1.idd or (@id is null and tt1.idd is null),
+				@rank:=@rank+1,
+				@rank:=1) as rn,
+				@id:=tt1.idd  <!-- 当前行unitName赋值给变量@unitName -->
+	from
+	(select 
+	        t.id idd,t.unit_name unitName,
+	        t.specialty specialty,t.classes classes,
+	        t.person_name personName,t.three_type threeType,
+	        t.rigth_time rigthTime,t.remark remark,
+	        case when (instr(t.three_type,'审批人')>0 or instr(t.remark,'审批人')>0) then null
+	        	<if test="updateTimeBegin !=null and updateTimeBegin != '' or updateTimeEnd != null and updateTimeEnd != '' ">
+	             when DATE_FORMAT(org.work_last_time,"%Y-%m-%d %H:%i") between DATE_FORMAT(CONCAT(#{updateTimeBegin},' 00:00'),"%Y-%m-%d %H:%i") 
+	                                                                    and DATE_FORMAT(CONCAT(#{updateTimeEnd},' 23:59'),"%Y-%m-%d %H:%i")
+	                   and(org.work_pri is not null)then null 
+	            </if>           
+	              else org.ticket_num
+	         end theLast 
+	         
+	from bda_three_person t
+	
+	left join (select work_pri,ticket_num ,work_last_time
+	             from bda_original 
+	             ) org
+	on t.person_name = org.work_pri
+	order by t.id,org.work_last_time desc
+	)tt1,
+	(select @rownum:=0,@id:=null,@rank:=0)b
+	)all_1
+	where all_1.rn = '1'
+	
+	union all
+	
+	select all_2.* from
+	(select tt1.*,
+       @rownum:=@rownum+1 rownum,
+			 if(
+				@id=tt1.idd or (@id is null and tt1.idd is null),
+				@rank:=@rank+1,
+				@rank:=1) as rn,
+				@id:=tt1.idd 
+	from 
+	(select 
+	        t.id idd,t.unit_name unitName,
+	        t.specialty specialty,t.classes classes,
+	        t.person_name personName,t.three_type threeType,
+	        t.rigth_time rigthTime,t.remark remark,
+	        case when (instr(t.three_type,'审批人')>0 or instr(t.remark,'审批人')>0) then null
+	        <if test="updateTimeBegin !=null and updateTimeBegin != '' or updateTimeEnd != null and updateTimeEnd != '' ">
+	             when DATE_FORMAT(org.work_last_time,"%Y-%m-%d %H:%i") between DATE_FORMAT(CONCAT(#{updateTimeBegin},' 00:00'),"%Y-%m-%d %H:%i") 
+	                                                                       and DATE_FORMAT(CONCAT(#{updateTimeEnd},' 23:59'),"%Y-%m-%d %H:%i")
+	                   and(org.ticket_lssue is not null)then null   
+	        </if>         
+	              else org.ticket_num
+	         end theLast 
+	         
+	from bda_three_person t
+	
+	left join (select ticket_lssue,ticket_num ,work_last_time
+	             from bda_original 
+	             ) org
+	on t.person_name = org.ticket_lssue
+	order by t.id,org.work_last_time desc
+	)tt1,
+	(select @rownum:=0,@id:=null,@rank:=0)b
+	)all_2
+	where all_2.rn = '1'
+	
+	union all
+	
+	select all_3.* from
+	(select tt1.*,
+       @rownum:=@rownum+1 rownum,
+			 if(
+				@id=tt1.idd or (@id is null and tt1.idd is null),
+				@rank:=@rank+1,
+				@rank:=1) as rn,
+				@id:=tt1.idd 
+	from 
+	(select 
+	        t.id idd,t.unit_name unitName,
+	        t.specialty specialty,t.classes classes,
+	        t.person_name personName,t.three_type threeType,
+	        t.rigth_time rigthTime,t.remark remark,
+	        case when (instr(t.three_type,'审批人')>0 or instr(t.remark,'审批人')>0) then null
+	        <if test="updateTimeBegin !=null and updateTimeBegin != '' or updateTimeEnd != null and updateTimeEnd != '' ">
+	             when DATE_FORMAT(org.work_last_time,"%Y-%m-%d %H:%i") between DATE_FORMAT(CONCAT(#{updateTimeBegin},' 00:00'),"%Y-%m-%d %H:%i") 
+	                                                                       and DATE_FORMAT(CONCAT(#{updateTimeEnd},' 23:59'),"%Y-%m-%d %H:%i")
+	                   and(org.attendance is not null)then null            
+	        </if>
+	              else org.ticket_num
+	         end theLast 
+	         
+	from bda_three_person t
+	
+	left join (select attendance,ticket_num ,work_last_time
+	             from bda_original 
+	             ) org
+	on t.person_name = org.attendance
+	order by t.id,org.work_last_time desc
+	)tt1,
+	(select @rownum:=0,@id:=null,@rank:=0)b
+	)all_3
+	where all_3.rn ='1'
+	
+	union all
+	
+	select all_4.* from
+	(select tt1.*,
+       @rownum:=@rownum+1 rownum,
+			 if(
+				@id=tt1.idd or (@id is null and tt1.idd is null),
+				@rank:=@rank+1,
+				@rank:=1) as rn,
+				@id:=tt1.idd 
+	from 
+	(select 
+	        t.id idd,t.unit_name unitName,
+	        t.specialty specialty,t.classes classes,
+	        t.person_name personName,t.three_type threeType,
+	        t.rigth_time rigthTime,t.remark remark,
+	        case when (instr(t.three_type,'审批人')>0 or instr(t.remark,'审批人')>0) then null
+	        <if test="updateTimeBegin !=null and updateTimeBegin != '' or updateTimeEnd != null and updateTimeEnd != '' ">
+	             when DATE_FORMAT(org.work_last_time,"%Y-%m-%d %H:%i") between DATE_FORMAT(CONCAT(#{updateTimeBegin},' 00:00'),"%Y-%m-%d %H:%i") 
+	                                                                       and DATE_FORMAT(CONCAT(#{updateTimeEnd},' 23:59'),"%Y-%m-%d %H:%i")
+	                   and(org.work_last_person is not null)then null            
+	        </if> 
+	              else org.ticket_num
+	         end theLast 
+	         
+	from bda_three_person t
+	
+	left join (select work_last_person,ticket_num ,work_last_time
+	             from bda_original 
+	             ) org
+	on t.person_name = org.work_last_person
+	order by t.id,org.work_last_time desc
+	)tt1,
+	(select @rownum:=0,@id:=null,@rank:=0)b
+	)all_4
+	where all_4.rn = '1'
+	
+	union all
+	
+	select all_5.* from
+	(select tt1.*,
+       @rownum:=@rownum+1 rownum,
+			 if(
+				@id=tt1.idd or (@id is null and tt1.idd is null),
+				@rank:=@rank+1,
+				@rank:=1) as rn,
+				@id:=tt1.idd 
+	from 
+	(select 
+	        t.id idd,t.unit_name unitName,
+	        t.specialty specialty,t.classes classes,
+	        t.person_name personName,t.three_type threeType,
+	        t.rigth_time rigthTime,t.remark remark,
+	        case when (instr(t.three_type,'审批人')>0 or instr(t.remark,'审批人')>0) then null
+	        <if test="updateTimeBegin !=null and updateTimeBegin != '' or updateTimeEnd != null and updateTimeEnd != '' ">
+	             when DATE_FORMAT(org.work_last_time,"%Y-%m-%d %H:%i") between DATE_FORMAT(CONCAT(#{updateTimeBegin},' 00:00'),"%Y-%m-%d %H:%i") 
+	                                                                       and DATE_FORMAT(CONCAT(#{updateTimeEnd},' 23:59'),"%Y-%m-%d %H:%i")
+	                   and(org.WORK_LICENSOR is not null)then null            
+	        </if> 
+	              else org.ticket_num
+	         end theLast 
+	         
+	from bda_three_person t
+	
+	left join (select WORK_LICENSOR,ticket_num ,work_last_time
+	             from bda_original 
+	             ) org
+	on t.person_name = org.WORK_LICENSOR
+	order by t.id,org.work_last_time desc
+	)tt1,
+	(select @rownum:=0,@id:=null,@rank:=0)b
+	)all_5
+	where all_5.rn = '1'
+	)al
+  <where>
+      <if test="unitName != null and unitName != ''">
+          unitName like CONCAT('%',#{unitName},'%')
+      </if>
+      <if test="threeType != null and threeType != ''">
+          and threeType like CONCAT('%',#{threeType},'%')
+      </if>
+      <if test="personName != null and personName != ''">
+          and personName like CONCAT('%',#{personName},'%')
+      </if>
+  </where>
+  group by idd,
+           unitName,
+           specialty,
+           classes,
+           personName,
+           threeType,
+           rigthTime,
+           remark
+  order by cast(idd as signed integer)
+	</select>
+	
+	<select id="getOriginalData" resultType="com.bda.bdaqm.electric.model.Original">
+	    select t.* from BDA_ORIGINAL t
+		where t.ticket_num = #{ticketNum}
+		  and (
+		         t.work_pri = #{personName}
+		      or t.ticket_lssue = #{personName}
+		      or t.attendance = #{personName}
+		      or t.work_licensor = #{personName}
+		      or t.work_last_person = #{personName}
+		  )
+	</select>
+	
+</mapper>

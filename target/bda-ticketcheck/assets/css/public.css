@@ -1,0 +1,13 @@
+html,body{ width: 100%; height: 100%; padding: 0; margin: 0; border: none; font-size: 12px; }
+*{ font-size: 12px; font-family: "Microsoft YaHei"; }
+.bda-clear{ clear: both; }
+.keyWordStyle {
+	background-color:#CC0000;
+	padding:0px 0px;
+	color:white;
+}
+.timeLimitStyle {
+	background-color:#FFFF00;
+	padding:0px 0px;
+	color:black;
+}

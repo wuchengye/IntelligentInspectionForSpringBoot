@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="
+	    http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/task  
+		http://www.springframework.org/schema/task/spring-task.xsd 
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- 给web使用的spring文件 -->
+	<!-- 读入properties文件，放入数据库连接 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list> 
+				<value>classpath:/dbconfig.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+<!-- aop进行日志记录(词典日志) -->
+	<!-- 启动@AspectJ支持 -->  
+	<!-- proxy-target-class默认"false",更改为"ture"使用CGLib动态代理 -->    
+	<aop:aspectj-autoproxy proxy-target-class="true"/> 
+	<!-- 指定自动搜索bean组件、自动搜索切面类 -->  
+	<!-- 若需要使用单元测试，必须把下面的base-package值改为com.bda.bdanlp.'模块名',并且要去掉controller所在包，启动webapps前必须改为com.bda.bdanlp -->
+    <context:component-scan base-package="com.bda.bdaqm"/> 
+<!-- aop进行日志记录(词典日志) -->
+
+	<!-- 启用quartz定时任务管理 -->
+	<!-- -->
+ 	<!-- <import resource="classpath*:spring/applicationContext-quartz.xml" /> -->
+ 	 
+	<!-- 自动扫描业务类组件 -->
+	<context:component-scan base-package="com.bda" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+	</context:component-scan>
+	
+	<!-- 使用CGLIB代理 -->
+	<aop:config proxy-target-class="true"/>
+	<task:annotation-driven executor="executor" scheduler="scheduler"/>
+	<task:executor id="executor" pool-size="20"/>
+	<task:scheduler id="scheduler" pool-size="20"/>
+	<!-- 配置Druid -->
+	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+		<property name="mergeSql" value="false" />
+		<property name="slowSqlMillis" value="10000" />
+		<property name="logSlowSql" value="true" />
+		
+	</bean>
+	
+	<bean id="ds2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	    <property name="driverClassName" value="${db.idriverClassName}"/>
+		
+		<property name="url" value="${db.inceptorUrl}" />
+		<property name="username" value="${db.iusername}" />
+		<property name="password" value="${db.ipassword}" />
+
+		
+		<property name="initialSize" value="${initialSize}" />
+		<property name="minIdle" value="${minIdle}" />
+		<property name="maxActive" value="${maxActive}" />
+
+		
+		<property name="maxWait" value="60000" />
+
+		
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+
+		
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<!-- <property name="validationQuery" value="SELECT 1 from dual" /> -->
+		<property name="testWhileIdle" value="false" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		
+		<property name="filters" value="slf4j" />
+		
+		<property name="proxyFilters">
+			<list>
+				<ref bean="stat-filter" />
+			</list>
+		</property>
+		
+		<property name="connectionErrorRetryAttempts" value="3"/>
+		<property name="breakAfterAcquireFailure" value="true"/>
+		<property name="asyncInit" value="true"/>
+	</bean>
+	
+	<bean id="sqlSessionFactoryInceptor" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!--dataSource属性指定要用到的连接池 -->
+		<property name="dataSource" ref="ds2" />
+		<!--configLocation属性指定mybatis的核心配置文件 -->
+		<property name="configLocation" value="classpath:spring/mybatis-configuration.xml" />
+		<property name="mapperLocations" value="classpath*:inceptor/**/*.xml" />
+	</bean>
+	
+	<bean id="txManager2"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="ds2" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="txManager2" />
+	
+	<!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> -->
+	<!-- <property name="basePackage" value="com.bda" /> -->
+	<!-- </bean> -->
+	<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.bda.**.mapper" />
+		<!-- 禁用顶层接口后所有mapper均可扫描 -->
+		<!-- <property name="markerInterface" value="tk.mybatis.mapper.common.Mapper"/> -->
+		<property name="properties">
+			<value>
+				ORDER=BEFORE
+			</value>
+		</property>
+	</bean>
+	
+	<!-- the transactional advice (what 'happens'; see the <aop:advisor/> bean 
+		below) -->
+	<tx:advice id="txAdvice" transaction-manager="txManager2">
+		<!-- the transactional semantics... -->
+		<tx:attributes>
+			<!-- all methods starting with 'get' are read-only -->
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="select*" read-only="true" />
+			<tx:method name="count*" read-only="true" />
+			<tx:method name="search*" read-only="true" />
+			<tx:method name="list*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+			<!-- other methods use the default transaction settings (see below) -->
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- shiro --><!--新增-->
+	<bean id="exceptionHandler" class="com.bda.bdaqm.shiro.realm.MyMvcExceptionHandler"/>
+	<bean name="loginFilter" class="com.bda.bdaqm.shiro.realm.JsonAuthLoginFilter" />
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="loginUrl" value="/usermanage/user/login" />
+		<property name="successUrl" value="/usermanage/user/loginSuccess" />
+		<property name="securityManager" ref="securityManager" />
+		<property name="filters">
+			<map>
+				<entry key="login" value-ref="loginFilter" />
+			</map>
+		</property>
+		<property name="filterChainDefinitions">
+			<value>
+				# some example chain definitions:
+				/swagger-ui.html = anon
+				/swagger-resources = anon
+				/v2/** = anon
+				/webjars/** = anon
+				/configuration/** = anon
+				/assets/** = anon
+				/services/** = anon
+				/asyn/** = anon
+				/http/** = anon
+				/httpResp/** = anon
+				<!-- /datamanage/userDetail/checkUserStatus = anon -->
+				<!--修改-->
+				<!--/admin/login = authc
+				/usermanage/user/login = authc
+				/admin/logout = logout
+				/** = user-->
+				/usermanage/user/login = authc
+				/admin/logout = logout
+				/** = login
+				# more
+				#URL-to-FilterChain definitions here
+			</value>
+		</property>
+	</bean>
+	<bean id="shiroSessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<property name="cacheManager" ref="shiroCacheManager"/>
+	</bean>
+
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+         <!-- 核心线程数 -->
+        <property name="corePoolSize" value="37" />
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="50" />
+        <!-- 队列最大长度 >=mainExecutor.maxSize -->
+        <property name="queueCapacity" value="200" />
+        <!-- 线程池维护线程所允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="18000" />
+        <!-- 线程池对拒绝任务(无线程可用)的处理策略 ThreadPoolExecutor.CallerRunsPolicy策略 ,调用者的线程会执行该任务,如果执行器已关闭,则丢弃.  -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+        </property>
+    </bean>
+    
+<!-- 	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher"> -->
+<!--         <property name="hashAlgorithmName" value="SHA-256" /> -->
+<!--     </bean> -->
+
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="myRealm" />
+		<property name="cacheManager" ref="shiroCacheManager" />
+	</bean>
+	<bean id="shiroCacheManager" class="com.bda.shiro.cache.ShiroCacheManager"/>
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+	<bean id="myRealm" class="com.bda.bdaqm.shiro.realm.MyRealm"/>
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod" value="org.apache.shiro.SecurityUtils.setSecurityManager" />
+		<property name="arguments" ref="securityManager" />
+	</bean>
+	
+	<!-- spring 缓存 -->
+	<cache:annotation-driven />
+	<!-- 开发时可用，或者单应用时使用 -->
+	<bean id="cacheManager" class="com.bda.cache.SimpleCacheManager"></bean>
+	
+	
+	<!-- 
+ 		jaxws:client相当于bean
+		serviceClass指定服务端接口类型
+		id:起个名
+		address:调用webservice的接口地址,配置全路径:http://localhost:8082/ws/hello
+	 -->
+	 <import resource="application-cxfclient.xml"/>
+
+	<!--新增-->
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"	p:defaultEncoding="utf-8">
+		<property name="maxUploadSizePerFile">
+			<value>5242880</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>1024</value>
+		</property>
+	</bean>
+
+	<util:properties id="ftpconfig" location="classpath:ftpconfig.properties"/>
+
+	<!--<bean id="swagger2Config" class="com.bda.bdaqm.config.Swagger2Config"/>-->
+</beans>

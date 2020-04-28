@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 工作负责人得分汇总 -->
+<mapper namespace="com.bda.bdaqm.electric.mapper.WorkPriScoreMapper">
+
+	<sql id="sumScore">
+	    (
+	    SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0 AND ORG.TICKET_TYPE = 11 )
+                  THEN to_number(#{modules.stationOne})
+	              ELSE 0 END
+            )+
+	    SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 21 )
+                  THEN to_number(#{modules.lineOne})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 43 )
+                  THEN to_number(#{modules.liveWorking}) 
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 51 )
+                  THEN to_number(#{modules.urgentRepairs})  
+	              ELSE 0 END
+            )+
+	    SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 12 )
+                  THEN to_number(#{modules.stationTwo})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 22 )
+                  THEN to_number(#{modules.lineTwo})
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 44 )
+                  THEN to_number(#{modules.lowVoltage})
+	              ELSE 0 END
+            )+
+	    SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 31 )
+                  THEN to_number(#{modules.fireOne})
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 32 )
+                  THEN to_number(#{modules.fireTwo})
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 13 )
+                  THEN to_number(#{modules.stationThree})
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( instr(ORG.WORK_END_TIME,${yearMonth}) > 0  AND ORG.TICKET_TYPE = 81 )
+                  THEN to_number(#{modules.writtenForm})
+	              ELSE 0 END
+            )
+        )
+	</sql>
+
+    <select id="getWorkPriScore" resultType="com.bda.bdaqm.electric.model.ScoreSummary">
+    
+    
+    SELECT TT.*,
+           row_number() over(partition by tt.unitName order by tt.total desc) unitRanking
+      FROM
+    (
+        SELECT TALL.*,(ONE + TWO + THREE + FOUR + FIVE + SIX + SEVEN + EIGHT + NINE + TEN + ELEVEN + TWELVE) AS TOTAL
+          FROM
+	        (SELECT #{reportType} reportType,
+	                THR.UNIT_NAME unitName,
+	                max(THR.DEPTMENT_NAME) deptmentName,
+	                max(THR.GROUP_NAME) groupName,
+	                THR.PERSON_NAME personName,
+	                THR.SPECIALTY specialty,
+	                THR.CLASSES classes ,
+	                #{reportType} as monthQualifications,
+	                #{reportType} as yearQualifications,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-01'"/></include> as one,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-02'"/></include> as two,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-03'"/></include> as three,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-04'"/></include> as four,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-05'"/></include> as five,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-06'"/></include> as six,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-07'"/></include> as seven,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-08'"/></include> as eight,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-09'"/></include> as nine,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-10'"/></include> as ten,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-11'"/></include> as eleven,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-12'"/></include> as twelve
+	               
+	               
+	          FROM (SELECT T.* FROM gzpfx01.BDA_THREE_PERSON_TEMP T 
+	          <where>
+		          <if test="reportType != null and reportType != ''">
+			          <choose>
+			              <when test="reportType == '工作票签发人'"> T.TICKET_SIGN = 1</when>
+			              <when test="reportType == '工作负责人'"> T.WORK_PRINCIPAL = 1</when>
+			              <when test="reportType == '工作许可人'"> T.WORK_PERMISSION = 1</when>
+			              <otherwise></otherwise>
+			          </choose>
+		      	  </if>
+	      	  </where>
+	                 <!-- WHERE T.THREE_TYPE LIKE CONCAT('%',#{reportType},'%')
+	                    OR T.REMARK LIKE CONCAT('%',#{reportType},'%') --> 
+	               )THR
+	     LEFT JOIN (select b.work_principal_uid,
+	                       b.work_end_time,
+	                       b.ticket_type,
+	                       u.user_name WORK_PRI
+		             from o_gea_lcam_sc_sp_pd_wticket_base b
+		             LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user u
+		             ON b.work_principal_uid = u.user_id
+		             ) org
+	            ON THR.PERSON_NAME = org.WORK_PRI
+	         
+	      GROUP BY THR.PERSON_NAME,
+	               THR.UNIT_NAME,
+	               THR.SPECIALTY,
+	               THR.CLASSES) TALL
+	      <where>
+	         1=1
+	         <!-- <if test="unitName != null and unitName != '' and unitName != '广州供电局有限公司'">
+	         AND (instr(#{unitName},TALL.unitName) > 0 or instr(#{unitName},TALL.deptmentName) > 0 or instr(#{unitName},TALL.groupName) > 0 )
+	         AND instr(#{unitName},TALL.unitName) > 0
+	         </if> -->
+	         <if test="unitName != null and unitName != '' and unitName != '广州供电局有限公司'">
+	       		
+	          <!-- unitName like '%'||#{unitName}||'%' -->
+	         <choose>
+	          	<when test="unitName != '外协单位' and  unitName != '其他单位' ">
+					<if test="level lte 3">
+	          			and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(TALL.unitName||'.*') 
+	          		</if>
+	          		<if test="level == 4">
+	          			and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(TALL.unitName||'/'||deptmentName||'.*') 
+	          		</if>
+	          		<if test="level gte 5">
+	          		and 
+	        		(select name_full_path from o_gea_lcam_sys_top_organization where org_id = #{orgId}) 
+	        		REGEXP(TALL.unitName||'.*/'||deptmentName||'.*/'||groupName||'.*') 
+	          		</if>	         		
+	          	</when>
+	          	<otherwise>
+	          	<!-- <when test="unitName != '外协单位' and  unitName != '其他单位' ">
+	         		and instr(#{unitName},unitName) > 0 
+	          	</when> -->
+	          	
+	          		<if test="unitName == '其他单位'">
+	          			and TALL.unitName NOT IN (select CASE WHEN instr(t1.org_name,'广州') > 0 
+						THEN (SUBSTRING(t1.org_name,instr(t1.org_name,'广州')+2))
+						ELSE (t1.org_name) END AS name  FROM 
+						gzpfx01.bda_work_dept t2 INNER JOIN o_gea_lcam_sys_top_organization t1
+						ON t1.org_id=SUBSTRING(t2.department_id,12))
+	          		</if>
+	          		<if test="unitName == '外协单位'">
+	          			and TALL.unitName NOT IN (select CASE WHEN instr(t1.org_name,'广州') > 0 
+						THEN (SUBSTRING(t1.org_name,instr(t1.org_name,'广州')+2))
+						ELSE (t1.org_name) END AS name  FROM 
+						gzpfx01.bda_work_dept t2 INNER JOIN o_gea_lcam_sys_top_organization t1
+						ON t1.org_id=SUBSTRING(t2.department_id,12))
+						or unitName = '南方电力建设企业集团'
+	          		</if>
+	          		 </otherwise>
+	          </choose>
+	     	 </if>
+	         <if test="personName != null and personName != ''">
+	         AND TALL.personName like CONCAT('%',#{personName},'%')
+	         </if>
+	         <if test="specialty != null and specialty != ''">
+	         AND TALL.specialty LIKE CONCAT('%',#{specialty},'%')
+	         </if>
+	         <if test="classes != null and classes != ''">
+	         AND TALL.classes = #{classes}
+	         </if>
+	      </where>
+	    <!-- ORDER BY TOTAL DESC -->
+	)TT
+    </select>
+    
+    <select id="getUnitCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT REPLACE(T.SECOND_DEPT_NAME,'广州','') AS TEXT,
+			   REPLACE(T.SECOND_DEPT_NAME,'广州','') AS VALUE
+          FROM gzpfx01.BDA_WORK_DEPT T
+      ORDER BY CAST(T.SORT_ID AS SIGNED INTEGER) ASC   
+    </select>
+    
+    <select id="getSpecialtyCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT REPLACE(TRIM(T.SPECIALTY),'类','') AS TEXT,
+			   REPLACE(TRIM(T.SPECIALTY),'类','') AS VALUE
+          FROM gzpfx01.BDA_THREE_PERSON T
+    </select>
+    
+    <select id="getClassCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        <!-- SELECT DISTINCT T.CLASSES AS TEXT,
+			   T.CLASSES AS VALUE
+          FROM BDA_THREE_PERSON T -->
+        SELECT DISTINCT T.DEPARTMENT_NAME AS TEXT,
+			   T.DEPARTMENT_NAME AS VALUE
+	      FROM gzpfx01.BDA_UNIT_CLASS T
+        <where>  
+            T.LEV = '5'
+            <if test="unitName == null or unitName == ''">
+                AND 1 = 2
+            </if>
+            <if test="unitName != null and unitName != ''">
+                AND T.SECOND_DEPT_NAME like CONCAT('%',#{unitName},'%') 
+            </if>
+        </where>
+    </select>
+    
+    <select id="getMonthReward" resultType="com.bda.bdaqm.electric.model.MonthReward">
+        SELECT * FROM gzpfx01.BDA_MONTH_REWARD 
+    </select>
+    
+     <select id="getYearReward" resultType="com.bda.bdaqm.electric.model.YearReward">
+        SELECT * FROM gzpfx01.BDA_Year_REWARD 
+    </select>
+    
+    <select id="getYearVerify" resultType="com.bda.bdaqm.electric.model.YearReward">
+        SELECT * FROM gzpfx01.BDA_YEAR_REWARD where type =#{type} 
+    </select>
+    
+    <select id="getMonthVerify" resultType="com.bda.bdaqm.electric.model.MonthReward">
+        SELECT * FROM gzpfx01.BDA_MONTH_REWARD where type =#{type} 
+    </select>
+    
+    <select id="getModulus" resultType="com.bda.bdaqm.electric.model.Modulu">
+        SELECT * FROM gzpfx01.BDA_MODULUS
+    </select>
+    
+    <update id="updateMonth">
+    	update gzpfx01.BDA_MONTH_REWARD set MONTH_TRANS = #{monthReward.monthTrans},MONTH_OPERATION = #{monthReward.monthOperation},MONTH_TWICE = #{monthReward.monthTwice},MONTH_INSPECTION=#{monthReward.monthInspection},MONTH_POWER=#{monthReward.monthPower},LEVEL_MONEY_MONTH=#{monthReward.levelMoneyMonth}
+    	where type = #{monthReward.type} and MONTH_GRADE = #{monthReward.monthGrade}
+    </update>
+    
+    <update id="updateYear">
+    	update gzpfx01.BDA_YEAR_REWARD set YEAR_TRANS = #{yearReward.yearTrans},YEAR_OPERATION = #{yearReward.yearOperation},YEAR_TWICE = #{yearReward.yearTwice},YEAR_INSPECTION=#{yearReward.yearInspection},YEAR_POWER=#{yearReward.yearPower},LEVEL_MONEY_YEAR=#{yearReward.levelMoneyYear}
+    	where type = #{yearReward.type} and YEAR_GRADE = #{yearReward.yearGrade}
+    </update>
+    
+    <update id="updateModulus">
+    	update gzpfx01.BDA_MODULUS set LIVE_WORKING = #{modulus.liveWorking},LOW_VOLTAGE = #{modulus.lowVoltage},URGENT_REPAIRS = #{modulus.urgentRepairs},WRITTEN_FORM=#{modulus.writtenForm},STATION_ONE=#{modulus.stationOne},STATION_TWO=#{modulus.stationTwo},STATION_THREE=#{modulus.stationThree},LINE_ONE=#{modulus.lineOne},LINE_TWO=#{modulus.lineTwo},FIRE_ONE=#{modulus.fireOne},FIRE_TWO=#{modulus.fireTwo}
+    	where type = #{modulus.type}
+    </update>
+    
+    <select id="getModulusByType" resultType="com.bda.bdaqm.electric.model.Modulu">
+        select * 
+	      from gzpfx01.bda_modulus t1
+	     where t1.type = #{type}
+    </select>
+	
+</mapper>

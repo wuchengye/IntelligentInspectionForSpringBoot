@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.electric.test.TestMapper">
+	
+	<select id="SelectOperation"  resultType="Map">
+	  select count(OPERATION_NEW) as count, OPERATION_NEW from BDA_ORIGINAL t group by OPERATION_NEW 
+	</select>
+	<select id="SelectWorkLast"  resultType="Map">
+	  select count(WORK_LAST_TIME_NEW), WORK_LAST_TIME_NEW from BDA_ORIGINAL t group by WORK_LAST_TIME_NEW
+	</select>
+	
+	<select id="SelectLineWorking"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='带电作业工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectLowVo"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='低压配网工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectUrgent"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='紧急抢修工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectStationOne"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='厂站第一种工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectStationTwo"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='厂站第二种工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectStationThree"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='厂站第三种工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectLineOne"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='线路第一种工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectLineTwo"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='线路第二种工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectFireOne"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='一级动火工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	<select id="SelectFireTwo"  resultType="String" >
+	  select sum(tab.aa) from(select count(TICKET_TYPE)as aa ,substr(OPERATION_NEW,0) as OPERATION_NEW, substr(WORK_LAST_TIME_NEW,0)as WORK_LAST_TIME_NEW from BDA_ORIGINAL where TICKET_TYPE='二级动火工作票' group by OPERATION_NEW,WORK_LAST_TIME_NEW)tab 
+		where tab.OPERATION_NEW=#{type} and tab.WORK_LAST_TIME_NEW=#{date}
+	</select>
+	
+	<insert id ="addData" parameterType="list" useGeneratedKeys="false">
+				insert into BDA_STATISTICS (BDA_STATISTICS_ID,UNIT,LIVE_WORKING,LOW_VOLTAGE,URGENT_REPAIRS,STATION_ONE,STATION_TWO,STATION_THREE,LINE_ONE,LINE_TWO,FIRE_ONE,FIRE_TWO,MONTH)
+		SELECT BDA_STATISTICS_ID.nextval AS BDA_STATISTICS_ID,A.*FROM
+		(
+ 		 <foreach item="item" index="index" collection="list" separator="union all">
+
+         
+             SELECT 
+                 #{item.unit},
+                 #{item.liveWorking},
+                 #{item.lowVoltage},
+                 #{item.urgentRepairs},
+                 #{item.stationOne},
+                 #{item.stationTwo},
+                 #{item.stationThree},
+                 #{item.lineOne},
+                 #{item.lineTwo},
+                 #{item.fireOne},
+                 #{item.fireTwo},
+                 #{item.month}
+             FROM DUAL
+         
+         </foreach> 
+         )A
+	</insert>
+
+</mapper>

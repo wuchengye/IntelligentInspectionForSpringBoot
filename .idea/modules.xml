@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/IntelligentInspection.iml" filepath="$PROJECT_DIR$/IntelligentInspection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bdasjs.iml" filepath="$PROJECT_DIR$/bdasjs.iml" />
     </modules>
   </component>
 </project>

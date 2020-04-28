@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 工作负责人得分汇总 -->
+<mapper namespace="com.bda.bdaqm.electric.mapper.WorkPriScoreMapper">
+
+	<sql id="sumScore">
+	    (
+	    SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '厂站第一种工作票' )
+                  THEN (SELECT CAST(T.STATION_ONE AS SIGNED INTEGER) 
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+	    SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '线路第一种工作票' )
+                  THEN (SELECT CAST(T.LINE_ONE AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '带电作业工作票' )
+                  THEN (SELECT CAST(T.LIVE_WORKING AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '紧急抢修工作票' )
+                  THEN (SELECT CAST(T.URGENT_REPAIRS AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+	    SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '厂站第二种工作票' )
+                  THEN (SELECT CAST(T.STATION_TWO AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '线路第二种工作票' )
+                  THEN (SELECT CAST(T.LINE_TWO AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '低压配电网工作票' )
+                  THEN (SELECT CAST(T.LOW_VOLTAGE AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+	    SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '一级动火工作票' )
+                  THEN (SELECT CAST(T.FIRE_ONE AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '二级动火工作票' )
+                  THEN (SELECT CAST(T.FIRE_TWO AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '厂站第三种工作票' )
+                  THEN (SELECT CAST(T.STATION_THREE AS SIGNED INTEGER)  
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )+
+        SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth}  AND ORG.TICKET_TYPE = '书面形式布置及记录' )
+                  THEN (SELECT CAST(T.WRITTEN_FORM AS SIGNED INTEGER) 
+	                      FROM BDA_MODULUS T
+	                     WHERE T.TYPE = #{reportType})  
+	              ELSE 0 END
+            )
+        )
+	</sql>
+
+    <!-- <sql id="sumScore">
+        (      SUM( CASE WHEN ( ORG.WORK_LAST_TIME_NEW = ${yearMonth} 
+                               AND (ORG.TICKET_TYPE = '厂站第一种工作票' OR ORG.TICKET_TYPE = '线路第一种工作票' 
+                                    OR ORG.TICKET_TYPE = '带电作业工作票' OR ORG.TICKET_TYPE = '紧急抢修工作票')
+                               )
+                         THEN 1  ELSE 0 END
+                   ) + 
+               SUM( CASE WHEN (ORG.WORK_LAST_TIME_NEW = ${yearMonth} 
+                             AND (ORG.TICKET_TYPE = '厂站第二种工作票' OR ORG.TICKET_TYPE = '线路第二种工作票'
+                                  OR ORG.TICKET_TYPE = '低压配电网工作票' OR ORG.TICKET_TYPE = '一级动火工作票'
+                                  OR ORG.TICKET_TYPE = '二级动火工作票' )
+                             )
+                         THEN 0.5 else 0 END
+                 )  + 
+               SUM( CASE WHEN (ORG.WORK_LAST_TIME_NEW = ${yearMonth} 
+                               AND (ORG.TICKET_TYPE = '厂站第三种工作票' OR ORG.TICKET_TYPE = '书面形式布置及记录' )
+                              )
+                         THEN 0.2 ELSE 0 END
+               )
+         )
+    </sql> -->
+
+    <select id="getWorkPriScore" resultType="com.bda.bdaqm.electric.model.ScoreSummary">
+    
+    
+    SELECT @rownum:=@rownum+1 rownum,<!-- 每一行在上行@rownum变量值的基础上+1 -->
+           TT.*,
+           if(
+              <!-- 每一行判断，当前行的unitName（单位）是否等于上一个@unitName变量值：如果是，在上一个@rank变量值基础上+1，否则@rank赋值1 -->
+              @unitName=TT.unitName or (@unitName is null and TT.unitName is null),
+              @rank:=@rank+1,
+              @rank:=1) as unitRanking,
+              @unitName:=TT.unitName <!-- 当前行unitName赋值给变量@unitName -->
+      FROM
+    (
+        SELECT TALL.*,(ONE + TWO + THREE + FOUR + FIVE + SIX + SEVEN + EIGHT + NINE + TEN + ELEVEN + TWELVE) AS TOTAL
+          FROM
+	        (SELECT #{reportType} reportType,
+	                THR.UNIT_NAME unitName,
+	                THR.PERSON_NAME personName,
+	                THR.SPECIALTY specialty,
+	                THR.CLASSES classes ,
+	                #{reportType} as monthQualifications,
+	                #{reportType} as yearQualifications,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-01'"/></include> as one,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-02'"/></include> as two,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-03'"/></include> as three,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-04'"/></include> as four,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-05'"/></include> as five,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-06'"/></include> as six,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-07'"/></include> as seven,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-08'"/></include> as eight,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-09'"/></include> as nine,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-10'"/></include> as ten,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-11'"/></include> as eleven,
+	                <include refid="sumScore"><property name="yearMonth" value="'${year}-12'"/></include> as twelve
+	               
+	               
+	          FROM (SELECT T.* FROM BDA_THREE_PERSON T 
+	                 WHERE T.THREE_TYPE LIKE CONCAT('%',#{reportType},'%')
+	                    OR T.REMARK LIKE CONCAT('%',#{reportType},'%') 
+	               )THR
+	     LEFT JOIN BDA_ORIGINAL org
+	            ON THR.PERSON_NAME = org.WORK_PRI
+	         
+	      GROUP BY THR.PERSON_NAME,
+	               THR.UNIT_NAME,
+	               THR.SPECIALTY,
+	               THR.CLASSES) TALL
+	      <where>
+	         1=1
+	         <if test="unitName != null and unitName != ''">
+	         AND TALL.unitName = #{unitName}
+	         </if>
+	         <if test="personName != null and personName != ''">
+	         AND TALL.personName like CONCAT('%',#{personName},'%')
+	         </if>
+	         <if test="specialty != null and specialty != ''">
+	         AND TALL.specialty LIKE CONCAT('%',#{specialty},'%')
+	         </if>
+	         <if test="classes != null and classes != ''">
+	         AND TALL.classes = #{classes}
+	         </if>
+	      </where>
+	    <!-- ORDER BY TOTAL DESC -->
+	    ORDER BY unitName,TOTAL DESC  <!-- 分组字段在前，排序字段在后 -->
+	)TT,(select @rownum:=0,@unitName:=null,@rank:=0)b
+    </select>
+    
+    <select id="getUnitCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT REPLACE(T.SECOND_DEPT_NAME,'广州','') AS TEXT,
+			   REPLACE(T.SECOND_DEPT_NAME,'广州','') AS VALUE
+          FROM BDA_WORK_DEPT T
+      ORDER BY CAST(T.SORT_ID AS SIGNED INTEGER) ASC   
+    </select>
+    
+    <select id="getSpecialtyCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT REPLACE(TRIM(T.SPECIALTY),'类','') AS TEXT,
+			   REPLACE(TRIM(T.SPECIALTY),'类','') AS VALUE
+          FROM BDA_THREE_PERSON T
+    </select>
+    
+    <select id="getClassCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        <!-- SELECT DISTINCT T.CLASSES AS TEXT,
+			   T.CLASSES AS VALUE
+          FROM BDA_THREE_PERSON T -->
+        SELECT DISTINCT T.DEPARTMENT_NAME AS TEXT,
+			   T.DEPARTMENT_NAME AS VALUE
+	      FROM BDA_UNIT_CLASS T
+        <where>  
+            T.LEV = '5'
+            <if test="unitName == null or unitName == ''">
+                AND 1 = 2
+            </if>
+            <if test="unitName != null and unitName != ''">
+                AND T.SECOND_DEPT_NAME like CONCAT('%',#{unitName},'%') 
+            </if>
+        </where>
+    </select>
+    
+    <select id="getMonthReward" resultType="com.bda.bdaqm.electric.model.MonthReward">
+        SELECT * FROM BDA_MONTH_REWARD 
+    </select>
+    
+     <select id="getYearReward" resultType="com.bda.bdaqm.electric.model.YearReward">
+        SELECT * FROM BDA_Year_REWARD 
+    </select>
+    
+    <select id="getYearVerify" resultType="com.bda.bdaqm.electric.model.YearReward">
+        SELECT * FROM BDA_YEAR_REWARD where type =#{type} 
+    </select>
+    
+    <select id="getMonthVerify" resultType="com.bda.bdaqm.electric.model.MonthReward">
+        SELECT * FROM BDA_MONTH_REWARD where type =#{type} 
+    </select>
+    
+    <select id="getModulus" resultType="com.bda.bdaqm.electric.model.Modulu">
+        SELECT * FROM BDA_MODULUS
+    </select>
+    
+    <update id="updateMonth">
+    	update BDA_MONTH_REWARD set MONTH_TRANS = #{monthReward.monthTrans},MONTH_OPERATION = #{monthReward.monthOperation},MONTH_TWICE = #{monthReward.monthTwice},MONTH_INSPECTION=#{monthReward.monthInspection},MONTH_POWER=#{monthReward.monthPower},LEVEL_MONEY_MONTH=#{monthReward.levelMoneyMonth}
+    	where type = #{monthReward.type} and MONTH_GRADE = #{monthReward.monthGrade}
+    </update>
+    
+    <update id="updateYear">
+    	update BDA_YEAR_REWARD set YEAR_TRANS = #{yearReward.yearTrans},YEAR_OPERATION = #{yearReward.yearOperation},YEAR_TWICE = #{yearReward.yearTwice},YEAR_INSPECTION=#{yearReward.yearInspection},YEAR_POWER=#{yearReward.yearPower},LEVEL_MONEY_YEAR=#{yearReward.levelMoneyYear}
+    	where type = #{yearReward.type} and YEAR_GRADE = #{yearReward.yearGrade}
+    </update>
+    
+    <update id="updateModulus">
+    	update BDA_MODULUS set LIVE_WORKING = #{modulus.liveWorking},LOW_VOLTAGE = #{modulus.lowVoltage},URGENT_REPAIRS = #{modulus.urgentRepairs},WRITTEN_FORM=#{modulus.writtenForm},STATION_ONE=#{modulus.stationOne},STATION_TWO=#{modulus.stationTwo},STATION_THREE=#{modulus.stationThree},LINE_ONE=#{modulus.lineOne},LINE_TWO=#{modulus.lineTwo},FIRE_ONE=#{modulus.fireOne},FIRE_TWO=#{modulus.fireTwo}
+    	where type = #{modulus.type}
+    </update>
+	
+</mapper>

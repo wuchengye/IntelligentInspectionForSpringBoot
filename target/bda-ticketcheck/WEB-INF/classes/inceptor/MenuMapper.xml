@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.admin.mapper.MyMenuMapper">
+	
+	<resultMap type="com.bda.bdaqm.admin.model.Menu" id="MenuRM">
+		<id column="MENU_ID" property="menuId" />
+		<collection property="subMenu" ofType="com.bda.bdaqm.admin.model.Menu" column="MENU_ID" select="selectAllRecursiveByParentId" />
+	</resultMap>
+	<resultMap type="com.bda.admin.bean.PMenu" id="PMenuRM">
+	    <id column="MENU_ID" property="menuId"/>
+	    <result column="MENU_NAME" property="menuName"/>
+	    <result column="TYPE" property="type"/>
+	    <result column="ICON" property="icon"/>
+		<collection property="actions" ofType="string">
+			<result column="ACTION"/>
+		</collection>
+	</resultMap>
+	<!-- 递归获取所有菜单 -->
+	<!-- <select id="selectAllRecursiveByParentId" resultMap="MenuRM">
+		select * from gzpfx01.BDA_MENU where parent_id = #{parentId} ORDER BY MENU_ORDER ASC
+	</select> -->
+	<select id="selectAllRecursiveByParentId" resultType="com.bda.bdaqm.admin.model.Menu">
+		select * from BDA_MENU ORDER BY MENU_ORDER ASC
+	</select>
+
+	<select id="selectMenusForPerms" resultMap="PMenuRM">
+		select t1.* ,t2.action from
+			(
+				select t1.* from BDA_MENU t1
+				<where>
+					<if test="parentId != null and parentId !='' ">
+						t1.parent_id = #{parentId}
+					</if>
+				</where>
+			)t1
+	   left join bda_auth_role_permission t2
+	     on t1.menu_id=t2.primkey and t2.name='Menu' and t2.role_id= #{roleId}
+	</select>
+
+	<select id="selectChildsMenuIdByParentId" resultType="string">
+		select menu_id from BDA_MENU where parent_id = #{parentId}
+	</select>
+
+	<insert id="addSelective" parameterType="com.bda.bdaqm.admin.model.Menu"  useGeneratedKeys="true" keyProperty="menu.menuId" >
+		insert into BDA_MENU (parent_id,menu_name,menu_url,menu_order,menu_level,type,icon)
+		values(#{menu.parentId},#{menu.menuName},#{menu.menuUrl},#{menu.menuOrder},#{menu.menuLevel},
+		#{menu.type},#{menu.icon})
+	</insert>
+	<resultMap type="com.bda.bdaqm.admin.model.Menu" id="NMenu">
+		<result column="MENU_ID" property="menuId"/>
+		<result column="PARENT_ID" property="parentId"/>
+		<result column="MENU_NAME" property="menuName"/>
+		<result column="MENU_URL" property="menuUrl"/>
+		<result column="MENU_ORDER" property="menuOrder"/>
+		<result column="MENU_LEVEL" property="menuLevel"/>
+		<result column="TYPE" property="type"/>
+		<result column="ICON" property="icon"/>
+	</resultMap>
+
+	<select id="selectAllMenu" resultMap="NMenu">
+		select * from bda_menu
+	</select>
+
+	<select id="selectMenuById" resultType="com.bda.bdaqm.admin.model.Menu">
+		select * from bda_menu where MENU_ID=#{menuId}
+	</select>
+	
+</mapper>

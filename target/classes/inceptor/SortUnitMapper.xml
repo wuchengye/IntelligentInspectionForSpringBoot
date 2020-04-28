@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.electric.mapper.SortUnitMapper">
+
+<resultMap type="com.bda.bdaqm.electric.model.UnitOrder" id="UnitOrderMap">
+ <id column="order_id" property="orderId"/>
+ <result column="unitname" property="unitname"/>
+</resultMap>
+
+<select id="queryUnitOrder" resultMap="UnitOrderMap">
+ select * from gzpfx01.bda_unit_orders order by order_id
+</select>
+
+</mapper>

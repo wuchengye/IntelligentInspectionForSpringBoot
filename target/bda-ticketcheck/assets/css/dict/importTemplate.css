@@ -1,0 +1,17 @@
+.template {
+	color:blue;
+}
+.template:hover {
+	font-weight:bold;
+	color:white;
+	background-color:dodgerblue;
+	cursor:pointer;
+}
+.addAnswer {
+	color:blue;
+}
+.addAnswer:hover {
+	color:blue;
+	text-decoration:underline;
+	cursor:pointer;
+}
