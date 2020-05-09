@@ -177,7 +177,7 @@
 		<dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
-		    <version>5.1.38</version>
+		    <version>8.0.11</version>
 		</dependency>
         <!-- DataSource Druid Connection Pool -->
         <dependency>
@@ -514,6 +514,16 @@
             <artifactId>guava</artifactId>
             <version>25.1-jre</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+            <version>1.4.5.RELEASE</version>
         </dependency>
     </dependencies>
 </project>

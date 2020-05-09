@@ -32,6 +32,7 @@
 		<property name="locations">
 			<list> 
 				<value>classpath:/dbconfig.properties</value>
+				<value>classpath:/mqconfig.properties</value>
 			</list>
 		</property>
 	</bean>
@@ -247,7 +248,6 @@
 	 <import resource="application-cxfclient.xml"/>
 
 	<!--新增-->
-
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"	p:defaultEncoding="utf-8">
 		<property name="maxUploadSizePerFile">
 			<value>5242880</value>
@@ -258,6 +258,10 @@
 	</bean>
 
 	<util:properties id="ftpconfig" location="classpath:ftpconfig.properties"/>
+	<util:properties id="mqconfig" location="classpath:mqconfig.properties"/>
+
+	<!-- 导入rabbitmq配置 -->
+	<import resource="application-mq.xml"/>
 
 	<!--<bean id="swagger2Config" class="com.bda.bdaqm.config.Swagger2Config"/>-->
 </beans>

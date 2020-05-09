@@ -4,10 +4,14 @@ import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.admin.model.User;
 import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.service.MissionService;
+import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.FileUtils;
 import com.bda.bdaqm.util.UZipFile;
+import com.oracle.jrockit.jfr.Producer;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +23,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -31,6 +37,11 @@ public class MissionManagerController {
 
     @Autowired
     private MissionService missionService;
+
+    @Autowired
+    private RabbitmqProducer rabbitmqProducer;
+    @Value("#{mqconfig.mq_ready_queue}")
+    private String queueId;
 
     @RequestMapping("/uploadFile")
     @ResponseBody
@@ -178,6 +189,19 @@ public class MissionManagerController {
     @RequestMapping("/missionCancel")
     public void missionCancel(@RequestParam("dirName")String dirName){
         deleteTemp(dirName);
+    }
+
+    @RequestMapping("/mqTest")
+    public void mqTest(@RequestParam("path")String path, Integer pri){
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", path + System.currentTimeMillis());
+            map.put("path", path);
+            // 注意：第二个属性是 Queue 与 交换机绑定的路由
+            rabbitmqProducer.sendQueue(queueId + "_exchange", "pri_" + queueId + "_patt", map, pri);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteTemp(String id){

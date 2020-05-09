@@ -6,7 +6,184 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b6314ea6-c45d-4f61-b285-fe00728d3765" name="Default Changelist" comment="" />
+    <list default="true" id="b6314ea6-c45d-4f61-b285-fe00728d3765" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_2_6_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_rabbitmq_amqp_client_3_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_amqp_spring_amqp_1_4_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_amqp_spring_rabbit_1_4_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_retry_spring_retry_1_1_2_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_messaging_4_3_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/bdasjs_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/bdasjs_war_exploded.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_5_1_38.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_11.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bdasjs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/bdasjs.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/dbconfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/dbconfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/spring/application-context.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/spring/application-context.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck.war" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck.war" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/PermissionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/PermissionController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/QmAuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/QmAuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/RoleManageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/RoleManageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/UserManageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/controller/UserManageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/interceptor/LoginInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/interceptor/LoginInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/model/RolePermission.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/model/RolePermission.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyMenuService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyMenuService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyRolePermissionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyRolePermissionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyRoleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyRoleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyUserRoleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/MyUserRoleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/PermisService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/PermisService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/UserOprService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/admin/service/UserOprService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/common/controller/BaseController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/common/controller/BaseController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/StatisticsController$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/StatisticsController$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/StatisticsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/StatisticsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/ThreePersonController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/ThreePersonController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketCheckController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketCheckController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketCheckResultController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketCheckResultController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketExploreController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketExploreController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketNumChartsConroller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketNumChartsConroller.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketTypeStatisticController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/TicketTypeStatisticController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/WorkPriScoreController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/WorkPriScoreController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/WorkTicketController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/WorkTicketController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/WorkingHoursController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/controller/WorkingHoursController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/ScoreSummary.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/ScoreSummary.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/Statistics.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/Statistics.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/TicketCheckResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/TicketCheckResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/unitVo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/model/unitVo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/StatisticsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/StatisticsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/ThreePersonService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/ThreePersonService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/TicketNumChartsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/TicketNumChartsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/TicketTypeStatisticService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/TicketTypeStatisticService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/TicketVerificateService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/TicketVerificateService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkPriScoreService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkPriScoreService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkTaskHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkTaskHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkTicketService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkTicketService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkingHoursService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/WorkingHoursService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/serviceImpl/QueryTicketServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/serviceImpl/QueryTicketServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/serviceImpl/TicketCheckServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/electric/service/serviceImpl/TicketCheckServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/mission/controller/MissionManagerController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/mission/controller/MissionManagerController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/ComplaintController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/ComplaintController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/DataManageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/DataManageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/DubiousController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/DubiousController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/UsedTabooController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/controller/UsedTabooController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/ComplaintService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/ComplaintService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/DataManageService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/DataManageService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/DubiousService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/DubiousService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/UsedTabooService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/risk/service/UsedTabooService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/shiro/realm/JsonAuthLoginFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/shiro/realm/JsonAuthLoginFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/shiro/realm/MyMvcExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/shiro/realm/MyMvcExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/shiro/realm/MyRealm.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/shiro/realm/MyRealm.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/ArtifactOutInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/ArtifactOutInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/AuthHeaderInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/AuthHeaderInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/CAbstractPhaseInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/CAbstractPhaseInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/CustQualityCheckCalculator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/CustQualityCheckCalculator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/CustQualityCheckUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/CustQualityCheckUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/DateUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/DateUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/ExcelUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/ExcelUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/FileUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/FileUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/FtpUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/FtpUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/HttpUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/HttpUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/NumTransferUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/NumTransferUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/PropertyMgr.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/PropertyMgr.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/ReadTxt.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/ReadTxt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SFTPUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SFTPUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SFTPUtil3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SFTPUtil3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SecretUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SecretUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SetList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/SetList.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/StringUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/StringUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/UZipFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/UZipFile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/V3toWAV.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/V3toWAV.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$MyXSSFSheetHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$MyXSSFSheetHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XLSXCovertCSVReader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XLSXCovertCSVReader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XssHttpServletRequestWrapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/com/bda/bdaqm/util/XssHttpServletRequestWrapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/dbconfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/dbconfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/spring/application-context.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/classes/spring/application-context.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/bda-ticketcheck/WEB-INF/lib/mysql-connector-java-5.1.38.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/PermissionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/PermissionController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/QmAuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/QmAuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/RoleManageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/RoleManageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/UserManageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/controller/UserManageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/interceptor/LoginInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/interceptor/LoginInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/model/RolePermission.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/model/RolePermission.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyMenuService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyMenuService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyRolePermissionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyRolePermissionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyRoleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyRoleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyUserRoleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/MyUserRoleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/PermisService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/PermisService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/UserOprService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/admin/service/UserOprService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/common/controller/BaseController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/common/controller/BaseController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/StatisticsController$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/StatisticsController$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/StatisticsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/StatisticsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/ThreePersonController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/ThreePersonController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketCheckController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketCheckController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketCheckResultController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketCheckResultController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketExploreController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketExploreController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketNumChartsConroller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketNumChartsConroller.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketTypeStatisticController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/TicketTypeStatisticController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/WorkPriScoreController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/WorkPriScoreController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/WorkTicketController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/WorkTicketController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/WorkingHoursController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/controller/WorkingHoursController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/ScoreSummary.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/ScoreSummary.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/Statistics.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/Statistics.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/TicketCheckResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/TicketCheckResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/unitVo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/model/unitVo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/StatisticsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/StatisticsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/ThreePersonService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/ThreePersonService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/TicketNumChartsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/TicketNumChartsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/TicketTypeStatisticService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/TicketTypeStatisticService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/TicketVerificateService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/TicketVerificateService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkPriScoreService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkPriScoreService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkTaskHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkTaskHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkTicketService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkTicketService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkingHoursService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/WorkingHoursService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/serviceImpl/QueryTicketServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/serviceImpl/QueryTicketServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/serviceImpl/TicketCheckServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/electric/service/serviceImpl/TicketCheckServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/mission/controller/MissionManagerController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/mission/controller/MissionManagerController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/ComplaintController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/ComplaintController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/DataManageController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/DataManageController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/DubiousController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/DubiousController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/UsedTabooController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/controller/UsedTabooController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/ComplaintService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/ComplaintService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/DataManageService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/DataManageService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/DubiousService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/DubiousService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/UsedTabooService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/risk/service/UsedTabooService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/shiro/realm/JsonAuthLoginFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/shiro/realm/JsonAuthLoginFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/shiro/realm/MyMvcExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/shiro/realm/MyMvcExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/shiro/realm/MyRealm.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/shiro/realm/MyRealm.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/ArtifactOutInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/ArtifactOutInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/AuthHeaderInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/AuthHeaderInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/CAbstractPhaseInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/CAbstractPhaseInterceptor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/CustQualityCheckCalculator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/CustQualityCheckCalculator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/CustQualityCheckUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/CustQualityCheckUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/DateUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/DateUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/ExcelUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/ExcelUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/FileUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/FileUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/FtpUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/FtpUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/HttpUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/HttpUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/NumTransferUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/NumTransferUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/PropertyMgr.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/PropertyMgr.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/ReadTxt.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/ReadTxt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SFTPUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SFTPUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SFTPUtil3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SFTPUtil3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SecretUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SecretUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SetList.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/SetList.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/StringUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/StringUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/UZipFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/UZipFile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/V3toWAV.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/V3toWAV.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$MyXSSFSheetHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XLSXCovertCSVReader$MyXSSFSheetHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XLSXCovertCSVReader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XLSXCovertCSVReader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XssHttpServletRequestWrapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/bda/bdaqm/util/XssHttpServletRequestWrapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/dbconfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/dbconfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/spring/application-context.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/spring/application-context.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/bda/bdaqm/electric/test/TestController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/bda/bdaqm/electric/test/TestController.class" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,16 +201,36 @@
     <option name="HIDDEN_KINDS">
       <set />
     </option>
-    <expand />
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="bda_qm_sjs@127.0.0.1" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="bda_qm_sjs@127.0.0.1" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="bda_qm_sjs@127.0.0.1" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="bda_qm_sjs: schema" type="76f4a085:MysqlImplModel$Schema" />
+      </path>
+    </expand>
     <select />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="spring-beans.schema" />
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
@@ -43,6 +240,11 @@
     <option name="CUSTOM_FILTER" />
   </component>
   <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="userSettingsFile" value="D:\apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
     <option name="importingSettings">
       <MavenImportingSettings>
         <option name="importAutomatically" value="true" />
@@ -51,19 +253,21 @@
   </component>
   <component name="ProjectId" id="1Zhos9uXmnHEpZjtDG588lL8K45" />
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/inceptor/manage" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="spring" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Projects\GuangZhou\bdaqm-sjs源码包\bdaqm-sjs\src\main\java\com\bda\bdaqm\util" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Projects\GuangZhou\bdaqm-sjs源码包\bdaqm-sjs\src\main\resources\inceptor\manage" />
       <recent name="D:\Projects\GuangZhou\bdaqm-sjs源码包\bdaqm-sjs\src\main\java\com\bda\bdaqm" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\GuangZhou\bdaqm-sjs源码包\bdaqm-sjs\src\main\java\com\bda\bdaqm\util" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -80,12 +284,13 @@
   </component>
   <component name="RunManager">
     <configuration name="Tomcat 7.0.99" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 7.0.99" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="1.8" nameIsGenerated="true">
-      <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/bdasjs_war/" />
+      <option name="OPEN_IN_BROWSER" value="false" />
+      <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
         <artifact name="bdasjs:war">
           <settings>
-            <option name="CONTEXT_PATH" value="/bdasjs_war" />
+            <option name="CONTEXT_PATH" value="" />
           </settings>
         </artifact>
       </deployment>
@@ -218,6 +423,51 @@
       </method>
     </configuration>
   </component>
+  <component name="ServiceViewManager">
+    <option name="allServicesViewState">
+      <serviceView>
+        <treeState>
+          <expand>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+            </path>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@19ffece" type="9fbbdea:ServiceModel$ServiceNode" />
+            </path>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@68b3d6a1" type="9fbbdea:ServiceModel$ServiceNode" />
+            </path>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@3d9c15df" type="9fbbdea:ServiceModel$ServiceNode" />
+            </path>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@71296bdc" type="9fbbdea:ServiceModel$ServiceNode" />
+            </path>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@59c43afc" type="9fbbdea:ServiceModel$ServiceNode" />
+            </path>
+            <path>
+              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@5bf5443e" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@58781945" type="9fbbdea:ServiceModel$ServiceNode" />
+            </path>
+          </expand>
+          <select />
+        </treeState>
+      </serviceView>
+    </option>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -234,10 +484,25 @@
       <workItem from="1586763483582" duration="24424000" />
       <workItem from="1587021037516" duration="167993000" />
       <workItem from="1588035864097" duration="13757000" />
+      <workItem from="1588124975566" duration="7326000" />
+      <workItem from="1588728337492" duration="41151000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
