@@ -55,7 +55,10 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/inceptor/manage" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="spring" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.4275862" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -233,7 +236,8 @@
       <workItem from="1586223725842" duration="57845000" />
       <workItem from="1586763483582" duration="24424000" />
       <workItem from="1587021037516" duration="167993000" />
-      <workItem from="1588035864097" duration="13757000" />
+      <workItem from="1588035864097" duration="82768000" />
+      <workItem from="1588993064794" duration="8679000" />
     </task>
     <servers />
   </component>

@@ -124,7 +124,7 @@ public class ComplaintController extends BaseController {
 		String downloadFileName = "";
 		try{
 			List<ComplaintSession> exportJudge = complaintService.getExportJudge(params);
-			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate/")+"可疑投诉风险监控会话数据导出模板.xlsx";
+			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/可疑投诉风险监控会话数据导出模板.xlsx";
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportComplaint.xlsx";
 			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;

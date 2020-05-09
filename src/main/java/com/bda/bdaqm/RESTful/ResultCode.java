@@ -26,7 +26,9 @@ public enum ResultCode {
 
     DOWNLOAD_FAILURE(70001,"下载失败"),
 
-    NOT_FIND_ROLE(80001,"未查询到该用户角色信息");
+    NOT_FIND_ROLE(80001,"未查询到该用户角色信息"),
+
+    WRONG_PASSWORD(90001,"密码错误");
 
     private Integer code;
     private String message;

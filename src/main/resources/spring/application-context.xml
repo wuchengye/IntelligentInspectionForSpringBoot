@@ -47,7 +47,7 @@
 
 	<!-- 启用quartz定时任务管理 -->
 	<!-- -->
- 	<!-- <import resource="classpath*:spring/applicationContext-quartz.xml" /> -->
+ 	 <import resource="classpath*:spring/applicationContext-quartz.xml" />
  	 
 	<!-- 自动扫描业务类组件 -->
 	<context:component-scan base-package="com.bda" use-default-filters="false">

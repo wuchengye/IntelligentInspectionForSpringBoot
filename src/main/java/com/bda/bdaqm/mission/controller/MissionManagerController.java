@@ -3,17 +3,18 @@ package com.bda.bdaqm.mission.controller;
 import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.admin.model.User;
 import com.bda.bdaqm.mission.model.InspectionMission;
+import com.bda.bdaqm.mission.quartz.SchedulerUtils;
 import com.bda.bdaqm.mission.service.MissionService;
 import com.bda.bdaqm.util.FileUtils;
 import com.bda.bdaqm.util.UZipFile;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -143,7 +144,7 @@ public class MissionManagerController {
         missionModel.setMissionIsnodubious(missionIsnodubious);
         missionModel.setMissionDescribe(missionDescribe);
         //语音文件路径,任务创建时，文件在本机上
-        missionModel.setMissionFilepath(uploadFilePath + dirName + "\\");
+        missionModel.setMissionFilepath(uploadFilePath + dirName + "/");
         missionModel.setMissionCreaterid(Integer.valueOf(user.getUserId()));
         //文件总数
         missionModel.setMissionTotalNum(missionTotalNum);
@@ -154,7 +155,13 @@ public class MissionManagerController {
         missionModel.setMissionTransferStatus(0);
         missionModel.setMissionInspectionStatus(0);
 
-        if(missionService.createMission(missionModel) == 1){
+        int missionId = missionService.createMission(missionModel);
+        if(missionId > 0 ){
+            try {
+                missionService.quartzMission(missionModel);
+            }catch (SchedulerException e){
+                e.printStackTrace();
+            }
             return Result.success();
         }else {
             return Result.failure();
@@ -181,7 +188,7 @@ public class MissionManagerController {
     }
 
     private void deleteTemp(String id){
-        String path = uploadFilePath + id + "\\";
+        String path = uploadFilePath + id + "/";
         File foldor = new File(path);
         if(foldor.exists()){
             if(foldor.listFiles().length > 0){
