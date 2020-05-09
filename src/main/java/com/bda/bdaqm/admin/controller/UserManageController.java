@@ -259,14 +259,13 @@ public class UserManageController {
 			}
 		}else{
 //			newPas = UserUtil.Sha256(newPas);
-			User targetUser = userService.selectOneByEqField("userId", userId);
+			User targetUser = userService.selectByPrimaryKey( userId);
 			if(targetUser!=null && oldPas.equals(targetUser.getPassword())){
 				ret = userService.editUserPas(userId, newPas);
 			}
-			
 		}
 		//return new OperaterResult<String>(ret > 0);
-		return ret > 0 ? Result.success() : Result.failure();
+		return ret > 0 ? Result.success() : Result.failure(ResultCode.WRONG_PASSWORD);
 	}
 	
 	/**

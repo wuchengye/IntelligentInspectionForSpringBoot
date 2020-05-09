@@ -8,7 +8,7 @@
         where mission_createrid = #{userId}
     </select>
 
-    <insert id="createMission">
+    <insert id="createMission" useGeneratedKeys="true" keyProperty="missionId" parameterType="com.bda.bdaqm.mission.model.InspectionMission">
 		insert into inspection_mission(mission_name,mission_describe,mission_type,
 		                                mission_status,mission_begintime,mission_istaboo,
 		                                mission_isrisk,mission_isnodubious,mission_upload_status,

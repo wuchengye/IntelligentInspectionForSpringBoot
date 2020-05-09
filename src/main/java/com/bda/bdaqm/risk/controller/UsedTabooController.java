@@ -161,7 +161,7 @@ public class UsedTabooController extends BaseController {
 		String downloadFileName = "";
 		try{
 			List<TabooSession> exportJudge = usedTabooService.getExportJudge(params);
-			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate/")+"可疑使用禁语会话数据导出模板.xlsx";
+			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/可疑使用禁语会话数据导出模板.xlsx";
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportTaboo.xlsx";
 			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;

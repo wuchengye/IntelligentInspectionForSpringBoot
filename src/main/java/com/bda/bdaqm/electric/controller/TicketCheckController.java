@@ -32,11 +32,11 @@ public class TicketCheckController extends BaseController{
 	private TicketVerificateService ticketVerificateService;
 	@Autowired
 	private TicketCheckServiceImpl ticketCheckServiceImpl;
-	
+
 	@RequestMapping("getTicketsData")
 	@ResponseBody
 	public Object getTicketsData(Page page,QueryParams ticket){
-		
+
 		List<Map<String, Object>> isNotNullDataList = ticketVerificateService.getTicketsData(ticket);
 		//List<Map<String,Object>> isNullDataList = ticketVerificateService.getTicketsDataIsNull(ticket);
 		List<Map<String,Object>> allDataList = new ArrayList<Map<String,Object>>();
@@ -57,7 +57,7 @@ public class TicketCheckController extends BaseController{
 				resList.add(allDataList.get(i));
 			}
 		}
-		
+
 		PageInfo<Map<String, Object>> pageInfo = new PageInfo<Map<String, Object>>(allDataList);
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("all", allDataList);
@@ -66,20 +66,20 @@ public class TicketCheckController extends BaseController{
 		//return new DataGrid(resList, pageInfo.getTotal());
 		return map;
 	}
-	
+
 	@RequestMapping("checkTicket")
 	@ResponseBody
 	public Object checkTicket(@RequestParam(required=false,value="ids[]")List<String> ids,QueryParams ticket){
-		
+
 		Date pre = new Date();
 		List<TicketCheckResult> resList = ticketCheckServiceImpl.ticketCheck(ticket, ids);
 		logger.info("校验耗时 ->  " + (new Date().getTime() - pre.getTime()) + "毫秒" );
-		
+
 		PageInfo<TicketCheckResult> p = new PageInfo<TicketCheckResult>(resList);
 		return new DataGrid(resList, p.getTotal());
-		
+
 	}
-	
+
 	@RequestMapping("quartzCheckTicket")
 	@ResponseBody
 	public Object quartzCheckTicket(String beginTime,String endTime){
@@ -97,5 +97,5 @@ public class TicketCheckController extends BaseController{
 		ticketCheckServiceImpl.ticketCheck(ticket, ids);
 		return null;
 	}
-	
+
 }

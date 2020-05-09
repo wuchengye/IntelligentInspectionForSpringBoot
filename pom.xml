@@ -283,7 +283,7 @@
             <scope>${scope}</scope>
         </dependency>
         <!-- 任务调度框架quartz依赖 -->
-        <!-- <dependency>
+         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
@@ -292,7 +292,7 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
             <version>${quartz.version}</version>
-        </dependency> -->
+        </dependency>
         <!-- cxf web service -->
         <dependency>
             <groupId>org.apache.cxf</groupId>

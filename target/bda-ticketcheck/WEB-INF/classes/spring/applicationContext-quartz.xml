@@ -29,11 +29,15 @@
 <!-- quartz -->
 	<!-- 配置调度器工厂(SchedulerFactoryBean) -->   
     <bean name="startQuertz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
-        <property name="triggers">  
+        <!--<property name="triggers">
             <list>  
                 <ref bean="jobTrigger_cleanRecordDirJob" /> 
             </list>  
-        </property>  
+        </property>-->
+        <!--quartz新增jdbc配置-->
+        <property name="applicationContextSchedulerContextKey" value="applicationContextKey"/>
+        <property name="configLocation" value="classpath:quartz.properties"/>
+        <property name="autoStartup" value="true"/>
     </bean> 
     
     <bean id="jobTrigger_cleanRecordDirJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"><!-- 每天03:00清理一次V3、WAV -->  

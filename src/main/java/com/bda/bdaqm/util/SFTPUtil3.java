@@ -6,11 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 
 import com.jcraft.jsch.Channel;
@@ -305,28 +301,36 @@ public class SFTPUtil3 {
 	     * @param del：上传后是否删除本地文件
 	     * @return
 	     */
-	    public boolean bacthUploadFile(String remotePath, String localPath,
-	            boolean del)
+	    public Map bacthUploadFile(String remotePath, String localPath)
 	    {
+			Map<String,List<String>> map = new HashMap<>();
+			//成功和失败的文件列表
+			List<String> sucList = new ArrayList<>();
+			List<String> faiList = new ArrayList<>();
 	        try
 	        {
 	            connect();
 	            File file = new File(localPath);
-	            File[] files = file.listFiles();
-	            for (int i = 0; i < files.length; i++)
-	            {
-	                if (files[i].isFile()
-	                        && files[i].getName().indexOf("bak") == -1)
-	                {
+	            List<File> list = findAllFiles(file);
+	            for (File file1 : list){
+	            	if(this.uploadFile(remotePath,file1.getName(),localPath,file1.getName())){
+	            		sucList.add(file1.getName());
+					}else {
+	            		faiList.add(file1.getName());
+					}
+				}
+	            /*File[] files = file.listFiles();
+	            for (int i = 0; i < files.length; i++) {
+	                if (files[i].isFile()) {
 	                    if (this.uploadFile(remotePath, files[i].getName(),
 	                            localPath, files[i].getName())
-	                            && del)
-	                    {
+	                            && del) {
 	                        deleteFile(localPath + files[i].getName());
 	                    }
 	                }
-	            }
-	            return true;
+	            }*/
+	            map.put("success",sucList);
+	            map.put("failure",faiList);
 	        }
 	        catch (Exception e)
 	        {
@@ -336,9 +340,26 @@ public class SFTPUtil3 {
 	        {
 	            this.disconnect();
 	        }
-	        return false;
-
+	        return map;
 	    }
+
+	    /**
+		 * 批量上传文件，递归文件夹
+	     * @author wcy
+	     * @date 2020-05-08 09:22
+	     */
+	    private List<File> findAllFiles(File file){
+	    	List<File> list = new ArrayList<>();
+	    	File[] files = file.listFiles();
+	    	for (File file1 : files){
+	    		if(file1.isDirectory()){
+	    			list.addAll(findAllFiles(file1));
+				}else {
+	    			list.add(file1);
+				}
+			}
+	    	return list;
+		}
 
 	    /**
 	     * 删除本地文件

@@ -42,7 +42,7 @@ public class DataManageController extends BaseController {
 		String downloadFileName = "";
 		try{
 			List<DataManage> exportJudge = dataManageService.getExportDataManage();
-			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate/")+"数据管理导出模板.xlsx";
+			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/数据管理导出模板.xlsx";
 
 			//打印地址
 			System.out.println("数据导出地址=======" + templatePath);

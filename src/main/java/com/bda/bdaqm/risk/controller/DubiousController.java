@@ -104,7 +104,7 @@ public class DubiousController extends BaseController {
 		String downloadFileName = "";
 		try{
 			List<NotDubious> exportJudge = dubiousService.getExportDubious(params);
-			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate/")+"非可疑数据导出模板.xlsx";
+			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/非可疑数据导出模板.xlsx";
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportDubious.xlsx";
 			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
