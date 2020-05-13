@@ -28,7 +28,10 @@ public enum ResultCode {
 
     NOT_FIND_ROLE(80001,"未查询到该用户角色信息"),
 
-    WRONG_PASSWORD(90001,"密码错误");
+    WRONG_PASSWORD(90001,"密码错误"),
+
+    FTP_PATH_NULL(10001,"服务器地址为空"),
+    FTP_CONNECT_FAILURE(10002,"连接失败");
 
     private Integer code;
     private String message;

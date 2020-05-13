@@ -99,7 +99,7 @@ public class SFTPUtil3 {
 
 	    /**
 	     * 批量下载文件
-	     * @param remotPath：远程下载目录(以路径符号结束,可以为相对路径eg:/assess/sftp/jiesuan_2/2014/)
+	     * @param remotePath：远程下载目录(以路径符号结束,可以为相对路径eg:/assess/sftp/jiesuan_2/2014/)
 	     * @param localPath：本地保存目录(以路径符号结束,D:\Duansha\sftp\)
 	     * @param fileFormat：下载文件格式(以特定字符开头,为空不做检验)
 	     * @param fileEndFormat：下载文件格式(文件格式)
@@ -207,7 +207,7 @@ public class SFTPUtil3 {
 
 	    /**
 	     * 下载单个文件
-	     * @param remotPath：远程下载目录(以路径符号结束)
+	     * @param remotePath：远程下载目录(以路径符号结束)
 	     * @param remoteFileName：下载文件名
 	     * @param localPath：本地保存目录(以路径符号结束)
 	     * @param localFileName：保存文件名
@@ -254,17 +254,15 @@ public class SFTPUtil3 {
 	     * 上传单个文件
 	     * @param remotePath：远程保存目录
 	     * @param remoteFileName：保存文件名
-	     * @param localPath：本地上传目录(以路径符号结束)
-	     * @param localFileName：上传的文件名
 	     * @return
 	     */
-	    public boolean uploadFile(String remotePath, String remoteFileName,String localPath, String localFileName)
+	    public boolean uploadFile(String remotePath, String remoteFileName,String filePath)
 	    {
 	        FileInputStream in = null;
 	        try
 	        {
 	            createDir(remotePath);
-	            File file = new File(localPath + localFileName);
+	            File file = new File(filePath);
 	            in = new FileInputStream(file);
 	            sftp.put(in, remoteFileName);
 	            return true;
@@ -298,7 +296,6 @@ public class SFTPUtil3 {
 	     * 批量上传文件
 	     * @param remotePath：远程保存目录
 	     * @param localPath：本地上传目录(以路径符号结束)
-	     * @param del：上传后是否删除本地文件
 	     * @return
 	     */
 	    public Map bacthUploadFile(String remotePath, String localPath)
@@ -313,11 +310,12 @@ public class SFTPUtil3 {
 	            File file = new File(localPath);
 	            List<File> list = findAllFiles(file);
 	            for (File file1 : list){
-	            	if(this.uploadFile(remotePath,file1.getName(),localPath,file1.getName())){
+	            	if(this.uploadFile(remotePath,file1.getName(),file1.getPath())){
 	            		sucList.add(file1.getName());
 					}else {
 	            		faiList.add(file1.getName());
 					}
+	            	file1.delete();
 				}
 	            /*File[] files = file.listFiles();
 	            for (int i = 0; i < files.length; i++) {
@@ -456,7 +454,6 @@ public class SFTPUtil3 {
 	     * 删除stfp文件
 	     * @param directory：要删除文件所在目录
 	     * @param deleteFile：要删除的文件
-	     * @param sftp
 	     */
 	    public void deleteSFTP(String directory, String deleteFile)
 	    {
@@ -493,7 +490,6 @@ public class SFTPUtil3 {
 	     * 列出目录下的文件
 	     * 
 	     * @param directory：要列出的目录
-	     * @param sftp
 	     * @return
 	     * @throws SftpException
 	     */
@@ -572,7 +568,7 @@ public class SFTPUtil3 {
 	    	     * @param localFileName：上传的文件名
 	    	     * @return
 	    	     */
-	            sftp.uploadFile("/1234/", "test_table1.txt", "D:/需求列表/SAS/test/", "test_table1.txt");
+	            //sftp.uploadFile("/1234/", "test_table1.txt", "D:/需求列表/SAS/test/", "test_table1.txt");
 	            //sftp.batchDownLoadFile(sftpPath, localPath, "ASSESS", ".txt", true);
 	        }
 	        catch (Exception e)

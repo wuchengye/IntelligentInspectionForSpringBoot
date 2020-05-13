@@ -19,9 +19,10 @@ public class SchedulerUtils {
         JobDetail jobDetail = JobBuilder.newJob(MissionJob.class)
                                         .withIdentity(mission.getMissionId().toString(),"group1")
                                         .usingJobData("missionId",mission.getMissionId().toString())
-                                        .usingJobData("missionName",mission.getMissionName())
                                         .usingJobData("missionFilepath",mission.getMissionFilepath())
-                                        .usingJobData("missionTotalNum",mission.getMissionTotalNum().toString())
+                                        .usingJobData("missionIstransfer",mission.getMissionIstransfer().toString())
+                                        .usingJobData("missionIsinspection",mission.getMissionIsinspection().toString())
+                                        .usingJobData("missionLevel",mission.getMissionLevel().toString())
                                         .build();
 
         //时间格式转换

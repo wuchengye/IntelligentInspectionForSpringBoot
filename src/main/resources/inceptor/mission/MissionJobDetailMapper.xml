@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.mission.mapper.MissionJobDetailMapper">
+    <!--定时任务，开启转写时插入-->
+    <insert id="insertSingleJobWhenTransfer" useGeneratedKeys="true" keyProperty="jobId">
+        insert into inspection_mission_jobdetail
+        (mission_id,file_name,file_path,mission_istransfer,mission_isinspection,file_status,file_status_describe,mission_level)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.missionId},#{item.fileName},#{item.filePath},#{item.missionIstransfer},
+            #{item.missionIsinspection},#{item.fileStatus},
+            <choose>
+                <when test="item.fileStatusDescribe != null and item.fileStatusDescribe != ''">
+                    #{item.fileStatusDescribe}
+                </when>
+                <otherwise>
+                    ''
+                </otherwise>
+            </choose>
+            ,#{item.missionLevel})
+        </foreach>
+    </insert>
+</mapper>

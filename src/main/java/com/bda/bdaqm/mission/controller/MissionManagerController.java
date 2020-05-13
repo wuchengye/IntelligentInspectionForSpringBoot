@@ -1,13 +1,17 @@
 package com.bda.bdaqm.mission.controller;
 
 import com.bda.bdaqm.RESTful.Result;
+import com.bda.bdaqm.RESTful.ResultCode;
 import com.bda.bdaqm.admin.model.User;
 import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.quartz.SchedulerUtils;
 import com.bda.bdaqm.mission.service.MissionService;
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.FileUtils;
+import com.bda.bdaqm.util.FtpUtil;
+import com.bda.bdaqm.util.SFTPUtil3;
 import com.bda.bdaqm.util.UZipFile;
+import com.bda.common.util.StringUtil;
 import com.oracle.jrockit.jfr.Producer;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -176,6 +180,53 @@ public class MissionManagerController {
             return Result.failure();
         }
     }
+
+    @RequestMapping("/createCommonMission")
+    public Result createCommonMission(
+            @RequestParam("missionName")String missionName,
+            @RequestParam("missionBegintime")String missionBegintime,
+            @RequestParam("missionIstransfer")int missionIstransfer,
+            @RequestParam("missionIsinspection")int missionIsinspection,
+            @RequestParam("missionIstaboo")int missionIstaboo,
+            @RequestParam("missionIsrisk")int missionIsrisk,
+            @RequestParam("missionIsnodubious")int missionIsnodubious,
+            @RequestParam("missionDescribe")String missionDescribe,
+            @RequestParam("ftpPath")String ftpPath,
+            @RequestParam(value = "ftpAccount",required = false)String ftpAccount,
+            @RequestParam(value = "ftpPwd",required = false)String ftpPwd,
+            @RequestParam("period")String period,
+            @RequestParam(value = "isTest",required = false)Boolean isTest
+            ){
+        //验证连接
+        if(isTest != null && isTest == true){
+            if(ftpPath == null || ftpPath.equals("")){
+                return Result.failure(ResultCode.FTP_PATH_NULL);
+            }
+            if(ftpPath.substring(0,1).equals("f")){
+                FtpUtil ftpUtil = new FtpUtil(ftpPath,21,ftpAccount,ftpPwd);
+                try {
+                    ftpUtil.connect();
+                    ftpUtil.disconnect();
+                }catch (Exception e){
+                    return Result.failure(ResultCode.FTP_CONNECT_FAILURE);
+                }
+                return Result.success();
+            }else {
+                SFTPUtil3 sftpUtil3 = new SFTPUtil3(ftpPath,ftpAccount,ftpPwd);
+                sftpUtil3.connect();
+                if(sftpUtil3.getSftp().isConnected()){
+                    return Result.success();
+                }else {
+                    return Result.failure(ResultCode.FTP_CONNECT_FAILURE);
+                }
+            }
+        }
+
+        return Result.success();
+
+
+    }
+
 
     @RequestMapping("/getListMission")
     public Result getListMission(){
