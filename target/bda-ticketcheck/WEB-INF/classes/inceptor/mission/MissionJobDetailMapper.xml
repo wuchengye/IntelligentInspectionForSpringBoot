@@ -22,4 +22,21 @@
             ,#{item.missionLevel})
         </foreach>
     </insert>
+
+    <select id="getListByMissionId" resultType="com.bda.bdaqm.mission.model.InspectionMissionJobDetail">
+        select * from inspection_mission_jobdetail  t
+        where mission_id = #{missionId}
+    </select>
+
+    <select id="getByJobId" resultType="com.bda.bdaqm.mission.model.InspectionMissionJobDetail">
+        select * from inspection_mission_jobdetail  t
+        where job_id = #{jobId}
+    </select>
+
+    <update id="updateTransferStatus">
+		update inspection_mission_jobdetail set file_hastransfer=#{fileHasTransfer},file_status=#{fileStatus},
+		file_status_describe=#{fileStatusDescribe},is_transfer_failed=#{isTransferFailed}
+		where job_id=#{jobId}
+	</update>
+
 </mapper>

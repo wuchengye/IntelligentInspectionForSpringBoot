@@ -23,6 +23,13 @@ public class MissionService {
         return missionMapper.getListMission(userId);
     }
 
+    public List<InspectionMission> getListMissionByStatus(int missionStatus){
+        return missionMapper.getListMissionByStatus(missionStatus);
+    }
+
+    public void updateMissionStatus(int missionId, int status) {
+        missionMapper.updateMissionStatus(missionId, status);
+    }
 
     //定时任务
     public void quartzMission(InspectionMission mission) throws SchedulerException {

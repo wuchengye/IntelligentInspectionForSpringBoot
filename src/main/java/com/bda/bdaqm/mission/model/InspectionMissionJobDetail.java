@@ -63,6 +63,11 @@ public class InspectionMissionJobDetail implements Serializable {
      */
     private Integer missionLevel;
 
+    /**
+     * is_transfer_failed
+     */
+    private Integer isTransferFailed;
+
     public Integer getJobId() {
         return jobId;
     }
@@ -157,5 +162,13 @@ public class InspectionMissionJobDetail implements Serializable {
 
     public void setMissionLevel(Integer missionLevel) {
         this.missionLevel = missionLevel;
+    }
+
+    public Integer getIsTransferFailed() {
+        return isTransferFailed;
+    }
+
+    public void setIsTransferFailed(Integer isTransferFailed) {
+        this.isTransferFailed = isTransferFailed;
     }
 }

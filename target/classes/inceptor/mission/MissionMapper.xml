@@ -8,6 +8,11 @@
         where mission_createrid = #{userId}
     </select>
 
+	<select id="getListMissionByStatus" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+        select * from inspection_mission  t
+        where mission_status = #{missionStatus}
+    </select>
+
     <insert id="createMission" useGeneratedKeys="true" keyProperty="missionId" parameterType="com.bda.bdaqm.mission.model.InspectionMission">
 		insert into inspection_mission(mission_name,mission_describe,mission_type,
 		                                mission_status,mission_begintime,mission_istaboo,
@@ -21,4 +26,9 @@
 				#{missionLevel},#{missionIstransfer},#{missionIsinspection},#{missionFilepath},
 				#{missionCreaterid},#{missionTotalNum})
 	</insert>
+
+	<update id="updateMissionStatus">
+		update inspection_mission set mission_status=#{missionStatus}
+		where mission_id=#{missionId}
+	</update>
 </mapper>

@@ -9,4 +9,6 @@ import java.util.List;
 public interface MissionMapper extends Mapper<InspectionMission> {
     int createMission(InspectionMission params);
     List<InspectionMission> getListMission(@Param("userId") int userId);
+    List<InspectionMission> getListMissionByStatus(@Param("missionStatus") int missionStatus);
+    void updateMissionStatus(@Param("missionId") int missionId, @Param("missionStatus") int missionStatus);
 }

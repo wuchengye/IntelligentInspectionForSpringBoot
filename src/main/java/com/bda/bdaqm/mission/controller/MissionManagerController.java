@@ -44,7 +44,9 @@ public class MissionManagerController {
     @Autowired
     private RabbitmqProducer rabbitmqProducer;
     @Value("#{mqconfig.mq_ready_queue}")
-    private String queueId;
+    private String readyQueueId;
+    @Value("#{mqconfig.mq_update_queue}")
+    private String updateQueueId;
 
     @RequestMapping("/uploadFile")
     @ResponseBody
@@ -237,8 +239,17 @@ public class MissionManagerController {
         return Result.success(list);
     }
 
+    @RequestMapping("/missionPause")
+    public void missionPause(@RequestParam("missionId")int missionId){
+        missionService.updateMissionStatus(missionId, 0);
+        updateReadyQueue();
+    }
 
-
+    @RequestMapping("/missionStart")
+    public void missionStart(@RequestParam("missionId")int missionId){
+        missionService.updateMissionStatus(missionId, 1);
+        updateReadyQueue();
+    }
 
 
 
@@ -251,10 +262,30 @@ public class MissionManagerController {
     public void mqTest(@RequestParam("path")String path, Integer pri){
         try {
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("id", path + System.currentTimeMillis());
-            map.put("path", path);
+            map.put("id",System.currentTimeMillis());
+            map.put("missionId",1);
+            map.put("name","aaa");
+            map.put("path",path);
             // 注意：第二个属性是 Queue 与 交换机绑定的路由
-            rabbitmqProducer.sendQueue(queueId + "_exchange", "pri_" + queueId + "_patt", map, pri);
+            rabbitmqProducer.sendQueue(readyQueueId + "_exchange", readyQueueId + "_patt", map, pri);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping("/mqPurge")
+    public void mqPurge(){
+        try {
+            rabbitmqProducer.queuePurge(readyQueueId+"_queue");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping("/mqUpdate")
+    public void mqUpdate(){
+        try {
+            updateReadyQueue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -271,6 +302,11 @@ public class MissionManagerController {
             }
             foldor.delete();
         }
+    }
+
+    //先清空队列，然后查表根据任务状态添加任务至队列
+    private void updateMQ() {
+
     }
 
     private boolean checkMp3Files(File foldor){
@@ -297,5 +333,10 @@ public class MissionManagerController {
             return true;
         }
         return false;
+    }
+
+    //更新ready队列
+    private void updateReadyQueue() {
+        rabbitmqProducer.sendQueue(updateQueueId+"_exchange", updateQueueId+"_patt", null);
     }
 }

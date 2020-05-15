@@ -42,7 +42,7 @@ public class MissionJob implements Job {
         map1.put("missionId","21");
         map1.put("name","52020022913124900940217431_057786934570_17816293365_20200229131249.mp3");
         map1.put("path","21\\52020022913124900940217431_057786934570_17816293365_20200229131249.mp3");
-        rabbitmqProducer.sendQueue(queueId + "_exchange", "pri_" + queueId + "_patt",
+        rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                 map1,9);*/
 
 
@@ -113,7 +113,7 @@ public class MissionJob implements Job {
                     map.put("missionId",jobDetail.getMissionId().toString());
                     map.put("name",jobDetail.getFileName());
                     map.put("path",jobDetail.getFilePath());
-                    rabbitmqProducer.sendQueue(queueId + "_exchange", "pri_" + queueId + "_patt",
+                    rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                             map,jobDetail.getMissionLevel());
                 }
             }

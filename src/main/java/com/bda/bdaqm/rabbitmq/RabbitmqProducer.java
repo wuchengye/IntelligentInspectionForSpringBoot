@@ -1,9 +1,12 @@
 package com.bda.bdaqm.rabbitmq;
+import com.rabbitmq.client.impl.AMQImpl;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ public class RabbitmqProducer {
 
     @Autowired
     private AmqpTemplate amqpTemplateReady;
+    @Autowired
+    private RabbitAdmin rabbitAdmin;
 
     public void sendQueue(String exchange_key, String queue_key, Object object) {
         // convertAndSend 将Java对象转换为消息发送至匹配key的交换机中Exchange
@@ -38,5 +43,10 @@ public class RabbitmqProducer {
             }
         });
         System.out.println(pri);
+    }
+
+    //清空队列
+    public void queuePurge(String queueName) {
+        rabbitAdmin.purgeQueue(queueName, false);
     }
 }

@@ -15,4 +15,16 @@ public class MissionJobDetailService {
     public int insertSingleJobWhenTransfer(List<InspectionMissionJobDetail> list){
         return missionJobDetailMapper.insertSingleJobWhenTransfer(list);
     }
+
+    public List<InspectionMissionJobDetail> getListByMissionId(int missionId){
+        return missionJobDetailMapper.getListByMissionId(missionId);
+    }
+
+    public InspectionMissionJobDetail getByJobId(int jobId) {
+        return missionJobDetailMapper.getByJobId(jobId);
+    }
+
+    public void updateTransferStatus(int jobId, int fileHasTransfer, int fileStatus, String fileStatusDescribe, int isTransferFailed) {
+        missionJobDetailMapper.updateTransferStatus(jobId, fileHasTransfer, fileStatus, fileStatusDescribe, isTransferFailed);
+    }
 }
