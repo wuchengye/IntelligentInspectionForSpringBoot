@@ -102,12 +102,13 @@ public class DubiousController extends BaseController {
 	@ResponseBody
 	public Result exportDudiousDetail(NotDubious params) throws Exception{
 		String downloadFileName = "";
+		String downloadPath = "";
 		try{
 			List<NotDubious> exportJudge = dubiousService.getExportDubious(params);
 			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/非可疑数据导出模板.xlsx";
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportDubious.xlsx";
-			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
+			downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
 			dubiousService.makeNotDubiousExcel(exportJudge, templatePath, downloadPath);
 		}catch(Exception e){
 			logger.error("程序异常：" + e);
@@ -115,7 +116,7 @@ public class DubiousController extends BaseController {
 			return Result.failure();
 		}
 		//return new OperaterResult<>(true, downloadFileName);
-		return Result.success(downloadFileName);
+		return Result.success(downloadPath);
 	}
 	
 	public void copyFile(String oldPath, String newPath) { 

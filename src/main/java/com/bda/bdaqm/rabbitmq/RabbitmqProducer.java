@@ -10,11 +10,8 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * @Description: 消息队列发送者
- * @Author:
- * @CreateTime:
- */
+
+
 @Service
 public class RabbitmqProducer {
 

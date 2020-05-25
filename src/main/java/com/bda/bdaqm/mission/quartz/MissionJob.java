@@ -2,6 +2,7 @@ package com.bda.bdaqm.mission.quartz;
 
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
+
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.bdaqm.util.SFTPUtil3;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,36 +32,16 @@ public class MissionJob implements Job {
     @Value("#{mqconfig.mq_ready_queue}")
     private String queueId;
 
+    @Value("#{ftpconfig.ftpPath}")
+    private String ftpPath;
+
+    @Value("#{ftpconfig.uploadFilePath}")
+    private String uploadFilePath;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-
-        System.out.println("消息队列" + queueId);
-
-       /* Map<String,String> map1 = new HashMap<>();
-        map1.put("id","1");
-        map1.put("missionId","21");
-        map1.put("name","52020022913124900940217431_057786934570_17816293365_20200229131249.mp3");
-        map1.put("path","21\\52020022913124900940217431_057786934570_17816293365_20200229131249.mp3");
-        rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
-                map1,9);*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         //sFTP
@@ -70,19 +52,19 @@ public class MissionJob implements Job {
         int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
         SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
 
-        String remotePath = jobDataMap.getString("missionId");
-        Map<String,List> result = sftp.bacthUploadFile(remotePath,jobDataMap.getString("missionFilepath"));
+        String remotePath = ftpPath + jobDataMap.getString("missionId") + "/";
+        Map<String,List> result = sftp.bacthUploadFile(remotePath,jobDataMap.getString("missionFilepath") ,uploadFilePath);
         List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
         List<InspectionMissionJobDetail> listFai = new ArrayList<>();
         if(result.get("success") != null){
-            List<String> sucList = result.get("success");
-            for (String suc : sucList){
+            List<File> sucList = result.get("success");
+            for (File suc : sucList){
                 InspectionMissionJobDetail inspectionMissionJobDetail = new InspectionMissionJobDetail();
                 inspectionMissionJobDetail.setMissionId(Integer.valueOf(jobDataMap.getString("missionId")));
                 inspectionMissionJobDetail.setMissionIstransfer(Integer.valueOf(jobDataMap.getString("missionIstransfer")));
                 inspectionMissionJobDetail.setMissionIsinspection(Integer.valueOf(jobDataMap.getString("missionIsinspection")));
-                inspectionMissionJobDetail.setFileName(suc);
-                inspectionMissionJobDetail.setFilePath(remotePath + suc);
+                inspectionMissionJobDetail.setFileName(suc.getName());
+                inspectionMissionJobDetail.setFilePath(SFTPUtil3.ftpChildPath(suc.getPath(),uploadFilePath));
                 inspectionMissionJobDetail.setFileStatus(1);
                 inspectionMissionJobDetail.setMissionLevel(Integer.valueOf(jobDataMap.getString("missionLevel")));
                 listSuc.add(inspectionMissionJobDetail);

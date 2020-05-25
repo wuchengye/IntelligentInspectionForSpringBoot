@@ -32,7 +32,27 @@ public class MissionService {
     }
 
     //定时任务
-    public void quartzMission(InspectionMission mission) throws SchedulerException {
-        SchedulerUtils.startScheduler(mission);
+    public void addSingleJob(InspectionMission mission) throws SchedulerException {
+        SchedulerUtils.addSingleJob(mission);
+    }
+
+    //根据任务id查找
+    public InspectionMission getMissionByMissionId(int missionId){
+        return missionMapper.getMissionByMissionId(missionId);
+    }
+
+    //移除定时任务
+    public void removeSingleJob(String missionId) throws SchedulerException {
+        SchedulerUtils.removeSingleJob(missionId);
+    }
+
+    //修改单次任务
+    public int updateSingleMission(InspectionMission params){
+        return missionMapper.updateSingleMission(params);
+    }
+
+    //常规定时任务
+    public void addCommonJob(InspectionMission mission) throws SchedulerException{
+        SchedulerUtils.addCommonJob(mission);
     }
 }

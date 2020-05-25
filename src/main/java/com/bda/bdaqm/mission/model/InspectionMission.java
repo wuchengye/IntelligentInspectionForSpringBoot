@@ -31,7 +31,7 @@ public class InspectionMission implements Serializable {
     private Integer missionType;
 
     /**
-     * mission_status 任务状态 0：未开始  1：进行中  2：已完成
+     * mission_status 任务状态 0：未开始  1：进行中  2：已完成 3:暂停
      */
     private Integer missionStatus;
 
@@ -125,6 +125,15 @@ public class InspectionMission implements Serializable {
      */
     private Integer missionPhasedCompletionNum;
 
+    /**
+     * mission_ftp 常规任务远程服务器
+     */
+    private String missionFtp;
+
+    /**
+     * mission_cycle 常规任务周期
+     */
+    private String missionCycle;
 
     public void setMissionTotalNum(Integer missionTotalNum) {
         this.missionTotalNum = missionTotalNum;
@@ -312,5 +321,21 @@ public class InspectionMission implements Serializable {
 
     public void setMissionCreaterid(Integer missionCreaterid) {
         this.missionCreaterid = missionCreaterid;
+    }
+
+    public String getMissionFtp() {
+        return missionFtp;
+    }
+
+    public void setMissionFtp(String missionFtp) {
+        this.missionFtp = missionFtp;
+    }
+
+    public String getMissionCycle() {
+        return missionCycle;
+    }
+
+    public void setMissionCycle(String missionCycle) {
+        this.missionCycle = missionCycle;
     }
 }

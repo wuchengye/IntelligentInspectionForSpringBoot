@@ -122,12 +122,13 @@ public class ComplaintController extends BaseController {
 	@ResponseBody
 	public Result exportJudgeDetail(ComplaintSession params) throws Exception{
 		String downloadFileName = "";
+		String downloadPath = "";
 		try{
 			List<ComplaintSession> exportJudge = complaintService.getExportJudge(params);
 			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/可疑投诉风险监控会话数据导出模板.xlsx";
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportComplaint.xlsx";
-			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
+			downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
 			complaintService.makeComplaintExportExcel(exportJudge, templatePath, downloadPath);
 		}catch(Exception e){
 			logger.error("程序异常：" + e);
@@ -135,7 +136,7 @@ public class ComplaintController extends BaseController {
 			return Result.failure();
 		}
 		//return new OperaterResult<>(true, downloadFileName);
-		return Result.success( downloadFileName);
+		return Result.success( downloadPath);
 	}
 	
 	@RequestMapping("/downloadResult")

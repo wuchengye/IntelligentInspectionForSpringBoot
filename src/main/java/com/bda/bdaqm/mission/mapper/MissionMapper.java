@@ -11,4 +11,8 @@ public interface MissionMapper extends Mapper<InspectionMission> {
     List<InspectionMission> getListMission(@Param("userId") int userId);
     List<InspectionMission> getListMissionByStatus(@Param("missionStatus") int missionStatus);
     void updateMissionStatus(@Param("missionId") int missionId, @Param("missionStatus") int missionStatus);
+    InspectionMission getMissionByMissionId(@Param("missionId")int missionId);
+    int updateSingleMission(InspectionMission params);
 }
+
+

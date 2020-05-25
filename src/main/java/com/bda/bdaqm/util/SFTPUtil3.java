@@ -298,22 +298,22 @@ public class SFTPUtil3 {
 	     * @param localPath：本地上传目录(以路径符号结束)
 	     * @return
 	     */
-	    public Map bacthUploadFile(String remotePath, String localPath)
+	    public Map bacthUploadFile(String remotePath, String localPath,String localParent)
 	    {
-			Map<String,List<String>> map = new HashMap<>();
+			Map<String,List<File>> map = new HashMap<>();
 			//成功和失败的文件列表
-			List<String> sucList = new ArrayList<>();
-			List<String> faiList = new ArrayList<>();
+			List<File> sucList = new ArrayList<>();
+			List<File> faiList = new ArrayList<>();
 	        try
 	        {
 	            connect();
 	            File file = new File(localPath);
 	            List<File> list = findAllFiles(file);
 	            for (File file1 : list){
-	            	if(this.uploadFile(remotePath,file1.getName(),file1.getPath())){
-	            		sucList.add(file1.getName());
+	            	if(this.uploadFile(remotePath + ftpChildPath(file1.getParent(),localParent),file1.getName(),file1.getPath())){
+	            		sucList.add(file1);
 					}else {
-	            		faiList.add(file1.getName());
+	            		faiList.add(file1);
 					}
 	            	file1.delete();
 				}
@@ -357,6 +357,19 @@ public class SFTPUtil3 {
 				}
 			}
 	    	return list;
+		}
+		/*
+		* 字符串分割
+		* */
+		public static String ftpChildPath(String full,String split){
+			String[] result = full.split(split,2);
+			String re = "";
+			if(result.length > 1){
+                for (String i : result){
+                    re = i;
+                }
+            }
+	    	return re;
 		}
 
 	    /**

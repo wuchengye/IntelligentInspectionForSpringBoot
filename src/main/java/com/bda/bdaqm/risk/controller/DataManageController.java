@@ -40,6 +40,7 @@ public class DataManageController extends BaseController {
 	@ResponseBody
 	public Result exportDudiousDetail() throws Exception{
 		String downloadFileName = "";
+		String downloadPath = "";
 		try{
 			List<DataManage> exportJudge = dataManageService.getExportDataManage();
 			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/数据管理导出模板.xlsx";
@@ -49,7 +50,7 @@ public class DataManageController extends BaseController {
 
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportDataManage.xlsx";
-			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
+			downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
 			dataManageService.makeDataManageExcel(exportJudge, templatePath, downloadPath);
 		}catch(Exception e){
 			logger.error("程序异常：" + e);
@@ -57,7 +58,7 @@ public class DataManageController extends BaseController {
 			return Result.failure();
 		}
 		//return new OperaterResult<>(true, downloadFileName);
-		return Result.success(downloadFileName);
+		return Result.success(downloadPath);
 	}
 	
 }

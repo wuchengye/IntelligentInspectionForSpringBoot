@@ -13,7 +13,7 @@ public class SchedulerUtils {
     private static StdScheduler scheduler = (StdScheduler) new ClassPathXmlApplicationContext("spring/applicationContext-quartz.xml")
             .getBean("startQuertz");
 
-    public static void startScheduler(InspectionMission mission) throws SchedulerException{
+    public static void addSingleJob(InspectionMission mission) throws SchedulerException{
 
         //Job实例
         JobDetail jobDetail = JobBuilder.newJob(MissionJob.class)
@@ -50,7 +50,60 @@ public class SchedulerUtils {
             scheduler.start();
         }
         scheduler.scheduleJob(jobDetail,trigger);
+    }
 
+
+    public static void removeSingleJob(String missionId) throws SchedulerException {
+        TriggerKey triggerKey = TriggerKey.triggerKey(missionId,"group1");
+        JobKey jobKey = JobKey.jobKey(missionId,"group1");
+        scheduler.pauseTrigger(triggerKey);
+        scheduler.unscheduleJob(triggerKey);
+        scheduler.deleteJob(jobKey);
+    }
+    public static void getSingleJob()throws SchedulerException{
+        JobDetail jobDetail = JobBuilder.newJob(MissionJob.class)
+                .withIdentity("1","group1")
+                .build();
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("00 01 12 01 06 ? 2020");
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("1","group1")
+                .startNow()
+                .withSchedule(cronScheduleBuilder)
+                .build();
+        scheduler.scheduleJob(jobDetail,trigger);
+        JobKey jobKey = JobKey.jobKey("1","group1");
+        System.out.println("ooooooo"+scheduler.getJobDetail(jobKey));;
+    }
+
+    public static void addCommonJob(InspectionMission mission) throws SchedulerException{
+        JobDetail jobDetail = JobBuilder.newJob(MissionCommonJob.class)
+                                        .withIdentity(mission.getMissionId().toString(),"group2")
+                                        .usingJobData("missionId",mission.getMissionId().toString())
+                                        .build();
+
+/*
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(mission.getMissionCycle());
+*/
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0/15 * * * * ? *");
+        String startTime = mission.getMissionBegintime();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        try {
+            date = simpleDateFormat.parse(startTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Trigger trigger = TriggerBuilder.newTrigger()
+                                        .withIdentity(mission.getMissionId().toString(),"group2")
+                                        /*.startAt(date)*/
+                                        .startNow()
+                                        .withSchedule(cronScheduleBuilder)
+                                        .build();
+
+        if(! scheduler.isStarted()){
+            scheduler.start();
+        }
+        scheduler.scheduleJob(jobDetail,trigger);
     }
 
 }

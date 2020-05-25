@@ -159,12 +159,13 @@ public class UsedTabooController extends BaseController {
 	@ResponseBody
 	public Result exportJudgeDetail(TabooSession params) throws Exception{
 		String downloadFileName = "";
+		String downloadPath = "";
 		try{
 			List<TabooSession> exportJudge = usedTabooService.getExportJudge(params);
 			String templatePath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/hotlineExpTemplate")+"/可疑使用禁语会话数据导出模板.xlsx";
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			downloadFileName = df.format(new Date()) + "-exportTaboo.xlsx";
-			String downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
+			downloadPath = request.getSession().getServletContext().getRealPath("/upload/qualityJudge/")+downloadFileName;
 			usedTabooService.makeTabooExportExcel(exportJudge, templatePath, downloadPath);
 		}catch(Exception e){
 			logger.error("程序异常：" + e);
@@ -172,7 +173,7 @@ public class UsedTabooController extends BaseController {
 			return Result.failure();
 		}
 		//return new OperaterResult<>(true, downloadFileName);
-		return Result.success(downloadFileName);
+		return Result.success(downloadPath);
 	}
 	
 	@RequestMapping("/downloadResult")
