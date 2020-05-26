@@ -451,11 +451,7 @@ public class MissionManagerController {
 
     @RequestMapping("/mqCheck")
     public String  mqPurge(String str){
-        Map<String,String> checkMap = new HashMap<>();
-        checkMap.put("mp3FilePath", "/2/qwe/yy.mp3");
-        checkMap.put("xmlFilePath", createXMLFile("D:\\newXML_2020525.xml", resolve(str)));
-        rabbitmqProducer.sendQueue(checkQueueId+"_exchange", checkQueueId+"_patt", checkMap);
-        return "success";
+        return "null";
     }
 
     @RequestMapping("/mqUpdate")
@@ -514,121 +510,6 @@ public class MissionManagerController {
             return true;
         }
         return false;
-    }
-
-    //生成xml文件
-    private String createXMLFile(String path, Map<String,String> map) {
-        String textStr1 = map.get("text1");
-        String textStr2 = map.get("text2");
-        String timeStr1 = map.get("time1");
-        String timeStr2 = map.get("time2");
-
-        try{
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = factory.newDocumentBuilder();
-            Document document = db.newDocument();
-            // 不显示standalone="no"
-            //document.setXmlStandalone(true);
-
-            Element result = document.createElement("result");
-            Element instance = document.createElement("instance");
-            Element subject = document.createElement("subject");
-
-            instance.setAttribute("waveuri", "./wav/qwert.wav");
-            subject.setAttribute("value", "search");
-
-            //客服 n0
-            Element channel_n0 = document.createElement("channel");
-            Element function_n0 = document.createElement("function");
-            Element text1 = document.createElement("text");
-            Element time1 = document.createElement("time");
-
-            channel_n0.setAttribute("no", "n0");
-            text1.setTextContent(textStr1);
-            time1.setTextContent(timeStr1);
-
-            function_n0.appendChild(text1);
-            function_n0.appendChild(time1);
-            channel_n0.appendChild(function_n0);
-            subject.appendChild(channel_n0);
-
-            //客户 n1
-            Element channel_n1 = document.createElement("channel");
-            Element function_n1 = document.createElement("function");
-            Element text2 = document.createElement("text");
-            Element time2 = document.createElement("time");
-
-            channel_n1.setAttribute("no", "n1");
-            text2.setTextContent(textStr2);
-            time2.setTextContent(timeStr2);
-
-            function_n1.appendChild(text2);
-            function_n1.appendChild(time2);
-            channel_n1.appendChild(function_n1);
-            subject.appendChild(channel_n1);
-
-            instance.appendChild(subject);
-            result.appendChild(instance);
-            document.appendChild(result);
-
-            // 创建TransformerFactory对象
-            TransformerFactory tff = TransformerFactory.newInstance();
-            // 创建 Transformer对象
-            Transformer tf = tff.newTransformer();
-
-            // 输出内容是否使用换行
-            tf.setOutputProperty(OutputKeys.INDENT, "yes");
-            // 创建xml文件并写入内容
-            tf.transform(new DOMSource(document), new StreamResult(new File(path)));
-            System.out.println("生成book1.xml成功");
-            return path;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("生成book1.xml失败");
-            return null;
-        }
-    }
-
-    private Map<String, String> resolve(String str) {
-        //客服text1,time1  客户text2,time2
-        StringBuilder text1 = new StringBuilder();
-        StringBuilder time1 = new StringBuilder();
-        StringBuilder text2 = new StringBuilder();
-        StringBuilder time2 = new StringBuilder();
-
-        //转成VoiceResult对象
-        JSONObject jsonObject = JSONObject.parseObject(str);
-        VoiceResult voiceResult = (VoiceResult) JSONObject.toJavaObject(jsonObject, VoiceResult.class);
-        //csNum 区分哪个是客服
-        String csNum = voiceResult.getResult().getCustomer_service();
-        //对话列表
-        List<VoiceResult.ResultBean.ContentBean> contentList = voiceResult.getResult().getContent();
-        for (VoiceResult.ResultBean.ContentBean content : contentList
-        ) {
-            if (content.getSpeaker().equals(csNum)) {
-                //添加到客服
-                text1.append(content.getOnebest().replace(" ", ""))
-                        .append(" ");
-                time1.append(content.getBg())
-                        .append(",")
-                        .append(content.getEd())
-                        .append(" ");
-            } else {
-                //添加到客户
-                text2.append(content.getOnebest().replace(" ", ""))
-                        .append(" ");
-                time2.append(content.getBg())
-                        .append(",")
-                        .append(content.getEd())
-                        .append(" ");
-            }
-        }
-        Map<String, String> map = new HashMap<>();
-        map.put("text1", text1.toString().trim());
-        map.put("time1", time1.toString().trim());
-        map.put("text2", text2.toString().trim());
-        map.put("time2", time2.toString().trim());
-        return map;
     }
 
     private int totalNum(String path){

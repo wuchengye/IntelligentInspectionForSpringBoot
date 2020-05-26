@@ -70,6 +70,11 @@ public class CompleteListener implements ChannelAwareMessageListener {
                 InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(id);
                 if (errCode.equals("0")) {
                     missionJobDetailService.updateTransferStatus(imj.getJobId(), 1, 2, "转写完成", 0);
+                    //创建xml文件夹
+                    File dir = new File(xmlPath);
+                    if (!dir.exists()) {
+                        dir.mkdir();
+                    }
                     //xml文件路径 文件名以时间结尾
                     SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
                     String dateTime = df.format(new Date());
@@ -197,10 +202,10 @@ public class CompleteListener implements ChannelAwareMessageListener {
         JSONObject jsonObject=JSONObject.parseObject(str);
         VoiceResult voiceResult = (VoiceResult) JSONObject.toJavaObject(jsonObject, VoiceResult.class);
         //csNum 区分哪个是客服
-        String csNum = voiceResult.getResult().getCustomer_service();
+        String csNum = voiceResult.getCustomer_service();
         //对话列表
-        List<VoiceResult.ResultBean.ContentBean> contentList = voiceResult.getResult().getContent();
-        for (VoiceResult.ResultBean.ContentBean content : contentList
+        List<VoiceResult.ContentBean> contentList = voiceResult.getContent();
+        for (VoiceResult.ContentBean content : contentList
         ) {
             if (content.getSpeaker().equals(csNum)) {
                 //添加到客服
