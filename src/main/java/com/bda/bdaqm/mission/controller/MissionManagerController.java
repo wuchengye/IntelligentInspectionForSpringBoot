@@ -50,6 +50,7 @@ public class MissionManagerController {
     @Value("#{mqconfig.mq_update_queue}")
     private String updateQueueId;
 
+
     @RequestMapping("/uploadFile")
     @ResponseBody
     /*上传文件，接收临时文件夹id*/
@@ -111,8 +112,9 @@ public class MissionManagerController {
             FileUtils.delDir(tempPath);
             return Result.failure();
         }
-
-        return Result.success(tempDirName);
+        //计数器
+        int totalNum = totalNum(unZipPath);
+        return Result.success(tempDirName,totalNum);
     }
 
     @RequestMapping("/createSingleMission")
@@ -163,7 +165,7 @@ public class MissionManagerController {
             missionModel.setMissionIsnodubious(missionIsnodubious);
             missionModel.setMissionDescribe(missionDescribe);
             //语音文件路径,任务创建时，文件在本机上
-            missionModel.setMissionFilepath(uploadFilePath + dirName + "/");
+            missionModel.setMissionFilepath(uploadFilePath + dirName + "/" + "unZip");
             missionModel.setMissionCreaterid(Integer.valueOf(user.getUserId()));
             //文件总数
             missionModel.setMissionTotalNum(missionTotalNum);
@@ -422,13 +424,13 @@ public class MissionManagerController {
     @RequestMapping("/mqTest")
     public void mqTest(@RequestParam("path")String path, Integer pri){
         try {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("id",System.currentTimeMillis());
-            map.put("missionId",1);
-            map.put("name","aaa");
+            Map<String,String> map = new HashMap<>();
+            map.put("id","24");
+            map.put("missionId","45");
+            map.put("name","zhishino2.mp3");
             map.put("path",path);
-            // 注意：第二个属性是 Queue 与 交换机绑定的路由
-            rabbitmqProducer.sendQueue(readyQueueId + "_exchange", readyQueueId + "_patt", map, pri);
+            rabbitmqProducer.sendQueue(readyQueueId + "_exchange", readyQueueId + "_patt",
+                    map,9);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -499,5 +501,25 @@ public class MissionManagerController {
             return true;
         }
         return false;
+    }
+
+    private int totalNum(String path){
+        int num = 0;
+        File folder = new File(path);
+        File[] files = folder.listFiles();
+        for (File file : files){
+            if (file.isDirectory()){
+                num = num + totalNum(file.getPath());
+            }else {
+                num++;
+                System.out.println("???" + file.getPath());
+            }
+        }
+        return num;
+    }
+
+    @RequestMapping("getTriggerState")
+    public Result getTriggerState(String missionId){
+        return Result.success(SchedulerUtils.getTriggerState(missionId));
     }
 }

@@ -57,4 +57,18 @@ public class StringUtils {
 		}
 		return cnt;
 	}
+
+	/**
+	* 截取文件路径父目录
+	*
+	 */
+	public static String split(String path){
+		String[] parentPahts = path.split("/");
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0;i<parentPahts.length-1;i++){
+			sb.append(parentPahts[i]);
+			sb.append("/");
+		}
+		return sb.toString();
+	}
 }

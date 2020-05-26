@@ -106,4 +106,15 @@ public class SchedulerUtils {
         scheduler.scheduleJob(jobDetail,trigger);
     }
 
+    public static Trigger.TriggerState getTriggerState(String missionId){
+        TriggerKey triggerKey = TriggerKey.triggerKey(missionId,"group1");
+        try {
+            Trigger.TriggerState state = scheduler.getTriggerState(triggerKey);
+            return state;
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

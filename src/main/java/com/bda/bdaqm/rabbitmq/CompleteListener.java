@@ -25,8 +25,8 @@ public class CompleteListener implements ChannelAwareMessageListener {
             int id = Integer.parseInt((String) map.get("id"));
             String data = (String) map.get("data");
             int missionId = Integer.parseInt((String) map.get("missionId"));
-            String errCode = (String) map.get("err_code");
-            String state = (String) map.get("state");
+            String errCode = String.valueOf(map.get("err_code"));
+            String state = String.valueOf(map.get("state"));
 
             //转写中
             if (state.equals("0")) {
