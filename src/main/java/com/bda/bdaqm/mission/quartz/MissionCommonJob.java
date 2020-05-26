@@ -1,10 +1,14 @@
 package com.bda.bdaqm.mission.quartz;
 
 import com.bda.bdaqm.mission.model.InspectionMission;
+import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
+import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.FtpUtil;
+import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.bdaqm.util.SFTPUtil3;
+import com.bda.bdaqm.util.StringUtils;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import org.apache.commons.net.ftp.FTPClient;
@@ -18,10 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 @Component
@@ -40,6 +41,10 @@ public class MissionCommonJob implements Job {
 
     @Autowired
     private MissionService missionService;
+
+    @Autowired
+    private RabbitmqProducer rabbitmqProducer;
+
 
 
     @Override
@@ -95,6 +100,9 @@ public class MissionCommonJob implements Job {
                             name.remove(i);
                         }
                     }
+                    lessMap.clear();
+                    lessMap.put("path",path);
+                    lessMap.put("name",name);
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -134,8 +142,10 @@ public class MissionCommonJob implements Job {
                                 name.remove(i);
                             }
                         }
-                        Map<String,List> result = sftpUtil3.bacthUploadFile(remotePath,tempPath,uploadFilePath);
-
+                        //Map<String,List> result = sftpUtil3.bacthUploadFile(remotePath,tempPath,uploadFilePath);
+                        lessMap.clear();
+                        lessMap.put("path",path);
+                        lessMap.put("name",name);
                     }
                 }
             } catch (Exception e) {
@@ -145,6 +155,55 @@ public class MissionCommonJob implements Job {
             }
         }
 
+        if(!lessMap.isEmpty()) {
+            //下载完成，从服务器上传到sftp服务器
+            String ip = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_IP);
+            String name = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_NAME);
+            String pwd = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PWD);
+            String sftpPath = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PATH);
+            int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
+            SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
+            Map<String, List> result = sftp.bacthUploadFile(remotePath, tempPath, uploadFilePath);
+
+            List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
+            List<InspectionMissionJobDetail> listFai = new ArrayList<>();
+            if (result.get("success") != null) {
+                List<File> sucList = result.get("success");
+                for (File suc : sucList) {
+                    String[] fileType = suc.getName().split(".");
+                    if (fileType.length > 0 && fileType[fileType.length - 1].equals("mp3")) {
+                        InspectionMissionJobDetail jobDetail = new InspectionMissionJobDetail();
+                        jobDetail.setMissionId(inspectionMission.getMissionId());
+                        jobDetail.setMissionIstransfer(inspectionMission.getMissionIstransfer());
+                        jobDetail.setMissionIsinspection(inspectionMission.getMissionIsinspection());
+                        jobDetail.setFileName(suc.getName());
+                        jobDetail.setFilePath(SFTPUtil3.ftpChildPath(suc.getPath(), uploadFilePath));
+                        jobDetail.setFileStatus(1);
+                        jobDetail.setMissionLevel(inspectionMission.getMissionLevel());
+                        listSuc.add(jobDetail);
+                    }
+                }
+            }
+            if (listSuc.size() > 0 && inspectionMission.getMissionIstransfer().equals("1")) {
+                int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
+                if (insert > 0) {
+                    //插入转写等待队列
+                    for (InspectionMissionJobDetail jobDetail : listSuc) {
+                        Map<String, String> mq = new HashMap<>();
+                        mq.put("id", jobDetail.getJobId().toString());
+                        mq.put("missionId", jobDetail.getMissionId().toString());
+                        mq.put("name", jobDetail.getFileName());
+                        mq.put("path", StringUtils.split(ftpPath + jobDetail.getFilePath()));
+                        rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
+                                mq, jobDetail.getMissionLevel());
+                    }
+                }
+            }
+            //删除临时文件夹
+            deleteTemp(tempPath);
+            //添加记录
+            addLogs(logPath, lessMap);
+        }
     }
 
     //递归ftp服务器，返回文件所在文件夹和文件名
@@ -320,5 +379,43 @@ public class MissionCommonJob implements Job {
         }
     }
 
+    //删除临时文件夹
+    private void deleteTemp(String tempPath){
+        String path = tempPath;
+        File foldor = new File(path);
+        if(foldor.exists()){
+            if(foldor.listFiles().length > 0){
+                for (File file : foldor.listFiles()){
+                    file.delete();
+                }
+            }
+        }
+    }
+
+    //添加记录
+    private void addLogs(String logPath,Map<String,List> map){
+        List<String> path = map.get("path");
+        List<String> name = map.get("name");
+        FileWriter fw = null;
+        try {
+            //如果文件存在，则追加内容；如果文件不存在，则创建文件
+            File f=new File(logPath);
+            fw = new FileWriter(f, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PrintWriter pw = new PrintWriter(fw);
+        for (int i = 0; i< path.size();i ++){
+            pw.println(path.get(i) + name.get(i));
+        }
+        pw.flush();
+        try {
+            fw.flush();
+            pw.close();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

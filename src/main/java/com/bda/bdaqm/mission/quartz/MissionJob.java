@@ -6,6 +6,7 @@ import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.bdaqm.util.SFTPUtil3;
+import com.bda.bdaqm.util.StringUtils;
 import io.swagger.models.auth.In;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -52,7 +53,7 @@ public class MissionJob implements Job {
         int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
         SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
 
-        String remotePath = ftpPath + jobDataMap.getString("missionId") + "/";
+        String remotePath = ftpPath;
         Map<String,List> result = sftp.bacthUploadFile(remotePath,jobDataMap.getString("missionFilepath") ,uploadFilePath);
         List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
         List<InspectionMissionJobDetail> listFai = new ArrayList<>();
@@ -71,13 +72,13 @@ public class MissionJob implements Job {
             }
         }
         if(result.get("failure") != null){
-            List<String > faiList = result.get("failure");
-            for (String fai : faiList){
+            List<File > faiList = result.get("failure");
+            for (File fai : faiList){
                 InspectionMissionJobDetail inspectionMissionJobDetail = new InspectionMissionJobDetail();
                 inspectionMissionJobDetail.setMissionId(Integer.valueOf(jobDataMap.getString("missionId")));
                 inspectionMissionJobDetail.setMissionIstransfer(Integer.valueOf(jobDataMap.getString("missionIstransfer")));
                 inspectionMissionJobDetail.setMissionIsinspection(Integer.valueOf(jobDataMap.getString("missionIsinspection")));
-                inspectionMissionJobDetail.setFileName(fai);
+                inspectionMissionJobDetail.setFileName(fai.getName());
                 inspectionMissionJobDetail.setFilePath(remotePath + fai);
                 inspectionMissionJobDetail.setFileStatus(0);
                 inspectionMissionJobDetail.setFileStatusDescribe("上传文件到ftp服务器失败");
@@ -94,7 +95,7 @@ public class MissionJob implements Job {
                     map.put("id",jobDetail.getJobId().toString());
                     map.put("missionId",jobDetail.getMissionId().toString());
                     map.put("name",jobDetail.getFileName());
-                    map.put("path",jobDetail.getFilePath());
+                    map.put("path", StringUtils.split(ftpPath + jobDetail.getFilePath()));
                     rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                             map,jobDetail.getMissionLevel());
                 }
@@ -104,4 +105,5 @@ public class MissionJob implements Job {
             missionJobDetailService.insertSingleJobWhenTransfer(listFai);
         }
     }
+
 }
