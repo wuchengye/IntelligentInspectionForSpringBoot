@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.mission.mapper.MissionJobDetailMapper">
+    <!--定时任务，开启转写时插入-->
+    <insert id="insertSingleJobWhenTransfer" useGeneratedKeys="true" keyProperty="jobId">
+        insert into inspection_mission_jobdetail
+        (mission_id,file_name,file_path,mission_istransfer,mission_isinspection,file_status,file_status_describe,mission_level)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.missionId},#{item.fileName},#{item.filePath},#{item.missionIstransfer},
+            #{item.missionIsinspection},#{item.fileStatus},
+            <choose>
+                <when test="item.fileStatusDescribe != null and item.fileStatusDescribe != ''">
+                    #{item.fileStatusDescribe}
+                </when>
+                <otherwise>
+                    ''
+                </otherwise>
+            </choose>
+            ,#{item.missionLevel})
+        </foreach>
+    </insert>
+
+    <select id="getListByMissionId" resultType="com.bda.bdaqm.mission.model.InspectionMissionJobDetail">
+        select * from inspection_mission_jobdetail  t
+        where mission_id = #{missionId}
+    </select>
+
+    <select id="getByJobId" resultType="com.bda.bdaqm.mission.model.InspectionMissionJobDetail">
+        select * from inspection_mission_jobdetail  t
+        where job_id = #{jobId}
+    </select>
+
+    <update id="updateTransferStatus">
+		update inspection_mission_jobdetail set file_hastransfer=#{fileHasTransfer},file_status=#{fileStatus},
+		file_status_describe=#{fileStatusDescribe},is_transfer_failed=#{isTransferFailed}
+		where job_id=#{jobId}
+	</update>
+
+</mapper>

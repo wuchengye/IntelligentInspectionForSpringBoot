@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.mission.mapper.MissionMapper">
+    <select id="getListMission" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+        select * from inspection_mission  t
+        where mission_createrid = #{userId}
+    </select>
+
+	<select id="getListMissionByStatus" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+        select * from inspection_mission  t
+        where mission_status = #{missionStatus}
+    </select>
+
+    <insert id="createMission" useGeneratedKeys="true" keyProperty="missionId" parameterType="com.bda.bdaqm.mission.model.InspectionMission">
+		insert into inspection_mission(mission_name,mission_describe,mission_type,
+		                                mission_status,mission_begintime,mission_istaboo,
+		                                mission_isrisk,mission_isnodubious,mission_upload_status,
+		                                mission_transfer_status,mission_inspection_status,
+		                                mission_level,mission_istransfer,mission_isinspection,
+		                                mission_filepath,mission_createrid,mission_totalnum,
+		                                mission_ftp,mission_cycle)
+		values(#{missionName},#{missionDescribe},#{missionType},#{missionStatus},
+				#{missionBegintime},#{missionIstaboo},#{missionIsrisk},#{missionIsnodubious},
+				#{missionUploadStatus},#{missionTransferStatus},#{missionInspectionStatus},
+				#{missionLevel},#{missionIstransfer},#{missionIsinspection},#{missionFilepath},
+				#{missionCreaterid},#{missionTotalNum},#{missionFtp},#{missionCycle})
+	</insert>
+
+	<update id="updateMissionStatus">
+		update inspection_mission set mission_status=#{missionStatus}
+		where mission_id=#{missionId}
+	</update>
+
+	<select id="getMissionByMissionId" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+		select * from inspection_mission
+		where
+		mission_id=#{missionId}
+	</select>
+
+	<update id="updateSingleMission" parameterType="com.bda.bdaqm.mission.model.InspectionMission">
+		update inspection_mission set mission_name=#{missionName},
+		mission_describe=#{missionDescribe},mission_begintime=#{missionBegintime},
+		mission_istaboo=#{missionIstaboo},mission_isrisk=#{missionIsrisk},
+		mission_isnodubious=#{missionIsnodubious},mission_level=#{missionLevel},
+		mission_istransfer=#{missionIstransfer},mission_isinspection=#{missionIsinspection},
+		mission_filepath=#{missionFilepath},mission_totalnum=#{missionTotalNum}
+		where mission_id=#{missionId}
+	</update>
+</mapper>

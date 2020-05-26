@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.admin.mapper.PermisMapper">
+	<select id="getPermisByRoleId" resultType="com.bda.admin.model.RolePermission">
+		select t.* 
+		from BDA_AUTH_ROLE_PERMISSION t
+		where t.NAME != 'Menu' and t.ROLE_ID = #{roleId}
+	</select>
+	
+	<insert id="insertPerByBatch" parameterType="java.util.List" >
+        <if test="list !=null and list.size() > 0">
+             insert into BDA_AUTH_ROLE_PERMISSION (
+             	ROLE_ID,
+                PERMISSION,
+                ACTION,
+                NAME,
+                PRIMKEY
+                )
+             <foreach collection="list" item="permission" index="index"
+              open="(" close=")" separator="union all"> 
+                 select
+                    #{permission.roleId} as roleId,
+                    #{permission.permission} as permission,
+                    #{permission.action} as action,
+                    #{permission.name} as name,
+                    #{permission.primkey} as primkey
+                 from dual 
+                 where not exists (
+	             	select 1 from BDA_AUTH_ROLE_PERMISSION t 
+	             	where t.ROLE_ID = #{permission.roleId} 
+                    	and t.PERMISSION = #{permission.permission}
+                    	and t.ACTION = #{permission.action}
+                    	and t.NAME = #{permission.name}
+                    	and t.PRIMKEY = #{permission.primkey}
+		         )
+             </foreach>
+        </if>
+    </insert>
+    
+    <delete id="deletePerByBatch" parameterType="java.util.List" >
+    	<if test="list !=null and list.size() > 0">
+    		delete from BDA_AUTH_ROLE_PERMISSION t
+    		where 
+    		<foreach collection="list" item="permission" index="index"
+              open="(" close=")" separator="or"> 
+	             (t.ROLE_ID = #{permission.roleId} 
+                    	and t.PERMISSION = #{permission.permission}
+                    	and t.ACTION = #{permission.action}
+                    	and t.NAME = #{permission.name}
+                    	and t.PRIMKEY = #{permission.primkey}
+		         )
+             </foreach>
+    	</if>
+    </delete>
+</mapper>

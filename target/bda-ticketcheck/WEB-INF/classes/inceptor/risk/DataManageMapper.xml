@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.risk.mapper.DataManageMapper">
+	
+	<select id ="getDataManage" resultType="com.bda.bdaqm.risk.model.DataManage">
+		select * from bdaqm_data_management order by data_date desc
+	</select>
+	
+</mapper>

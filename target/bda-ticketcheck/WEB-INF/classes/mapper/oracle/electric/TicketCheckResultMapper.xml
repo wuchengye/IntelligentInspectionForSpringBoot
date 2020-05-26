@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.electric.mapper.TicketCheckResultMapper">
+	
+	<!-- 获取校验结果列表 -->
+	<select id="getResultData" resultType="com.bda.bdaqm.electric.model.TicketCheckResult">
+	    SELECT T.* FROM BDA_TICKET_CHECK_RESULT T
+	    <where>
+	        1=1
+	        <if test="params.ticketType != null and params.ticketType != ''">
+	            AND T.TICKET_TYPE = #{params.ticketType}
+	        </if>
+	        <if test="params.department != null and params.department != ''">
+	            AND T.CLASSES = #{params.department}
+	        </if>
+	        <if test="params.workPrincipal != null and params.workPrincipal != ''">
+	            AND T.WORK_PRINCIPAL = #{params.workPrincipal}
+	        </if>
+	        <if test="params.ticketSigner != null and params.ticketSigner != ''">
+	            AND T.TICKET_SIGNER = #{params.ticketSigner}
+	        </if>
+	        <if test="params.workLicensor != null and params.workLicensor != ''">
+	            AND T.LICENSOR = #{params.workLicensor}
+	        </if>
+	        <if test="params.checkResult != null and params.checkResult != ''">
+	            AND ${params.checkResult}
+	        </if>
+	        <if test="params.standardResult != null and params.standardResult != ''">
+	            AND T.STANDARD_RESULT = #{params.standardResult}
+	        </if>
+	    </where>
+	    order by T.ticket_id asc
+	</select>
+	
+	<!-- 计算柱状图数据 -->
+	<select id="getChartData" resultType="map">
+	    SELECT            
+	           SUM(CASE WHEN misuse_ticket = '1' THEN 1 ELSE 0 END) AS CNT_MISUSE,
+	           SUM(CASE WHEN beyond_plan = '1' THEN 1 ELSE 0 END) AS CNT_PLAN,
+	           SUM(CASE WHEN keyword_error = '1' THEN 1 ELSE 0 END) AS CNT_KEYWORD_ERROR,
+	           SUM(CASE WHEN work_member_count = '1' THEN 1 ELSE 0 END) AS CNT_MEMBER,
+	           SUM(CASE WHEN fillin_task_error = '1' THEN 1 ELSE 0 END) AS CNT_FILLINTASK,
+	           SUM(CASE WHEN fillin_safe_error = '1' THEN 1 ELSE 0 END) AS CNT_FILLINSAFE,
+	           SUM(CASE WHEN double_issue_error = '1' THEN 1 ELSE 0 END) AS CNT_DOUBLEISSUE,
+	           SUM(CASE WHEN empty_permiss_time = '1' THEN 1 ELSE 0 END) AS CNT_EMPTYPMIS,
+	           SUM(CASE WHEN handle_change = '1' THEN 1 ELSE 0 END) AS CNT_CHANGE,
+	           SUM(CASE WHEN handle_delay = '1' THEN 1 ELSE 0 END) AS CNT_DELAY,
+	           SUM(CASE WHEN final_content_error = '1' THEN 1 ELSE 0 END) AS CNT_FINALCONTENT,
+	           SUM(CASE WHEN licensor_no_sign = '1' THEN 1 ELSE 0 END) AS CNT_LICENSORNOSIGN,
+	           SUM(CASE WHEN keep_multiple = '1' THEN 1 ELSE 0 END) AS CNT_MULTIPLE,
+	           SUM(CASE WHEN sign_error = '1' THEN 1 ELSE 0 END) AS CNT_SIGNERROR,
+	           SUM(CASE WHEN no_save = '1' THEN 1 ELSE 0 END) AS CNT_NOSAVE,
+	           SUM(CASE WHEN nonstandard_word = '1' THEN 1 ELSE 0 END) AS CNT_NONSTANDARD
+	      FROM BDA_TICKET_CHECK_RESULT T
+	     <where>
+	        (T.CHECK_RESULT = '1' OR T.STANDARD_RESULT = '1')
+	        <if test="params.ticketType != null and params.ticketType != ''">
+	            AND T.TICKET_TYPE = #{params.ticketType}
+	        </if>
+	        <if test="params.department != null and params.department != ''">
+	            AND T.CLASSES = #{params.department}
+	        </if>
+	        <if test="params.workPrincipal != null and params.workPrincipal != ''">
+	            AND T.WORK_PRINCIPAL = #{params.workPrincipal}
+	        </if>
+	        <if test="params.ticketSigner != null and params.ticketSigner != ''">
+	            AND T.TICKET_SIGNER = #{params.ticketSigner}
+	        </if>
+	        <if test="params.workLicensor != null and params.workLicensor != ''">
+	            AND T.LICENSOR = #{params.workLicensor}
+	        </if>
+	    </where>
+	</select>
+	
+	<select id="getPieData" resultType="map">
+	    SELECT SUM(CASE WHEN check_result = '0' THEN 1 ELSE 0 END) AS CNT_QUALIFIED,
+	           SUM(CASE WHEN check_result = '1' THEN 1 ELSE 0 END) AS CNT_UNQUALIFIED,
+	           SUM(CASE WHEN check_result = '2' THEN 1 ELSE 0 END) AS CNT_EXCEPTION,
+	           
+	           SUM(CASE WHEN standard_result = '0' THEN 1 ELSE 0 END) AS CNT_STANDARD,
+	           SUM(CASE WHEN standard_result = '1' THEN 1 ELSE 0 END) AS CNT_NONSTANDARD,
+	           SUM(CASE WHEN standard_result = '2' THEN 1 ELSE 0 END) AS CNT_STD_EXCEPTION
+	      FROM BDA_TICKET_CHECK_RESULT T
+	     <where>
+	        1=1
+	        <if test="params.ticketType != null and params.ticketType != ''">
+	            AND T.TICKET_TYPE = #{params.ticketType}
+	        </if>
+	        <if test="params.department != null and params.department != ''">
+	            AND T.CLASSES = #{params.department}
+	        </if>
+	        <if test="params.workPrincipal != null and params.workPrincipal != ''">
+	            AND T.WORK_PRINCIPAL = #{params.workPrincipal}
+	        </if>
+	        <if test="params.ticketSigner != null and params.ticketSigner != ''">
+	            AND T.TICKET_SIGNER = #{params.ticketSigner}
+	        </if>
+	        <if test="params.workLicensor != null and params.workLicensor != ''">
+	            AND T.LICENSOR = #{params.workLicensor}
+	        </if>
+	    </where>
+	</select>
+	
+	<select id="getClassCombobox" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT T.DEPARTMENT_NAME AS TEXT,
+			   T.DEPARTMENT_NAME AS VALUE
+	      FROM BDA_UNIT_CLASS T
+         WHERE T.LEV = '5'
+    </select>
+    
+    <select id="getTicketType" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT T.TICKET_TYPE AS TEXT, 
+               T.TICKET_TYPE AS VALUE
+          FROM BDA_TICKET_WORK_TYPE T
+    </select>
+    
+    <select id="getPersonName" resultType="com.bda.bdaqm.util.ComboBoxItem">
+        SELECT DISTINCT T.PERSON_NAME AS TEXT, 
+               T.PERSON_NAME AS VALUE
+          FROM BDA_THREE_PERSON T
+         WHERE T.THREE_TYPE LIKE CONCAT('%',#{type},'%')
+    </select>
+    
+    	
+	<select id = "selectById" resultType = "com.bda.bdaqm.electric.model.TicketCheck">
+		select * from sp_pd_home_page where ticket_id = #{id}
+	</select>
+	
+	<select id = "getResultById" resultType = "com.bda.bdaqm.electric.model.TicketCheckResult">
+		select * from bda_ticket_check_result where ticket_id = #{id}
+	</select>
+    
+    
+</mapper>

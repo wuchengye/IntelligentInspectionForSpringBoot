@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.electric.mapper.AnalysisStatisticMapper">
+	<select id="selectDateByCondition" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT tt.ticket_id,tt.permission_time,tt.work_end_time,
+		tt.plan_end_time,tt.org_id,tt.org_name,tt.name_full_path,
+		tt.org_level,CASE WHEN tt.work_end_time>tt.plan_end_time THEN  1 ELSE 0 END AS is_delay,
+		t3.check_result,t3.standard_result,tt.work_task,tt.major,tt.ticket_type,tt.function_location_name,
+		tt.work_permission_uid,tt.work_principal_uid,tt.ticket_no,tt.ticket_sign_uid,
+		tt.work_state,tt.plan_start_time,tpri.name_full_path pmisFullPath,tsign.name_full_path signFullPath 
+		 FROM 
+		(SELECT DISTINCT t2.id ticket_id,t2.work_end_time,t2.permission_time,t2.plan_end_time,
+		t2.work_task,t2.major,t2.ticket_type,t1.org_id,t1.org_name,
+		t1.name_full_path,t1.org_level,t2.function_location_name,
+		t2.work_permission_uid,t2.work_principal_uid,t2.ticket_no,t2.ticket_sign_uid,
+		t2.work_state,t2.plan_start_time  FROM  
+		o_gea_lcam_sc_sp_pd_wticket_base t2
+		LEFT JOIN o_gea_lcam_sys_top_organization t1 
+		ON t1.org_id = t2.department_oid 
+		WHERE t2.src_operation_type <![CDATA[ <> ]]> 'D'
+		AND t2.work_state  IN ( '7','8')
+		AND SUBSTRING( t2.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+		AND SUBSTRING( t2.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}) tt
+		LEFT JOIN (SELECT *         
+   		FROM (SELECT ROW_NUMBER() OVER(PARTITION BY ticket_id ORDER BY batch_time desc) rn,         
+         test1.*         
+         FROM gzpfx01.bda_ticket_check_result test1)         
+  		WHERE rn = 1) t3 ON tt.ticket_id=t3.ticket_id 
+		left JOIN (SELECT  ou.user_id,org.name_full_path FROM  o_gea_lcam_sys_top_user ou LEFT JOIN 
+		o_gea_lcam_sys_top_organization org ON ou.org_id = org.org_id) tpri
+		ON tt.work_permission_uid = tpri.user_id
+		left JOIN (SELECT  ou.user_id,org.name_full_path FROM  o_gea_lcam_sys_top_user ou LEFT JOIN 
+		o_gea_lcam_sys_top_organization org ON ou.org_id = org.org_id) tsign
+		ON tt.ticket_sign_uid = tsign.user_id
+		
+	</select>
+	<insert id="insertDataToTemp">
+		INSERT INTO gzpfx01.bda_analysis_statistic values
+		<foreach collection="list" item="item" index="index" separator=",">
+            (gzpfx01.seq_analysis_statistic_id.nextval,
+            #{item.ticketId}, #{item.permissionTime},#{item.workEndTime},
+            #{item.planEndTime},#{item.orgId},#{item.orgName},#{item.nameFullPath},
+            #{item.orgLevel},#{item.isDelay},#{item.checkResult},
+            #{item.standardResult},#{item.workTask},#{item.major},#{item.ticketType},
+            #{item.functionLocationName},#{item.workPermissionUid}, #{item.workPrincipalUid},
+            #{item.ticketNo}, #{item.ticketSignUid}, #{item.workState}, #{item.planStartTime},
+            #{item.dataType})
+        </foreach>
+	
+	
+	</insert>
+	<!-- <insert id="insertDataToTemp">
+	INSERT INTO gzpfx01.bda_analysis_statistic
+		SELECT gzpfx01.seq_analysis_statistic_id.nextval AS id,tt2.* from
+		(SELECT DISTINCT tt.ticket_id,tt.permission_time,tt.work_end_time,
+		tt.plan_end_time,tt.org_id,tt.org_name,tt.name_full_path,
+		tt.org_level,CASE WHEN tt.work_end_time>tt.plan_end_time THEN  1 ELSE 0 END AS is_delay,
+		t3.check_result,t3.standard_result,tt.work_task,tt.major,tt.ticket_type,tt.function_location_name,
+		tt.work_permission_uid,tt.work_principal_uid,tt.ticket_no,tt.ticket_sign_uid,
+		tt.work_state,tt.plan_start_time 
+		 FROM 
+		(SELECT DISTINCT t2.id ticket_id,t2.work_end_time,t2.permission_time,t2.plan_end_time,
+		t2.work_task,t2.major,t2.ticket_type,t1.org_id,t1.org_name,
+		t1.name_full_path,t1.org_level,t2.function_location_name,
+		t2.work_permission_uid,t2.work_principal_uid,t2.ticket_no,t2.ticket_sign_uid,
+		t2.work_state,t2.plan_start_time  FROM  
+		o_gea_lcam_sc_sp_pd_wticket_base t2
+		LEFT JOIN o_gea_lcam_sys_top_organization t1 
+		ON t1.org_id = t2.department_oid 
+		WHERE t2.src_operation_type <![CDATA[ <> ]]> 'D'
+		AND t2.work_state  IN ( '7','8')
+		AND SUBSTRING( t2.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+		AND SUBSTRING( t2.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}) tt
+		LEFT JOIN (SELECT *         
+   		FROM (SELECT ROW_NUMBER() OVER(PARTITION BY ticket_id ORDER BY batch_time desc) rn,         
+         test1.*         
+         FROM gzpfx01.bda_ticket_check_result test1)         
+  		WHERE rn = 1) t3 ON tt.ticket_id=t3.ticket_id) tt2;
+	</insert> -->
+	
+	<select id="getUnitNumAndCheck" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,bds.name_full_path nameFullPath,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			<if test="unitStr != null and unitStr != ''">
+				AND bds.name_full_path REGEXP(#{unitStr})
+			</if>
+	</select>
+	<select id="getKVNumAndCheck" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			AND bds.data_type='0'
+			<if test="unitStr != null and unitStr != ''">
+				AND bds.name_full_path REGEXP(#{unitStr})
+			</if>
+	</select>
+	
+	<select id="getQCCenterByNuit" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,bds.name_full_path nameFullPath,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			AND bds.org_level = '5'
+			AND bds.name_full_path REGEXP('中国南方电网有限责任公司/广州供电局有限公司/${unit}/运行部/.*(巡维中心|巡检中心)');
+	</select>
+	
+	<select id="getGroupNumAndCheck" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,bds.name_full_path nameFullPath,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			AND bds.org_level <![CDATA[>=]]> '5'
+			AND bds.name_full_path REGEXP('中国南方电网有限责任公司/广州供电局有限公司/${unit}/.*/.*班.*');	
+	</select>
+	
+	<select id="getPowerNumAndCheck" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,bds.name_full_path nameFullPath,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			AND bds.name_full_path REGEXP('中国南方电网有限责任公司/广州供电局有限公司/${unit}/.*供电所/.*');	
+	</select>
+	
+	<select id="otherDeptNumAndCheck" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT tab.ticket_id ticketId,tab.check_result checkResult,
+				tab.standard_result standardResult,org.name_full_path nameFullPath,
+				tab.org_id orgId,tab.work_end_time 
+		FROM 
+		o_gea_lcam_sys_top_organization org ,(SELECT  st.*,us.org_id orgId FROM 
+		gzpfx01.bda_analysis_statistic st , o_gea_lcam_sys_top_user us WHERE  
+		st.work_permission_uid = us.user_id AND st.name_full_path LIKE '%外协单位%') tab
+		WHERE tab.orgId = org.org_id
+		and SUBSTRING( tab.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( tab.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime};
+	</select>
+	
+	<select id="getUnitComboxSql" resultType="com.bda.bdaqm.util.ComboBoxItem">
+		select department_short_name as TEXT , department_name as VALUE from gzpfx01.bda_work_dept 
+		where department_short_name not in ('基建部','输电所')
+	</select>
+	
+	<select id="otherPersonNumAndCheck" resultType="map">
+		SELECT tt.user_name name,count(tt.ticket_id) total,
+		SUM(CASE tt.check_result WHEN 0 THEN  1 ELSE 0 END) qualified,
+		SUM(CASE tt.check_result WHEN 0 THEN 
+		CASE tt.standard_result WHEN 0 THEN  1 ELSE 0 END  ELSE 0 END) standard FROM 
+		(SELECT DISTINCT t1.ticket_id,t1.check_result,t1.standard_result,
+				t2.user_name FROM gzpfx01.bda_analysis_statistic t1 
+				LEFT JOIN o_gea_lcam_sc_sp_pd_wticket_user t2
+				ON t1.work_principal_uid = t2.user_id 
+		WHERE t1.name_full_path REGEXP('外协单位.*')
+			  and SUBSTRING( t1.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			  AND SUBSTRING( t1.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime} 
+			  AND t1.data_type='0') tt
+		WHERE tt.user_name IS NOT NULL
+		GROUP BY tt.user_name
+		ORDER BY total DESC	LIMIT 10	
+
+	</select>
+	
+	<select id="getOpenRoomNumAndCheck" resultType="map">
+		SELECT tt.dev_name name,count(tt.ticket_id) total,
+		SUM(CASE tt.check_result WHEN 0 THEN  1 ELSE 0 END) qualified,
+		SUM(CASE tt.check_result WHEN 0 THEN 
+		CASE tt.standard_result WHEN 0 THEN  1 ELSE 0 END  ELSE 0 END) standard
+		from 
+		(select t.*,t3.dev_name from gzpfx01.bda_analysis_statistic t,
+		(select DISTINCT t1.dev_name,t2.region_name from o_gis_g_psr_nw_net_df_dsubstation t1,
+		o_gea_lcam_sc_dm_function_location t2 where SUBSTRING(t1.feederid_list,0,15) = t2.id 
+		 and t2.region_name IS NOT NULL and t2.region_name=#{unit} and t1.dev_name like '%开关房%' 
+		 and t1.dev_name != '开关房' and t1.dev_name != '高低压开关房') t3
+		 where  t.data_type='0'
+		 and t.name_full_path REGEXP(#{unit}) 
+		 and t.work_task like '%'||t3.dev_name||'%'
+		 and SUBSTRING( t.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+		 AND SUBSTRING( t.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}) tt
+		 GROUP BY tt.dev_name
+		ORDER BY total DESC	LIMIT 10	
+	</select>
+	
+	<!-- <select id="getOpenRoomNumAndCheck" resultType="map">
+		SELECT tt.function_location_name name,count(tt.ticket_id) total,
+		SUM(CASE tt.check_result WHEN 0 THEN  1 ELSE 0 END) qualified,
+		SUM(CASE tt.check_result WHEN 0 THEN 
+		CASE tt.standard_result WHEN 0 THEN  1 ELSE 0 END  ELSE 0 END) standard FROM
+		(SELECT DISTINCT bas.ticket_id,bas.check_result,bas.standard_result,bfln.function_location_name
+		FROM gzpfx01.bda_function_location_name bfln
+		LEFT JOIN gzpfx01.bda_analysis_statistic bas ON bfln.ticket_id = bas.ticket_id
+		WHERE bfln.name_full_path REGEXP(#{unit}) AND TYPE='1' and 
+		bfln.function_location_name REGEXP('开关房$') 
+		and SUBSTRING( bas.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+		 AND SUBSTRING( bas.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}) tt
+		GROUP BY tt.function_location_name
+		ORDER BY total DESC	LIMIT 10
+	</select> -->
+	
+	<select id="getLineNumAndCheck" resultType="map">
+		SELECT tt.function_location_name name,count(tt.ticket_id) total,
+		SUM(CASE tt.check_result WHEN 0 THEN  1 ELSE 0 END) qualified,
+		SUM(CASE tt.check_result WHEN 0 THEN 
+		CASE tt.standard_result WHEN 0 THEN  1 ELSE 0 END  ELSE 0 END) standard FROM
+		(SELECT DISTINCT bas.ticket_id,bas.check_result,bas.standard_result,bfln.function_location_name
+		FROM gzpfx01.bda_function_location_name bfln
+		LEFT JOIN gzpfx01.bda_analysis_statistic bas ON bfln.ticket_id = bas.ticket_id
+		WHERE bfln.name_full_path REGEXP(#{unit}) AND TYPE='0'
+		and SUBSTRING( bas.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+		 AND SUBSTRING( bas.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+		 and bas.data_type='0') tt
+		GROUP BY tt.function_location_name
+		ORDER BY total DESC	LIMIT 10
+	</select>
+	
+	<select id="getStationNumAndCheck" resultType="map">
+		SELECT tt.function_location_name name,count(tt.ticket_id) total,
+		SUM(CASE tt.check_result WHEN 0 THEN  1 ELSE 0 END) qualified,
+		SUM(CASE tt.check_result WHEN 0 THEN 
+		CASE tt.standard_result WHEN 0 THEN  1 ELSE 0 END  ELSE 0 END) standard FROM
+		(SELECT DISTINCT bas.ticket_id,bas.check_result,bas.standard_result,bfln.function_location_name
+		FROM gzpfx01.bda_function_location_name bfln
+		LEFT JOIN gzpfx01.bda_analysis_statistic bas ON bfln.ticket_id = bas.ticket_id
+		WHERE bfln.name_full_path REGEXP(#{unit}) AND TYPE='3'
+		and SUBSTRING( bas.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+		 AND SUBSTRING( bas.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+		 and bas.data_type='0') tt
+		GROUP BY tt.function_location_name
+		ORDER BY total DESC	LIMIT 10
+	</select>
+	
+	<select id="analysisFunctionName" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,bds.name_full_path nameFullPath,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			and bds.data_type='0'
+	</select>
+	
+	<select id="getMajorNumAndCheck" resultType="map">
+		SELECT tt.major name,count(tt.ticket_id) total,
+		SUM(CASE tt.check_result WHEN 0 THEN  1 ELSE 0 END) qualified,
+		SUM(CASE tt.check_result WHEN 0 THEN 
+		CASE tt.standard_result WHEN 0 THEN  1 ELSE 0 END  ELSE 0 END) standard FROM 
+		(SELECT DISTINCT t1.ticket_id,t1.check_result,t1.standard_result,t1.major
+				 FROM gzpfx01.bda_analysis_statistic t1 
+		WHERE 1=1
+			and t1.data_type='0'
+			  and SUBSTRING( t1.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( t1.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime} ) tt
+		GROUP BY tt.major
+		ORDER BY major DESC	LIMIT 10
+	
+	</select>
+	
+	<select id="getDeviceNumAndCheck" resultType="com.bda.bdaqm.electric.model.AnalysisStatistic">
+		SELECT DISTINCT bds.ticket_id ticketId,bds.check_result checkResult,
+				bds.standard_result standardResult,bds.name_full_path nameFullPath,
+				bds.permission_time,bds.work_end_time,bds.plan_end_time,
+				bds.org_id,bds.org_name,bds.org_level,bds.is_delay,bds.work_task,
+				bds.major,bds.ticket_type,bds.function_location_name 
+				from gzpfx01.bda_analysis_statistic bds
+			WHERE SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[>=]]> #{beginTime}
+			AND SUBSTRING( bds.work_end_time, 1, 10 ) <![CDATA[<=]]> #{endTime}
+			and bds.data_type='0'
+			<if test="unitStr != null and unitStr != ''">
+				AND bds.work_task REGEXP(#{unitStr})
+			</if>
+			<if test="unit != null and unit != ''">
+				and bds.name_full_path REGEXP(#{unit})
+			</if>
+	</select>
+	
+	<insert id="insertFunctionLocationName">
+		insert into gzpfx01.bda_function_location_name values
+		<foreach collection="flnList" item="item" index="index" separator=",">
+            (#{item.ticketId}, #{item.nameFullPath},#{item.functionLocationName},#{item.type})
+        </foreach>
+	</insert>
+</mapper>
