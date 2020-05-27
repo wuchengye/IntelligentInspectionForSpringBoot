@@ -188,4 +188,8 @@ public class MyRoleService  extends AbstractService<Role>{
 		return roleMapper.updateRole(role.getRoleId(),role.getRoleName(),role.getDescription(),role.getUpdateUserAccount(),
 				role.getUpdateTime());
 	}
+
+	public String getRoleNameByUserId(String userId){
+		return roleMapper.getRoleNameByUserId(userId);
+	}
 }

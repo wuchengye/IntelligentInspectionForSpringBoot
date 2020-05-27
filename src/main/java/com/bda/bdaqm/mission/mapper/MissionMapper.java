@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface MissionMapper extends Mapper<InspectionMission> {
     int createMission(InspectionMission params);
-    List<InspectionMission> getListMission(@Param("userId") int userId);
+    List<InspectionMission> getListMission(@Param("allUserIds") List<String> allUserIds,@Param("companyName") String companyName,@Param("planName") String planName,
+                                           @Param("recordStartDate") String recordStartDate,@Param("recordEndDate") String recordEndDate);
     List<InspectionMission> getListMissionByStatus(@Param("missionStatus") int missionStatus);
     void updateMissionStatus(@Param("missionId") int missionId, @Param("missionStatus") int missionStatus);
     InspectionMission getMissionByMissionId(@Param("missionId")int missionId);

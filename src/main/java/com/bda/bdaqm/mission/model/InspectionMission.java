@@ -135,6 +135,19 @@ public class InspectionMission implements Serializable {
      */
     private String missionCycle;
 
+    /*
+    *  创建者的角色
+    * */
+    private String missionCreaterRole;
+
+    public String getMissionCreaterRole() {
+        return missionCreaterRole;
+    }
+
+    public void setMissionCreaterRole(String missionCreaterRole) {
+        this.missionCreaterRole = missionCreaterRole;
+    }
+
     public void setMissionTotalNum(Integer missionTotalNum) {
         this.missionTotalNum = missionTotalNum;
     }

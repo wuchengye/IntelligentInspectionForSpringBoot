@@ -4,8 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bda.bdaqm.mission.mapper.MissionMapper">
     <select id="getListMission" resultType="com.bda.bdaqm.mission.model.InspectionMission">
-        select * from inspection_mission  t
-        where mission_createrid = #{userId}
+        select * from inspection_mission
+        where mission_createrid in
+        <foreach collection="allUserIds" item="userId" index="index"
+				 open="(" close=")" separator=",">
+        		#{userId}
+		</foreach>
+		<if test="companyName != null and companyName!= ''">
+			and mission_creater_role=#{companyName}
+		</if>
+		<if test="planName != null and planName != ''">
+			and mission_name=#{planName}
+		</if>
+		<if test="recordStartDate != null and recordStartDate != ''">
+			and mission_begintime <![CDATA[>=]]> #{recordStartDate}
+		</if>
+		<if test="recordEndDate != null and recordEndDate != ''">
+			and mission_begintime <![CDATA[<=]]> #{recordEndDate}
+		</if>
     </select>
 
 	<select id="getListMissionByStatus" resultType="com.bda.bdaqm.mission.model.InspectionMission">
@@ -20,12 +36,12 @@
 		                                mission_transfer_status,mission_inspection_status,
 		                                mission_level,mission_istransfer,mission_isinspection,
 		                                mission_filepath,mission_createrid,mission_totalnum,
-		                                mission_ftp,mission_cycle)
+		                                mission_ftp,mission_cycle,mission_creater_role)
 		values(#{missionName},#{missionDescribe},#{missionType},#{missionStatus},
 				#{missionBegintime},#{missionIstaboo},#{missionIsrisk},#{missionIsnodubious},
 				#{missionUploadStatus},#{missionTransferStatus},#{missionInspectionStatus},
 				#{missionLevel},#{missionIstransfer},#{missionIsinspection},#{missionFilepath},
-				#{missionCreaterid},#{missionTotalNum},#{missionFtp},#{missionCycle})
+				#{missionCreaterid},#{missionTotalNum},#{missionFtp},#{missionCycle},#{missionCreaterRole})
 	</insert>
 
 	<update id="updateMissionStatus">

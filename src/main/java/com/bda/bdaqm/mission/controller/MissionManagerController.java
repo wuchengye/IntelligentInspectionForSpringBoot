@@ -1,9 +1,10 @@
 package com.bda.bdaqm.mission.controller;
 
-import afu.org.checkerframework.checker.igj.qual.I;
 import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.RESTful.ResultCode;
 import com.bda.bdaqm.admin.model.User;
+import com.bda.bdaqm.admin.service.MyRoleService;
+import com.bda.bdaqm.admin.service.UserOprService;
 import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.quartz.SchedulerUtils;
 import com.bda.bdaqm.mission.service.MissionService;
@@ -14,6 +15,9 @@ import com.bda.bdaqm.util.FtpUtil;
 import com.bda.bdaqm.util.SFTPUtil3;
 import com.bda.bdaqm.util.UZipFile;
 
+import com.bda.easyui.bean.DataGrid;
+import com.bda.easyui.bean.Page;
+import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.quartz.SchedulerException;
@@ -26,10 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @RestController
@@ -41,6 +42,12 @@ public class MissionManagerController {
 
     @Autowired
     private MissionService missionService;
+
+    @Autowired
+    private MyRoleService myRoleService;
+
+    @Autowired
+    private UserOprService userService;
 
     @Autowired
     private RabbitmqProducer rabbitmqProducer;
@@ -136,6 +143,7 @@ public class MissionManagerController {
             //获取用户信息
             Subject subject = SecurityUtils.getSubject();
             User user = (User)subject.getPrincipal();
+            String missionCreaterRole = myRoleService.getRoleNameByUserId(user.getUserId());
 
             InspectionMission missionModel = new InspectionMission();
             missionModel.setMissionName(missionName);
@@ -167,6 +175,7 @@ public class MissionManagerController {
             //语音文件路径,任务创建时，文件在本机上
             missionModel.setMissionFilepath(uploadFilePath + dirName + "/" + "unZip");
             missionModel.setMissionCreaterid(Integer.valueOf(user.getUserId()));
+            missionModel.setMissionCreaterRole(missionCreaterRole);
             //文件总数
             missionModel.setMissionTotalNum(missionTotalNum);
 
@@ -277,6 +286,7 @@ public class MissionManagerController {
             //获取用户信息
             Subject subject = SecurityUtils.getSubject();
             User user = (User)subject.getPrincipal();
+            String missionCreaterRole = myRoleService.getRoleNameByUserId(user.getUserId());
 
             InspectionMission inspectionMission = new InspectionMission();
             inspectionMission.setMissionName(missionName);
@@ -305,6 +315,7 @@ public class MissionManagerController {
             //等级最高 ： 10
             inspectionMission.setMissionLevel(10);
             inspectionMission.setMissionCreaterid(Integer.valueOf(user.getUserId()));
+            inspectionMission.setMissionCreaterRole(missionCreaterRole);
             //创建任务时，任务相关状态
             inspectionMission.setMissionStatus(0);
             inspectionMission.setMissionUploadStatus(0);
@@ -465,8 +476,7 @@ public class MissionManagerController {
     }
 
     @RequestMapping("/queryMissonList")
-    public Result queryMissonList(@RequestParam(value = "page",required = false)String page,
-                                  @RequestParam(value = "rows",required = false)String rows,
+    public Result queryMissonList(Page page,
                                   @RequestParam(value = "companyName",required = false)String companyName,
                                   @RequestParam(value = "planName",required = false)String planName,
                                   @RequestParam(value = "recordStartDate",required = false)String recordStartDate,
@@ -474,8 +484,21 @@ public class MissionManagerController {
         //获取用户信息
         Subject subject = SecurityUtils.getSubject();
         User user = (User)subject.getPrincipal();
-        List<InspectionMission> list = missionService.getListMission(Integer.valueOf(user.getUserId()));
-        return Result.success(list);
+        List<Map<String,Object>> resList = new ArrayList<>();
+        resList.addAll(haveSonUsers(user.getAccount()));
+        List<String> allUserIds = new ArrayList<>();
+        for (Map<String,Object> map : resList){
+            allUserIds.add(map.get("userId").toString());
+        }
+        allUserIds.add(user.getUserId());
+
+        List<InspectionMission> listMission = missionService.getListMission(page,allUserIds,companyName,planName,recordStartDate,recordEndDate);
+        PageInfo<InspectionMission> pageInfo = new PageInfo<>(listMission);
+        return Result.success(new DataGrid(listMission, pageInfo.getTotal()));
+
+
+        //List<InspectionMission> list = missionService.getListMission(Integer.valueOf(user.getUserId()));
+        //return Result.success(list);
     }
 
     @RequestMapping("/missionPause")
@@ -597,5 +620,21 @@ public class MissionManagerController {
     @RequestMapping("getTriggerState")
     public Result getTriggerState(String missionId){
         return Result.success(SchedulerUtils.getTriggerState(missionId));
+    }
+
+    //获取任务列表用；查询当前用户所创建的用户
+    private List<Map<String,Object>> haveSonUsers(String create){
+        List<Map<String,Object>> result = new ArrayList<>();
+        List<Map<String,Object>> users = userService.selectUsersAndRoleByCreate(create,"");
+        if(users != null && users.size() > 0){
+            for(Map map : users){
+                //向下递归，查找当前用户所创建的用户及其子用户
+                if(map.get("account") != null && !map.get("account").toString().equals("")){
+                    result.addAll(haveSonUsers(map.get("account").toString()));
+                }
+            }
+            result.addAll(users);
+        }
+        return result;
     }
 }
