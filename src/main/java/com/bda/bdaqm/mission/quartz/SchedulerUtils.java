@@ -8,6 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class SchedulerUtils {
     private static StdScheduler scheduler = (StdScheduler) new ClassPathXmlApplicationContext("spring/applicationContext-quartz.xml")
@@ -60,6 +61,15 @@ public class SchedulerUtils {
         scheduler.unscheduleJob(triggerKey);
         scheduler.deleteJob(jobKey);
     }
+
+    public static void removeCommonJob(String missionId) throws SchedulerException {
+        TriggerKey triggerKey = TriggerKey.triggerKey(missionId,"group2");
+        JobKey jobKey = JobKey.jobKey(missionId,"group2");
+        scheduler.pauseTrigger(triggerKey);
+        scheduler.unscheduleJob(triggerKey);
+        scheduler.deleteJob(jobKey);
+    }
+
     public static void getSingleJob()throws SchedulerException{
         JobDetail jobDetail = JobBuilder.newJob(MissionJob.class)
                 .withIdentity("1","group1")
@@ -116,5 +126,17 @@ public class SchedulerUtils {
         }
         return null;
     }
+
+    //是否正在运行
+    public static boolean isCurrentlyExe(String missionId){
+        List<JobExecutionContext> list = scheduler.getCurrentlyExecutingJobs();
+        for (JobExecutionContext job : list){
+            if(missionId.equals(job.getTrigger().getJobKey().getName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

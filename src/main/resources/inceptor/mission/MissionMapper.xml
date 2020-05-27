@@ -48,4 +48,19 @@
 		mission_filepath=#{missionFilepath},mission_totalnum=#{missionTotalNum}
 		where mission_id=#{missionId}
 	</update>
+
+	<select id="isCreateCommonMission" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+		select * from inspection_mission
+		where mission_createrid=#{userId} and mission_type=#{missionType}
+	</select>
+
+	<update id="updateCommonMission" parameterType="com.bda.bdaqm.mission.model.InspectionMission">
+		update inspection_mission set mission_name=#{missionName},
+		mission_describe=#{missionDescribe},mission_begintime=#{missionBegintime},
+		mission_istaboo=#{missionIstaboo},mission_isrisk=#{missionIsrisk},
+		mission_isnodubious=#{missionIsnodubious},
+		mission_istransfer=#{missionIstransfer},mission_isinspection=#{missionIsinspection},
+		mission_ftp=#{missionFtp},mission_cycle=#{missionCycle}
+		where mission_id=#{missionId}
+	</update>
 </mapper>

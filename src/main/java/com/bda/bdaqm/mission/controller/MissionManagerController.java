@@ -203,6 +203,9 @@ public class MissionManagerController {
             if(inspectionMission.getMissionStatus()!= 0){
                 return Result.failure();
             }
+            if(missionService.isCurrentlyExe(missId)){
+                return Result.failure();
+            }
             //移除定时任务
             try {
                 missionService.removeSingleJob(String.valueOf(missionId));
@@ -270,7 +273,6 @@ public class MissionManagerController {
             @RequestParam("scanTime")String scanTime,
             @RequestParam("scanDay")String scanDay
             ){
-        //验证连接
         if(missId.equals("")){
             //获取用户信息
             Subject subject = SecurityUtils.getSubject();
@@ -329,16 +331,85 @@ public class MissionManagerController {
                 } catch (SchedulerException e) {
                     e.printStackTrace();
                 }
+                return Result.success();
             }
-
+            return Result.failure();
+        }else{
+            int missionId = 0;
+            try {
+                missionId = Integer.valueOf(missId);
+            }catch (Exception e){
+                return Result.failure();
+            }
+            //old
+            InspectionMission inspectionMission = missionService.getMissionByMissionId(missionId);
+            if(inspectionMission == null){
+                return Result.failure();
+            }
+            //写入对象中
+            inspectionMission.setMissionName(missionName);
+            inspectionMission.setMissionIstransfer(missionIstransfer);
+            inspectionMission.setMissionIsinspection(missionIsinspection);
+            inspectionMission.setMissionIstaboo(missionIstaboo);
+            inspectionMission.setMissionIsrisk(missionIsrisk);
+            inspectionMission.setMissionIsnodubious(missionIsnodubious);
+            inspectionMission.setMissionDescribe(missionDescribe);
+            inspectionMission.setMissionFtp(ftpPath);
+            String[] scantimes = scanTime.split(":");
+            StringBuffer cycle = new StringBuffer();
+            for(int i = scantimes.length-1;i>=0;i--){
+                cycle.append(scantimes[i]);
+                cycle.append(" ");
+            }
+            cycle.append("? * ");
+            cycle.append(scanDay);
+            if(!inspectionMission.getMissionBegintime().equals(missionBegintime) ||
+                !inspectionMission.getMissionCycle().equals(cycle.toString())){
+                if(missionService.isCurrentlyExe(missId)){
+                    return Result.failure();
+                }
+                try {
+                    missionService.removeCommonJob(missId);
+                } catch (SchedulerException e) {
+                    e.printStackTrace();
+                }
+                inspectionMission.setMissionBegintime(missionBegintime);
+                inspectionMission.setMissionCycle(cycle.toString());
+                if(missionService.updateCommonMission(inspectionMission) > 0){
+                    try {
+                        missionService.addCommonJob(inspectionMission);
+                    } catch (SchedulerException e) {
+                        e.printStackTrace();
+                    }
+                    return Result.success();
+                }
+                return Result.failure();
+            }else {
+                if(missionService.updateCommonMission(inspectionMission) > 0){
+                    return Result.success();
+                }else {
+                    return Result.failure();
+                }
+            }
         }
-
-
-
-        return Result.success();
-
-
     }
+
+    //创建任务前调用
+    @RequestMapping("/isCreateCommonMission")
+    public Result isCreateCommonMission(){
+        //获取用户信息
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User)subject.getPrincipal();
+        String userId = user.getUserId();
+        String missionType = "0";
+        List<InspectionMission> list = missionService.isCreateCommonMission(userId,missionType);
+        if(list != null && list.size() > 0){
+            return Result.failure();
+        }
+        return Result.success();
+    }
+
+
     @RequestMapping("/getQuartz")
     public void getQuartz(){
         try {
@@ -393,8 +464,13 @@ public class MissionManagerController {
             }
     }
 
-    @RequestMapping("/getListMission")
-    public Result getListMission(){
+    @RequestMapping("/queryMissonList")
+    public Result queryMissonList(@RequestParam(value = "page",required = false)String page,
+                                  @RequestParam(value = "rows",required = false)String rows,
+                                  @RequestParam(value = "companyName",required = false)String companyName,
+                                  @RequestParam(value = "planName",required = false)String planName,
+                                  @RequestParam(value = "recordStartDate",required = false)String recordStartDate,
+                                  @RequestParam(value = "recordEndDate",required = false)String recordEndDate){
         //获取用户信息
         Subject subject = SecurityUtils.getSubject();
         User user = (User)subject.getPrincipal();

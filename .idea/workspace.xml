@@ -9,12 +9,10 @@
     <list default="true" id="0c1d9b2b-83d9-4399-bad4-10a4e9e8ebfb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionCommonJob.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionCommonJob.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionJob.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionJob.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/mapper/MissionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/mapper/MissionMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/SchedulerUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/SchedulerUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CompleteListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CompleteListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/util/StringUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/util/StringUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/mqconfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mqconfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/service/MissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/service/MissionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/inceptor/mission/MissionMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/inceptor/mission/MissionMapper.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -260,7 +258,7 @@
       <updated>1589530597099</updated>
       <workItem from="1589530598575" duration="94862000" />
       <workItem from="1590136494735" duration="3687000" />
-      <workItem from="1590335548657" duration="32791000" />
+      <workItem from="1590335548657" duration="58332000" />
     </task>
     <servers />
   </component>

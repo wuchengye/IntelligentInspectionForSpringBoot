@@ -13,6 +13,8 @@ public interface MissionMapper extends Mapper<InspectionMission> {
     void updateMissionStatus(@Param("missionId") int missionId, @Param("missionStatus") int missionStatus);
     InspectionMission getMissionByMissionId(@Param("missionId")int missionId);
     int updateSingleMission(InspectionMission params);
+    List<InspectionMission> isCreateCommonMission(@Param("userId")String userId,@Param("missionType")String missionType);
+    int updateCommonMission(InspectionMission params);
 }
 
 

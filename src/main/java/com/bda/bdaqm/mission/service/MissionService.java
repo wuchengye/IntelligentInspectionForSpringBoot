@@ -31,6 +31,11 @@ public class MissionService {
         missionMapper.updateMissionStatus(missionId, status);
     }
 
+    public List<InspectionMission> isCreateCommonMission(String userId,String missionType){
+        return missionMapper.isCreateCommonMission(userId,missionType);
+    }
+
+
     //定时任务
     public void addSingleJob(InspectionMission mission) throws SchedulerException {
         SchedulerUtils.addSingleJob(mission);
@@ -46,13 +51,26 @@ public class MissionService {
         SchedulerUtils.removeSingleJob(missionId);
     }
 
+    public void removeCommonJob(String missionId) throws SchedulerException{
+        SchedulerUtils.removeCommonJob(missionId);
+    }
+
     //修改单次任务
     public int updateSingleMission(InspectionMission params){
         return missionMapper.updateSingleMission(params);
     }
 
+    //修改常规任务
+    public int updateCommonMission(InspectionMission params){
+        return missionMapper.updateCommonMission(params);
+    }
     //常规定时任务
     public void addCommonJob(InspectionMission mission) throws SchedulerException{
         SchedulerUtils.addCommonJob(mission);
+    }
+
+    //是否正在运行任务
+    public boolean isCurrentlyExe(String missionId){
+        return SchedulerUtils.isCurrentlyExe(missionId);
     }
 }
