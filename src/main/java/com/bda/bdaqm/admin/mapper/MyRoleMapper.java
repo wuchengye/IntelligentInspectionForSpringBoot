@@ -50,4 +50,6 @@ public interface MyRoleMapper extends Mapper<Role>{
 					 @Param("createUserAccount") String account,@Param("createTime") String time);
 	int updateRole(@Param("roleId")String id,@Param("roleName") String name,@Param("roleDescription")String desctiption,
 				   @Param("updateUserAccount") String account,@Param("updateTime") String time);
+
+	String getRoleNameByUserId(@Param("userId")String userId);
 }
