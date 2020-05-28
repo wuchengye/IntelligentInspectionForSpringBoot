@@ -182,11 +182,11 @@ public class CompleteListener implements ChannelAwareMessageListener {
             tf.setOutputProperty(OutputKeys.INDENT, "yes");
             // 创建xml文件并写入内容
             tf.transform(new DOMSource(document), new StreamResult(new File(path)));
-            System.out.println("生成book1.xml成功");
+            System.out.println("生成"+path+"成功");
             return path;
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("生成book1.xml失败");
+            System.out.println("生成"+path+"失败");
             return null;
         }
     }

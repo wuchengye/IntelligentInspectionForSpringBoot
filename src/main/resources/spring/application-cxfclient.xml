@@ -10,7 +10,7 @@
 				            http://cxf.apache.org/schemas/jaxws.xsd
 				            http://cxf.apache.org/core 
 				            http://cxf.apache.org/schemas/core.xsd">
- 	<!-- 
+ 	<!--
  		jaxws:client相当于bean
 		serviceClass指定服务端接口类型
 		id:起个名

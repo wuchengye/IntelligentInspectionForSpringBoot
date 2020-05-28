@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CheckListener implements ChannelAwareMessageListener {
 
@@ -23,7 +26,7 @@ public class CheckListener implements ChannelAwareMessageListener {
             System.out.println("mp3Path:"+mp3FilePath);
             System.out.println("xmlPath"+xmlFilePath);
 
-            String cmd = "cmd.exe /c python " + pythonPath + "check.py " + mp3FilePath + " " + xmlFilePath;
+            String cmd = "python " + pythonPath + "check.py " + mp3FilePath + " " + xmlFilePath;
             System.out.println("cmd:"+cmd);
             Process p = Runtime.getRuntime().exec(cmd);
             InputStream fis=p.getInputStream();
@@ -31,15 +34,35 @@ public class CheckListener implements ChannelAwareMessageListener {
             BufferedReader br=new BufferedReader(isr);
             String line=null;
             System.out.println("cmd执行：");
+            StringBuilder output = new StringBuilder();
             while((line=br.readLine())!=null){
                 System.out.println(line);
+                output.append(line).append("\n");
             }
             p.waitFor();
             System.out.println("执行完");
+
             fis.close();
             isr.close();
             br.close();
             p.destroy();
+
+            System.out.println("cmd输出："+output);
+            if (output.toString().contains("check success")) {
+                //质检成功,用正则提取session_id
+                Pattern pattern = Pattern.compile("unid=\\S*#");
+                Matcher matcher = pattern.matcher(output);
+                if (matcher.find()) {
+                    String sessionId = matcher.group();
+                    System.out.println("sessionId="+sessionId);
+                    //这里还没写sessionId的数据库操作
+                } else {
+                    System.out.println("找不到sessionId");
+                }
+            } else {
+                //质检失败
+                System.out.println("质检失败");
+            }
 
             //确认ACK
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
