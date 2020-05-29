@@ -7,11 +7,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c1d9b2b-83d9-4399-bad4-10a4e9e8ebfb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/mapper/MissionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/mapper/MissionMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/SchedulerUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/SchedulerUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/service/MissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/service/MissionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/inceptor/mission/MissionMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/inceptor/mission/MissionMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/model/InspectionMission.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/model/InspectionMission.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionCommonJob.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionCommonJob.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/dbconfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/dbconfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/ftpconfig.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/ftpconfig.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/inceptor/manage/MyRoleMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/inceptor/manage/MyRoleMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/quartz.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/quartz.properties" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

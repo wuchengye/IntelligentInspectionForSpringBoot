@@ -13,10 +13,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,6 +23,7 @@ import java.io.*;
 import java.util.*;
 
 @Component
+@DisallowConcurrentExecution
 public class MissionCommonJob implements Job {
     @Autowired
     private MissionJobDetailService missionJobDetailService;
@@ -398,8 +396,16 @@ public class MissionCommonJob implements Job {
         List<String> name = map.get("name");
         FileWriter fw = null;
         try {
+            String logParent = StringUtils.split(logPath);
+            File folder = new File(logParent);
+            if(!folder.exists()){
+                folder.mkdirs();
+            }
             //如果文件存在，则追加内容；如果文件不存在，则创建文件
             File f=new File(logPath);
+            if(!f.exists()){
+                f.createNewFile();
+            }
             fw = new FileWriter(f, true);
         } catch (IOException e) {
             e.printStackTrace();
