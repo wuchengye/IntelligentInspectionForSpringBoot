@@ -135,7 +135,7 @@ public class InspectionMission implements Serializable {
      */
     private String missionCycle;
 
-    /*
+    /**
     *  创建者的角色
     * */
     private String missionCreaterRole;
