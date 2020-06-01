@@ -2,6 +2,7 @@ package com.bda.bdaqm.mission.service;
 
 import com.bda.bdaqm.mission.mapper.MissionMapper;
 import com.bda.bdaqm.mission.model.InspectionMission;
+import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.quartz.SchedulerUtils;
 import com.bda.easyui.bean.Page;
 import com.github.pagehelper.PageHelper;
@@ -79,5 +80,19 @@ public class MissionService {
     //是否正在运行任务
     public boolean isCurrentlyExe(String missionId){
         return SchedulerUtils.isCurrentlyExe(missionId);
+    }
+
+    //遍历MissionDetail状态，更新任务状态
+    public boolean isMissionComplete(int missionId, List<InspectionMissionJobDetail> details) {
+        for (InspectionMissionJobDetail d : details
+             ) {
+            if (!d.getFileStatus().equals(0) && !d.getFileStatus().equals(5)) {
+                //有未完成且未失败的details 则判定任务未完成
+                return false;
+            }
+        }
+        //任务完成
+        missionMapper.updateMissionStatus(missionId, 2);
+        return true;
     }
 }

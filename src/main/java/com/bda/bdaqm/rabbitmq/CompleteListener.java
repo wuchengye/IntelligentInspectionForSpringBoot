@@ -42,6 +42,9 @@ public class CompleteListener implements ChannelAwareMessageListener {
     @Autowired
     private RabbitmqProducer rabbitmqProducer;
 
+    @Autowired
+    private MissionService missionService;
+
     @Value("#{mqconfig.mq_check_queue}")
     private String checkQueueId;
     @Value("#{mqconfig.xmlPath}")
@@ -69,7 +72,9 @@ public class CompleteListener implements ChannelAwareMessageListener {
             //转写完
             if (state.equals("1")) {
                 if (errCode.equals("0")) {
+                    //更新数据库
                     missionJobDetailService.updateTransferStatus(imj.getJobId(), 1, 3, "转写完成", 0);
+                    isMissionComplete(imj);
                     //创建xml文件夹
                     File dir = new File(xmlPath);
                     if (!dir.exists()) {
@@ -97,6 +102,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
                 } else {
                     System.out.println("转写失败，原因："+data);
                     missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
+                    isMissionComplete(imj);
                 }
             }
 
@@ -106,7 +112,14 @@ public class CompleteListener implements ChannelAwareMessageListener {
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             e.printStackTrace();
             missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
+            isMissionComplete(imj);
         }
+    }
+
+    //判断任务是否完成，若完成则更新数据库状态
+    private void isMissionComplete(InspectionMissionJobDetail imj) {
+        List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
+        missionService.isMissionComplete(imj.getMissionId(), detailList);
     }
 
     //字节码转化为对象
