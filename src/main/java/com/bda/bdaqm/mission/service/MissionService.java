@@ -38,6 +38,10 @@ public class MissionService {
         return missionMapper.isCreateCommonMission(userId,missionType);
     }
 
+    public void updateMissionUploadStatus(int missionId,int status){
+        missionMapper.updateMissionUploadStatus(missionId,status);
+    }
+
 
     //定时任务
     public void addSingleJob(InspectionMission mission) throws SchedulerException {

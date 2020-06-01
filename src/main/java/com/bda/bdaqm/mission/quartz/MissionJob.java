@@ -59,6 +59,9 @@ public class MissionJob implements Job {
         SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
 
         System.out.println("定时开始：");
+
+        missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
+
         String remotePath = ftpPath;
         Map<String,List> result = sftp.bacthUploadFile(remotePath,jobDataMap.getString("missionFilepath") ,uploadFilePath);
         List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
@@ -115,6 +118,18 @@ public class MissionJob implements Job {
         if(listFai.size() > 0){
             missionJobDetailService.insertSingleJobWhenTransfer(listFai);
         }
+
+
+        if(listSuc.size() == 0){
+            //没有上传成功的，任务状态直接完成
+            missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
+            missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
+        }else {
+            //改变任务状态,进行中
+            missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
+            missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
+        }
+
     }
 
 }

@@ -52,160 +52,170 @@ public class MissionCommonJob implements Job {
 
         InspectionMission inspectionMission = missionService.getMissionByMissionId(Integer.valueOf(jobDataMap.getString("missionId")));
 
-        String ftp = inspectionMission.getMissionFtp();
-        //遍历ftp或sftp结果
-        Map<String,List> map = new HashMap<>();
-        //差集
-        Map<String,List> lessMap = new HashMap<>();
-        //记录地址
-        String logPath = uploadFilePath + "CommonMission" + "/" + "Logs" + "/" + inspectionMission.getMissionId() + ".txt";
-        //临时中转地址
-        String tempPath = uploadFilePath + "CommonMission" + "/" + inspectionMission.getMissionId() + "/";
-        //sftp服务器地址
-        String remotePath = ftpPath;
-        if(splitFtp(ftp,1).equals("ftp")){
-            System.out.println("是ftp");
-            FtpUtil ftpUtil = new FtpUtil(splitFtp(ftp,2),21,splitFtp(ftp,3),splitFtp(ftp,4));
-            try{
-                ftpUtil.connect();
-                FTPFile[] files = ftpUtil.getFtpClient().listFiles();
-                for (FTPFile file : files){
-                    System.out.println("ftp量" + file.getName());
-                }
+        if (inspectionMission.getMissionStatus() != 3) {
+            //任务的文件上传状态改为1，进行中
+            missionService.updateMissionUploadStatus(inspectionMission.getMissionId(),1);
 
-                map = this.getFtpMapList("/",ftpUtil.getFtpClient());
-                System.out.println("列表后：" + map.get("path").size()+ "," + map.get("name").size());
-                Map<String,List> lessAllMap = this.getLessMap(map,logPath);
-                List<String> path = lessAllMap.get("path");
-                List<String> name = lessAllMap.get("name");
-                System.out.println("差集：" + path.size() + "," + name.size());
-                if(path.size() > 0){
-                    File folder = new File(tempPath);
-                    System.out.println("临时文件夹" + folder.exists());
-                    if(!folder.exists()){
-                        folder.mkdirs();
-                    }
-                    for (int i = 0; i < path.size(); i++){
-                        boolean flag = false;
-                        try {
-                            flag = ftpUtil.downloadFiles(tempPath, path.get(i), new Date().getTime() + "_" + i + "_" + name.get(i), name.get(i));
-                        }catch (Exception e){
-                            System.out.println("下载出错");
-                        }
-                        System.out.println(path.get(i) + name.get(i));
-                        if(!flag){
-                            path.remove(i);
-                            name.remove(i);
-                        }
-                    }
-                    lessMap.put("path",path);
-                    lessMap.put("name",name);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
+            String ftp = inspectionMission.getMissionFtp();
+            //遍历ftp或sftp结果
+            Map<String, List> map = new HashMap<>();
+            //差集
+            Map<String, List> lessMap = new HashMap<>();
+            //记录地址
+            String logPath = uploadFilePath + "CommonMission" + "/" + "Logs" + "/" + inspectionMission.getMissionId() + ".txt";
+            //临时中转地址
+            String tempPath = uploadFilePath + "CommonMission" + "/" + inspectionMission.getMissionId() + "/";
+            //sftp服务器地址
+            String remotePath = ftpPath;
+            if (splitFtp(ftp, 1).equals("ftp")) {
+                System.out.println("是ftp");
+                FtpUtil ftpUtil = new FtpUtil(splitFtp(ftp, 2), 21, splitFtp(ftp, 3), splitFtp(ftp, 4));
                 try {
-                    ftpUtil.disconnect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }else{
-            System.out.println("是sftp");
-            SFTPUtil3 sftpUtil3 = new SFTPUtil3(splitFtp(ftp,2),splitFtp(ftp,3),splitFtp(ftp,4));
-            try {
-                sftpUtil3.connect();
-                ChannelSftp sftp = sftpUtil3.getSftp();
-                if(sftp.isConnected()){
-                    map = this.getSftpMapList("/",sftp);
-                    Map<String,List> lessAllMap = this.getLessMap(map,logPath);
+                    ftpUtil.connect();
+                    FTPFile[] files = ftpUtil.getFtpClient().listFiles();
+                    for (FTPFile file : files) {
+                        System.out.println("ftp量" + file.getName());
+                    }
+
+                    map = this.getFtpMapList("/", ftpUtil.getFtpClient());
+                    System.out.println("列表后：" + map.get("path").size() + "," + map.get("name").size());
+                    Map<String, List> lessAllMap = this.getLessMap(map, logPath);
                     List<String> path = lessAllMap.get("path");
                     List<String> name = lessAllMap.get("name");
-                    if(path.size() > 0){
+                    System.out.println("差集：" + path.size() + "," + name.size());
+                    if (path.size() > 0) {
                         File folder = new File(tempPath);
-                        if(!folder.exists()){
+                        System.out.println("临时文件夹" + folder.exists());
+                        if (!folder.exists()) {
                             folder.mkdirs();
                         }
-                        for (int i = 0; i < path.size(); i++){
+                        for (int i = 0; i < path.size(); i++) {
                             boolean flag = false;
-                            try{
-                                flag = sftpUtil3.downloadFile(path.get(i),name.get(i),tempPath,new Date().getTime() + "_"+ i + "_" +name.get(i) );
-                            }catch (Exception e){
-                                System.out.println("下载失败");
+                            try {
+                                flag = ftpUtil.downloadFiles(tempPath, path.get(i), new Date().getTime() + "_" + i + "_" + name.get(i), name.get(i));
+                            } catch (Exception e) {
+                                System.out.println("下载出错");
                             }
                             System.out.println(path.get(i) + name.get(i));
-                            if(!flag){
+                            if (!flag) {
                                 path.remove(i);
                                 name.remove(i);
                             }
                         }
-                        //Map<String,List> result = sftpUtil3.bacthUploadFile(remotePath,tempPath,uploadFilePath);
-                        lessMap.put("path",path);
-                        lessMap.put("name",name);
+                        lessMap.put("path", path);
+                        lessMap.put("name", name);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        ftpUtil.disconnect();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }finally {
-                sftpUtil3.disconnect();
+            } else {
+                System.out.println("是sftp");
+                SFTPUtil3 sftpUtil3 = new SFTPUtil3(splitFtp(ftp, 2), splitFtp(ftp, 3), splitFtp(ftp, 4));
+                try {
+                    sftpUtil3.connect();
+                    ChannelSftp sftp = sftpUtil3.getSftp();
+                    if (sftp.isConnected()) {
+                        map = this.getSftpMapList("/", sftp);
+                        Map<String, List> lessAllMap = this.getLessMap(map, logPath);
+                        List<String> path = lessAllMap.get("path");
+                        List<String> name = lessAllMap.get("name");
+                        if (path.size() > 0) {
+                            File folder = new File(tempPath);
+                            if (!folder.exists()) {
+                                folder.mkdirs();
+                            }
+                            for (int i = 0; i < path.size(); i++) {
+                                boolean flag = false;
+                                try {
+                                    flag = sftpUtil3.downloadFile(path.get(i), name.get(i), tempPath, new Date().getTime() + "_" + i + "_" + name.get(i));
+                                } catch (Exception e) {
+                                    System.out.println("下载失败");
+                                }
+                                System.out.println(path.get(i) + name.get(i));
+                                if (!flag) {
+                                    path.remove(i);
+                                    name.remove(i);
+                                }
+                            }
+                            //Map<String,List> result = sftpUtil3.bacthUploadFile(remotePath,tempPath,uploadFilePath);
+                            lessMap.put("path", path);
+                            lessMap.put("name", name);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    sftpUtil3.disconnect();
+                }
             }
-        }
 
-        if(!lessMap.isEmpty()) {
-            //下载完成，从服务器上传到sftp服务器
-            System.out.println("进入上传阶段");
-            String ip = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_IP);
-            String name = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_NAME);
-            String pwd = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PWD);
-            String sftpPath = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PATH);
-            int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
-            SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
-            Map<String, List> result = sftp.bacthUploadFile(remotePath, tempPath, uploadFilePath);
-            System.out.println("上传阶段完成");
+            if (!lessMap.isEmpty()) {
+                //下载完成，从服务器上传到sftp服务器
+                System.out.println("进入上传阶段");
+                String ip = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_IP);
+                String name = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_NAME);
+                String pwd = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PWD);
+                String sftpPath = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PATH);
+                int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
+                SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
+                Map<String, List> result = sftp.bacthUploadFile(remotePath, tempPath, uploadFilePath);
+                System.out.println("上传阶段完成");
 
-            List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
-            List<InspectionMissionJobDetail> listFai = new ArrayList<>();
-            if (result.get("success") != null) {
-                List<File> sucList = result.get("success");
-                System.out.println("进入上传成功：" + sucList.size());
-                for (File suc : sucList) {
-                    String[] fileType = suc.getName().split("\\.");
-                    System.out.println("比对是否mp3");
-                    if (fileType.length > 0 && fileType[fileType.length - 1].equals("mp3")) {
-                        System.out.println("进入MP3");
-                        InspectionMissionJobDetail jobDetail = new InspectionMissionJobDetail();
-                        jobDetail.setMissionId(inspectionMission.getMissionId());
-                        jobDetail.setMissionIstransfer(inspectionMission.getMissionIstransfer());
-                        jobDetail.setMissionIsinspection(inspectionMission.getMissionIsinspection());
-                        jobDetail.setFileName(suc.getName());
-                        jobDetail.setFilePath(SFTPUtil3.ftpChildPath(suc.getPath(), uploadFilePath));
-                        jobDetail.setFileStatus(1);
-                        jobDetail.setMissionLevel(inspectionMission.getMissionLevel());
-                        listSuc.add(jobDetail);
+                List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
+                List<InspectionMissionJobDetail> listFai = new ArrayList<>();
+                if (result.get("success") != null) {
+                    List<File> sucList = result.get("success");
+                    System.out.println("进入上传成功：" + sucList.size());
+                    for (File suc : sucList) {
+                        String[] fileType = suc.getName().split("\\.");
+                        System.out.println("比对是否mp3");
+                        if (fileType.length > 0 && fileType[fileType.length - 1].equals("mp3")) {
+                            System.out.println("进入MP3");
+                            InspectionMissionJobDetail jobDetail = new InspectionMissionJobDetail();
+                            jobDetail.setMissionId(inspectionMission.getMissionId());
+                            jobDetail.setMissionIstransfer(inspectionMission.getMissionIstransfer());
+                            jobDetail.setMissionIsinspection(inspectionMission.getMissionIsinspection());
+                            jobDetail.setFileName(suc.getName());
+                            jobDetail.setFilePath(SFTPUtil3.ftpChildPath(suc.getPath(), uploadFilePath));
+                            jobDetail.setFileStatus(1);
+                            jobDetail.setMissionLevel(inspectionMission.getMissionLevel());
+                            listSuc.add(jobDetail);
+                        }
                     }
                 }
-            }
-            if (listSuc.size() > 0 && inspectionMission.getMissionIstransfer() == 1) {
-                System.out.println("进入任务文件插入");
-                int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
-                if (insert > 0) {
-                    //插入转写等待队列
-                    System.out.println("进入队列");
-                    for (InspectionMissionJobDetail jobDetail : listSuc) {
-                        Map<String, String> mq = new HashMap<>();
-                        mq.put("id", jobDetail.getJobId().toString());
-                        mq.put("missionId", jobDetail.getMissionId().toString());
-                        mq.put("name", jobDetail.getFileName());
-                        mq.put("path", StringUtils.split(ftpPath + jobDetail.getFilePath()));
-                        rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
-                                mq, jobDetail.getMissionLevel());
+                if (listSuc.size() > 0 && inspectionMission.getMissionIstransfer() == 1) {
+                    System.out.println("进入任务文件插入");
+                    int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
+                    if (insert > 0) {
+                        //插入转写等待队列
+                        System.out.println("进入队列");
+                        for (InspectionMissionJobDetail jobDetail : listSuc) {
+                            Map<String, String> mq = new HashMap<>();
+                            mq.put("id", jobDetail.getJobId().toString());
+                            mq.put("missionId", jobDetail.getMissionId().toString());
+                            mq.put("name", jobDetail.getFileName());
+                            mq.put("path", StringUtils.split(ftpPath + jobDetail.getFilePath()));
+                            rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
+                                    mq, jobDetail.getMissionLevel());
+                        }
                     }
+                    //任务状态：进行中
+                    missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
+                }else {
+                    missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
                 }
+                missionService.updateMissionStatus(inspectionMission.getMissionId(),2);
+                //删除临时文件夹
+                deleteTemp(tempPath);
+                //添加记录
+                addLogs(logPath, lessMap);
             }
-            //删除临时文件夹
-            deleteTemp(tempPath);
-            //添加记录
-            addLogs(logPath, lessMap);
         }
     }
 
