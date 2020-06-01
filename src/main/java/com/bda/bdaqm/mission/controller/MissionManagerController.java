@@ -185,7 +185,7 @@ public class MissionManagerController {
             missionModel.setMissionIsnodubious(missionIsnodubious);
             missionModel.setMissionDescribe(missionDescribe);
             //语音文件路径,任务创建时，文件在本机上
-            missionModel.setMissionFilepath(uploadFilePath + dirName + "/" + "unZip");
+            missionModel.setMissionFilepath(uploadFilePath + dirName + "/" + "unZip" + "/");
             missionModel.setMissionCreaterid(Integer.valueOf(user.getUserId()));
             missionModel.setMissionCreaterRole(missionCreaterRole);
             //文件总数
@@ -514,15 +514,29 @@ public class MissionManagerController {
     }
 
     @RequestMapping("/missionPause")
-    public void missionPause(@RequestParam("missionId")int missionId){
-        missionService.updateMissionStatus(missionId, 0);
+    public Result missionPause(@RequestParam("missionId")int missionId){
+        InspectionMission mission = missionService.getMissionByMissionId(missionId);
+        if (mission.getMissionStatus() == 2) {
+            return Result.failure(ResultCode.MISSION_HAS_COMPLETED);
+        }
+
+        //更新任务状态-暂停，刷新消息队列
+        missionService.updateMissionStatus(missionId, 3);
         updateReadyQueue();
+        return Result.success();
     }
 
     @RequestMapping("/missionStart")
-    public void missionStart(@RequestParam("missionId")int missionId){
+    public Result missionStart(@RequestParam("missionId")int missionId){
+        InspectionMission mission = missionService.getMissionByMissionId(missionId);
+        if (mission.getMissionStatus() == 2) {
+            return Result.failure(ResultCode.MISSION_HAS_COMPLETED);
+        }
+
+        //更新任务状态-进行中，刷新消息队列
         missionService.updateMissionStatus(missionId, 1);
         updateReadyQueue();
+        return Result.success();
     }
 
 

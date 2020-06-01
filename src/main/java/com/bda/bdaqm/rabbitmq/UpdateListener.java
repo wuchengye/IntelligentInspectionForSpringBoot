@@ -39,7 +39,7 @@ public class UpdateListener implements ChannelAwareMessageListener {
                 for (InspectionMissionJobDetail imjd : missionJDList
                      ) {
                     System.out.println("  找到音频:id="+imjd.getJobId());
-                    if (imjd.getFileStatus() == 0 && imjd.getMissionIstransfer() == 1 && imjd.getIsTransferFailed() == 0) {
+                    if (imjd.getFileStatus() == 1 && imjd.getMissionIstransfer() == 1 && imjd.getIsTransferFailed() == 0) {
                         System.out.println("    加入队列成功");
                         sendToQueue(imjd);
                     } else {

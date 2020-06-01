@@ -77,9 +77,9 @@ public class MissionCommonJob implements Job {
 
                 map = this.getFtpMapList("/",ftpUtil.getFtpClient());
                 System.out.println("列表后：" + map.get("path").size()+ "," + map.get("name").size());
-                lessMap = this.getLessMap(map,logPath);
-                List<String> path = lessMap.get("path");
-                List<String> name = lessMap.get("name");
+                Map<String,List> lessAllMap = this.getLessMap(map,logPath);
+                List<String> path = lessAllMap.get("path");
+                List<String> name = lessAllMap.get("name");
                 System.out.println("差集：" + path.size() + "," + name.size());
                 if(path.size() > 0){
                     File folder = new File(tempPath);
@@ -100,7 +100,6 @@ public class MissionCommonJob implements Job {
                             name.remove(i);
                         }
                     }
-                    lessMap.clear();
                     lessMap.put("path",path);
                     lessMap.put("name",name);
                 }
@@ -121,9 +120,9 @@ public class MissionCommonJob implements Job {
                 ChannelSftp sftp = sftpUtil3.getSftp();
                 if(sftp.isConnected()){
                     map = this.getSftpMapList("/",sftp);
-                    lessMap = this.getLessMap(map,logPath);
-                    List<String> path = lessMap.get("path");
-                    List<String> name = lessMap.get("name");
+                    Map<String,List> lessAllMap = this.getLessMap(map,logPath);
+                    List<String> path = lessAllMap.get("path");
+                    List<String> name = lessAllMap.get("name");
                     if(path.size() > 0){
                         File folder = new File(tempPath);
                         if(!folder.exists()){
@@ -143,7 +142,6 @@ public class MissionCommonJob implements Job {
                             }
                         }
                         //Map<String,List> result = sftpUtil3.bacthUploadFile(remotePath,tempPath,uploadFilePath);
-                        lessMap.clear();
                         lessMap.put("path",path);
                         lessMap.put("name",name);
                     }
@@ -157,6 +155,7 @@ public class MissionCommonJob implements Job {
 
         if(!lessMap.isEmpty()) {
             //下载完成，从服务器上传到sftp服务器
+            System.out.println("进入上传阶段");
             String ip = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_IP);
             String name = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_NAME);
             String pwd = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PWD);
@@ -164,14 +163,18 @@ public class MissionCommonJob implements Job {
             int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
             SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
             Map<String, List> result = sftp.bacthUploadFile(remotePath, tempPath, uploadFilePath);
+            System.out.println("上传阶段完成");
 
             List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
             List<InspectionMissionJobDetail> listFai = new ArrayList<>();
             if (result.get("success") != null) {
                 List<File> sucList = result.get("success");
+                System.out.println("进入上传成功：" + sucList.size());
                 for (File suc : sucList) {
-                    String[] fileType = suc.getName().split(".");
+                    String[] fileType = suc.getName().split("\\.");
+                    System.out.println("比对是否mp3");
                     if (fileType.length > 0 && fileType[fileType.length - 1].equals("mp3")) {
+                        System.out.println("进入MP3");
                         InspectionMissionJobDetail jobDetail = new InspectionMissionJobDetail();
                         jobDetail.setMissionId(inspectionMission.getMissionId());
                         jobDetail.setMissionIstransfer(inspectionMission.getMissionIstransfer());
@@ -184,10 +187,12 @@ public class MissionCommonJob implements Job {
                     }
                 }
             }
-            if (listSuc.size() > 0 && inspectionMission.getMissionIstransfer().equals("1")) {
+            if (listSuc.size() > 0 && inspectionMission.getMissionIstransfer() == 1) {
+                System.out.println("进入任务文件插入");
                 int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
                 if (insert > 0) {
                     //插入转写等待队列
+                    System.out.println("进入队列");
                     for (InspectionMissionJobDetail jobDetail : listSuc) {
                         Map<String, String> mq = new HashMap<>();
                         mq.put("id", jobDetail.getJobId().toString());

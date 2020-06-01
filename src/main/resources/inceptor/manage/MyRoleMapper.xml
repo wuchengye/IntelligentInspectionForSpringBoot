@@ -84,7 +84,7 @@
 		where role_id=#{roleId}
 	</update>
 
-	<select id="getRoleNameByUserId">
+	<select id="getRoleNameByUserId" resultType="java.lang.String">
 		select role_name from bda_auth_role where role_id=(select role_id from bda_auth_user_role where user_id=#{userId})
 </select>
 </mapper>

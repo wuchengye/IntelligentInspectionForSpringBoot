@@ -49,27 +49,27 @@ public class CompleteListener implements ChannelAwareMessageListener {
 
     @Override
     public void onMessage(Message message, Channel channel) throws Exception {
-        try {
-            Map map = (Map) getObjectFromBytes(message.getBody());
-            System.out.println("收到：" + map);
-            int id = Integer.parseInt((String) map.get("id"));
-            String data = (String) map.get("data");
-            int missionId = Integer.parseInt((String) map.get("missionId"));
-            String errCode = String.valueOf(map.get("err_code"));
-            String state = String.valueOf(map.get("state"));
-            String path = (String) map.get("path");
+        Map map = (Map) getObjectFromBytes(message.getBody());
+        System.out.println("收到：" + map);
+        int id = Integer.parseInt((String) map.get("id"));
+        String data = (String) map.get("data");
+        int missionId = Integer.parseInt((String) map.get("missionId"));
+        String errCode = String.valueOf(map.get("err_code"));
+        String state = String.valueOf(map.get("state"));
+        String path = (String) map.get("path");
 
+        InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(id);
+
+        try {
             //转写中
             if (state.equals("0")) {
-                InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(id);
-                missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 1, "转写中", 0);
+                missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 2, "转写中", 0);
             }
 
             //转写完
             if (state.equals("1")) {
-                InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(id);
                 if (errCode.equals("0")) {
-                    missionJobDetailService.updateTransferStatus(imj.getJobId(), 1, 2, "转写完成", 0);
+                    missionJobDetailService.updateTransferStatus(imj.getJobId(), 1, 3, "转写完成", 0);
                     //创建xml文件夹
                     File dir = new File(xmlPath);
                     if (!dir.exists()) {
@@ -88,10 +88,10 @@ public class CompleteListener implements ChannelAwareMessageListener {
                     } else {
                         System.out.println("xml生成成功");
                         //发送消息给check队列，添加质检任务
-                        //这里还没写开始质检的数据库操作
                         Map<String,String> checkMap = new HashMap<>();
                         checkMap.put("mp3FilePath", path);
                         checkMap.put("xmlFilePath", xmlPath);
+                        checkMap.put("jobId", String.valueOf(imj.getJobId()));
                         rabbitmqProducer.sendQueue(checkQueueId+"_exchange", checkQueueId+"_patt", checkMap);
                     }
                 } else {
@@ -105,6 +105,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
         } catch (Exception e) {
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             e.printStackTrace();
+            missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
         }
     }
 

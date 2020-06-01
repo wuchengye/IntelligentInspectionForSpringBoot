@@ -39,4 +39,10 @@
 		where job_id=#{jobId}
 	</update>
 
+    <update id="updateInspectionStatus">
+		update inspection_mission_jobdetail set file_hasinspection=#{fileHasInspection},file_status=#{fileStatus},
+		file_status_describe=#{fileStatusDescribe}
+		where job_id=#{jobId}
+	</update>
+
 </mapper>

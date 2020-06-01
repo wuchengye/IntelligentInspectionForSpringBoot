@@ -1,8 +1,10 @@
 package com.bda.bdaqm.mission.quartz;
 
+import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 
+import com.bda.bdaqm.mission.service.MissionService;
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.bdaqm.util.SFTPUtil3;
@@ -28,6 +30,9 @@ public class MissionJob implements Job {
     private MissionJobDetailService missionJobDetailService;
 
     @Autowired
+    private MissionService missionService;
+
+    @Autowired
     private RabbitmqProducer rabbitmqProducer;
 
     @Value("#{mqconfig.mq_ready_queue}")
@@ -44,7 +49,7 @@ public class MissionJob implements Job {
         JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-
+        InspectionMission mission;
         //sFTP
         String ip = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_IP);
         String name = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_NAME);
@@ -53,6 +58,7 @@ public class MissionJob implements Job {
         int port = Integer.parseInt(PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PORT));
         SFTPUtil3 sftp = new SFTPUtil3(ip, port, name, pwd);
 
+        System.out.println("定时开始：");
         String remotePath = ftpPath;
         Map<String,List> result = sftp.bacthUploadFile(remotePath,jobDataMap.getString("missionFilepath") ,uploadFilePath);
         List<InspectionMissionJobDetail> listSuc = new ArrayList<>();
@@ -79,7 +85,7 @@ public class MissionJob implements Job {
                 inspectionMissionJobDetail.setMissionIstransfer(Integer.valueOf(jobDataMap.getString("missionIstransfer")));
                 inspectionMissionJobDetail.setMissionIsinspection(Integer.valueOf(jobDataMap.getString("missionIsinspection")));
                 inspectionMissionJobDetail.setFileName(fai.getName());
-                inspectionMissionJobDetail.setFilePath(remotePath + fai);
+                inspectionMissionJobDetail.setFilePath(SFTPUtil3.ftpChildPath(fai.getPath(),uploadFilePath));
                 inspectionMissionJobDetail.setFileStatus(0);
                 inspectionMissionJobDetail.setFileStatusDescribe("上传文件到ftp服务器失败");
                 inspectionMissionJobDetail.setMissionLevel(Integer.valueOf(jobDataMap.getString("missionLevel")));
@@ -88,6 +94,11 @@ public class MissionJob implements Job {
         }
         if(listSuc.size() > 0 && jobDataMap.getString("missionIstransfer").equals("1")){
             int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
+            mission = missionService.getMissionByMissionId(Integer.valueOf(jobDataMap.getString("missionId")));
+            if(mission != null){
+                mission.setMissionStatus(1);
+                missionService.updateMissionStatus(mission.getMissionId(),mission.getMissionStatus());
+            }
             if(insert > 0){
                 //插入转写等待队列
                 for (InspectionMissionJobDetail jobDetail : listSuc){

@@ -1,8 +1,10 @@
 package com.bda.bdaqm.rabbitmq;
 
+import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
@@ -13,20 +15,28 @@ import java.util.stream.Collectors;
 
 public class CheckListener implements ChannelAwareMessageListener {
 
+    @Autowired
+    private MissionJobDetailService missionJobDetailService;
+
     @Value("#{mqconfig.pythonPath}")
     private String pythonPath;
+    @Value("#{mqconfig.pythonCMD}")
+    private String pythonCMD;
 
     @Override
     public void onMessage(Message message, Channel channel) throws Exception {
+        Map map = (Map) getObjectFromBytes(message.getBody());
+        String mp3FilePath = (String) map.get("mp3FilePath");
+        String xmlFilePath = (String) map.get("xmlFilePath");
+        int jobId = Integer.parseInt((String) map.get("jobId"));
+        System.out.println("mp3Path:"+mp3FilePath);
+        System.out.println("xmlPath"+xmlFilePath);
+        System.out.println("jobId:"+jobId);
+
         try {
-            Map map = (Map) getObjectFromBytes(message.getBody());
-            String mp3FilePath = (String) map.get("mp3FilePath");
-            String xmlFilePath = (String) map.get("xmlFilePath");
+            missionJobDetailService.updateInspectionStatus(jobId, 0, 4, "质检中");
 
-            System.out.println("mp3Path:"+mp3FilePath);
-            System.out.println("xmlPath"+xmlFilePath);
-
-            String cmd = "python " + pythonPath + "check.py " + mp3FilePath + " " + xmlFilePath;
+            String cmd = pythonCMD + " " + pythonPath + "check.py " + mp3FilePath + " " + xmlFilePath;
             System.out.println("cmd:"+cmd);
             Process p = Runtime.getRuntime().exec(cmd);
             InputStream fis=p.getInputStream();
@@ -55,19 +65,22 @@ public class CheckListener implements ChannelAwareMessageListener {
                 if (matcher.find()) {
                     String sessionId = matcher.group();
                     System.out.println("sessionId="+sessionId);
-                    //这里还没写sessionId的数据库操作
+                    missionJobDetailService.updateInspectionStatus(jobId, 1, 5, "质检完成");
                 } else {
                     System.out.println("找不到sessionId");
                 }
             } else {
                 //质检失败
                 System.out.println("质检失败");
+                missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
             }
 
             //确认ACK
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             e.printStackTrace();
+            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+            missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
         }
     }
 

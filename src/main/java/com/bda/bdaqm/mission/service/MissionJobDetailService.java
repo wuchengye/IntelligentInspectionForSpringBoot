@@ -27,4 +27,8 @@ public class MissionJobDetailService {
     public void updateTransferStatus(int jobId, int fileHasTransfer, int fileStatus, String fileStatusDescribe, int isTransferFailed) {
         missionJobDetailMapper.updateTransferStatus(jobId, fileHasTransfer, fileStatus, fileStatusDescribe, isTransferFailed);
     }
+
+    public void updateInspectionStatus(int jobId, int fileHasInspection, int fileStatus, String fileStatusDescribe) {
+        missionJobDetailMapper.updateInspectionStatus(jobId, fileHasInspection, fileStatus, fileStatusDescribe);
+    }
 }

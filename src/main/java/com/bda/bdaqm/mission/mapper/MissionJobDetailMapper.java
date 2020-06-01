@@ -13,4 +13,6 @@ public interface MissionJobDetailMapper {
     void updateTransferStatus(@Param("jobId") int jobId, @Param("fileHasTransfer") int fileHasTransfer,
                               @Param("fileStatus") int fileStatus, @Param("fileStatusDescribe") String fileStatusDescribe,
                               @Param("isTransferFailed") int isTransferFailed);
+    void updateInspectionStatus(@Param("jobId") int jobId, @Param("fileHasInspection") int fileHasInspection,
+                              @Param("fileStatus") int fileStatus, @Param("fileStatusDescribe") String fileStatusDescribe);
 }

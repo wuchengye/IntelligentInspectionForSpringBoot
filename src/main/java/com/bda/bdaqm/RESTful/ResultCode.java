@@ -19,6 +19,7 @@ public enum ResultCode {
     UPDATE_FAILURE(30002,"更新失败"),
 
     SUBMIT_FAILURE(40001,"提交失败"),
+    MISSION_HAS_COMPLETED(40002,"任务已经完成"),
 
     HAVE_ACCOUNT(50001,"账户已存在"),
 
