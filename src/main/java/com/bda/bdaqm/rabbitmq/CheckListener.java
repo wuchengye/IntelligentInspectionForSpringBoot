@@ -1,6 +1,8 @@
 package com.bda.bdaqm.rabbitmq;
 
+import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
+import com.bda.bdaqm.mission.service.MissionService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +20,8 @@ public class CheckListener implements ChannelAwareMessageListener {
 
     @Autowired
     private MissionJobDetailService missionJobDetailService;
+    @Autowired
+    private MissionService missionService;
 
     @Value("#{mqconfig.pythonPath}")
     private String pythonPath;
@@ -66,13 +71,17 @@ public class CheckListener implements ChannelAwareMessageListener {
                     String sessionId = matcher.group();
                     System.out.println("sessionId="+sessionId);
                     missionJobDetailService.updateInspectionStatus(jobId, 1, 5, "质检完成");
+                    isMissionComplete(jobId);
                 } else {
                     System.out.println("找不到sessionId");
+                    missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
+                    isMissionComplete(jobId);
                 }
             } else {
                 //质检失败
                 System.out.println("质检失败");
                 missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
+                isMissionComplete(jobId);
             }
 
             //确认ACK
@@ -81,7 +90,15 @@ public class CheckListener implements ChannelAwareMessageListener {
             e.printStackTrace();
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
+            isMissionComplete(jobId);
         }
+    }
+
+    //判断任务是否完成，若完成则更新数据库状态
+    private void isMissionComplete(int jobId) {
+        InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(jobId);
+        List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
+        missionService.isMissionComplete(imj.getMissionId(), detailList);
     }
 
     //字节码转化为对象
