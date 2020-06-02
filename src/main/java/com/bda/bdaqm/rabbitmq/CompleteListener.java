@@ -67,6 +67,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
             //转写中
             if (state.equals("0")) {
                 missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 2, "转写中", 0);
+                missionService.updateMissionTransferStatus(imj.getMissionId(),1);
             }
 
             //转写完
@@ -74,7 +75,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
                 if (errCode.equals("0")) {
                     //更新数据库
                     missionJobDetailService.updateTransferStatus(imj.getJobId(), 1, 3, "转写完成", 0);
-                    isMissionComplete(imj);
+
                     //创建xml文件夹
                     File dir = new File(xmlPath);
                     if (!dir.exists()) {
@@ -104,6 +105,8 @@ public class CompleteListener implements ChannelAwareMessageListener {
                     missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
                     isMissionComplete(imj);
                 }
+                //更新任务表的转写状态跟任务状态
+                isMissionTransferComplete(imj);
             }
 
             //确认ACK
@@ -113,6 +116,8 @@ public class CompleteListener implements ChannelAwareMessageListener {
             e.printStackTrace();
             missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
             isMissionComplete(imj);
+            //更新任务表的转写状态跟任务状态
+            isMissionTransferComplete(imj);
         }
     }
 
@@ -121,6 +126,13 @@ public class CompleteListener implements ChannelAwareMessageListener {
         List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
         missionService.isMissionComplete(imj.getMissionId(), detailList);
     }
+    //判断任务的转写是否完成，若完成则更新任务表的转写状态为已完成
+    private void isMissionTransferComplete(InspectionMissionJobDetail imj){
+        List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
+        missionService.isMissionTransferComplete(imj.getMissionId(),detailList);
+    }
+
+
 
     //字节码转化为对象
     private Object getObjectFromBytes(byte[] objBytes) throws Exception {

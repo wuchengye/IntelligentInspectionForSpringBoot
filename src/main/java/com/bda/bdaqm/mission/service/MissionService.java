@@ -43,6 +43,10 @@ public class MissionService {
         missionMapper.updateMissionUploadStatus(missionId,status);
     }
 
+    public void updateMissionTransferStatus(int missionId,int status){
+        missionMapper.updateMissionTransferStatus(missionId,status);
+    }
+
 
     //定时任务
     public void addSingleJob(InspectionMission mission) throws SchedulerException {
@@ -86,13 +90,37 @@ public class MissionService {
     public boolean isMissionComplete(int missionId, List<InspectionMissionJobDetail> details) {
         for (InspectionMissionJobDetail d : details
              ) {
-            if (!d.getFileStatus().equals(0) && !d.getFileStatus().equals(5)) {
+            if (!(d.getFileStatus() == 0) && !(d.getFileStatus() == 5)) {
                 //有未完成且未失败的details 则判定任务未完成
                 return false;
             }
         }
         //任务完成
         missionMapper.updateMissionStatus(missionId, 2);
+        return true;
+    }
+
+    //遍历MissionDetail状态，更新任务的转写状态
+    public boolean isMissionTransferComplete(int missionId,List<InspectionMissionJobDetail> details){
+        for (InspectionMissionJobDetail d : details){
+            if(!(d.getFileStatus() == 0) && (d.getFileStatus() < 3)){
+                return false;
+            }
+        }
+        missionMapper.updateMissionTransferStatus(missionId,2);
+        return true;
+    }
+
+    //遍历missionDetail状态，更新任务的质检进度
+    public boolean isMissionInspectionComplete(int missionId,List<InspectionMissionJobDetail> details){
+        int complete = 0;
+        for (InspectionMissionJobDetail d : details){
+            if(d.getFileStatus() == 0 || d.getFileStatus() ==5){
+                complete++;
+            }
+        }
+        double p = ((double)complete / (double)details.size()) * 100;
+        missionMapper.updateMissionInspectionStatus(missionId,(int) p);
         return true;
     }
 }

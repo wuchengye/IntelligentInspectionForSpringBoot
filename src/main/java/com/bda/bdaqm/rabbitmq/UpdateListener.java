@@ -4,6 +4,7 @@ import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
+import com.bda.bdaqm.util.StringUtils;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
@@ -59,7 +60,7 @@ public class UpdateListener implements ChannelAwareMessageListener {
         map.put("id", imjd.getJobId());
         map.put("missionId", imjd.getMissionId());
         map.put("name", imjd.getFileName());
-        map.put("path", imjd.getFilePath());
+        map.put("path", StringUtils.split(imjd.getFilePath()));
         rabbitmqProducer.sendQueue(readyQueueId + "_exchange", readyQueueId + "_patt", map, imjd.getMissionLevel());
     }
 }

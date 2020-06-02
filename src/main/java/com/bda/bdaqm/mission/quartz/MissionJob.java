@@ -74,7 +74,7 @@ public class MissionJob implements Job {
                 inspectionMissionJobDetail.setMissionIstransfer(Integer.valueOf(jobDataMap.getString("missionIstransfer")));
                 inspectionMissionJobDetail.setMissionIsinspection(Integer.valueOf(jobDataMap.getString("missionIsinspection")));
                 inspectionMissionJobDetail.setFileName(suc.getName());
-                inspectionMissionJobDetail.setFilePath(SFTPUtil3.ftpChildPath(suc.getPath(),uploadFilePath));
+                inspectionMissionJobDetail.setFilePath(ftpPath + SFTPUtil3.ftpChildPath(suc.getPath(),uploadFilePath));
                 inspectionMissionJobDetail.setFileStatus(1);
                 inspectionMissionJobDetail.setMissionLevel(Integer.valueOf(jobDataMap.getString("missionLevel")));
                 listSuc.add(inspectionMissionJobDetail);
@@ -88,7 +88,7 @@ public class MissionJob implements Job {
                 inspectionMissionJobDetail.setMissionIstransfer(Integer.valueOf(jobDataMap.getString("missionIstransfer")));
                 inspectionMissionJobDetail.setMissionIsinspection(Integer.valueOf(jobDataMap.getString("missionIsinspection")));
                 inspectionMissionJobDetail.setFileName(fai.getName());
-                inspectionMissionJobDetail.setFilePath(SFTPUtil3.ftpChildPath(fai.getPath(),uploadFilePath));
+                inspectionMissionJobDetail.setFilePath(ftpPath + SFTPUtil3.ftpChildPath(fai.getPath(),uploadFilePath));
                 inspectionMissionJobDetail.setFileStatus(0);
                 inspectionMissionJobDetail.setFileStatusDescribe("上传文件到ftp服务器失败");
                 inspectionMissionJobDetail.setMissionLevel(Integer.valueOf(jobDataMap.getString("missionLevel")));
@@ -109,7 +109,7 @@ public class MissionJob implements Job {
                     map.put("id",jobDetail.getJobId().toString());
                     map.put("missionId",jobDetail.getMissionId().toString());
                     map.put("name",jobDetail.getFileName());
-                    map.put("path", StringUtils.split(ftpPath + jobDetail.getFilePath()));
+                    map.put("path", StringUtils.split(jobDetail.getFilePath()));
                     rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                             map,jobDetail.getMissionLevel());
                 }

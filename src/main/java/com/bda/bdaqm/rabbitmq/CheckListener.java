@@ -71,16 +71,19 @@ public class CheckListener implements ChannelAwareMessageListener {
                     String sessionId = matcher.group();
                     System.out.println("sessionId="+sessionId);
                     missionJobDetailService.updateInspectionStatus(jobId, 1, 5, "质检完成");
+                    isMissionInspectionComplete(jobId);
                     isMissionComplete(jobId);
                 } else {
                     System.out.println("找不到sessionId");
                     missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
+                    isMissionInspectionComplete(jobId);
                     isMissionComplete(jobId);
                 }
             } else {
                 //质检失败
                 System.out.println("质检失败");
                 missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
+                isMissionInspectionComplete(jobId);
                 isMissionComplete(jobId);
             }
 
@@ -90,6 +93,7 @@ public class CheckListener implements ChannelAwareMessageListener {
             e.printStackTrace();
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
+            isMissionInspectionComplete(jobId);
             isMissionComplete(jobId);
         }
     }
@@ -99,6 +103,13 @@ public class CheckListener implements ChannelAwareMessageListener {
         InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(jobId);
         List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
         missionService.isMissionComplete(imj.getMissionId(), detailList);
+    }
+
+    //判断任务的质检模型是否完成，完成了多少
+    private void isMissionInspectionComplete(int jobId){
+        InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(jobId);
+        List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
+        missionService.isMissionInspectionComplete(imj.getMissionId(),detailList);
     }
 
     //字节码转化为对象

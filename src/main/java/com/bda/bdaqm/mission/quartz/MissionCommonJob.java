@@ -182,7 +182,7 @@ public class MissionCommonJob implements Job {
                             jobDetail.setMissionIstransfer(inspectionMission.getMissionIstransfer());
                             jobDetail.setMissionIsinspection(inspectionMission.getMissionIsinspection());
                             jobDetail.setFileName(suc.getName());
-                            jobDetail.setFilePath(SFTPUtil3.ftpChildPath(suc.getPath(), uploadFilePath));
+                            jobDetail.setFilePath(remotePath + SFTPUtil3.ftpChildPath(suc.getPath(), uploadFilePath));
                             jobDetail.setFileStatus(1);
                             jobDetail.setMissionLevel(inspectionMission.getMissionLevel());
                             listSuc.add(jobDetail);
@@ -200,7 +200,7 @@ public class MissionCommonJob implements Job {
                             mq.put("id", jobDetail.getJobId().toString());
                             mq.put("missionId", jobDetail.getMissionId().toString());
                             mq.put("name", jobDetail.getFileName());
-                            mq.put("path", StringUtils.split(ftpPath + jobDetail.getFilePath()));
+                            mq.put("path", StringUtils.split(jobDetail.getFilePath()));
                             rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                                     mq, jobDetail.getMissionLevel());
                         }
