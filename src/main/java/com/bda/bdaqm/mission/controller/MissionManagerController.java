@@ -11,6 +11,10 @@ import com.bda.bdaqm.mission.service.MissionService;
 
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.rabbitmq.model.VoiceResult;
+import com.bda.bdaqm.risk.model.ComplaintSession;
+import com.bda.bdaqm.risk.model.TabooSession;
+import com.bda.bdaqm.risk.service.ComplaintService;
+import com.bda.bdaqm.risk.service.UsedTabooService;
 import com.bda.bdaqm.util.FileUtils;
 import com.bda.bdaqm.util.FtpUtil;
 import com.bda.bdaqm.util.SFTPUtil3;
@@ -58,6 +62,10 @@ public class MissionManagerController {
 
     @Autowired
     private UserOprService userService;
+    @Autowired
+    private ComplaintService complaintService;
+    @Autowired
+    private UsedTabooService usedTabooService;
 
     @Autowired
     private RabbitmqProducer rabbitmqProducer;
@@ -547,17 +555,18 @@ public class MissionManagerController {
     }
 
     @RequestMapping("/mqTest")
-    public void mqTest(@RequestParam("path")String path, Integer pri){
-        try {
-            Map<String,String> map = new HashMap<>();
-            map.put("id","24");
-            map.put("missionId","45");
-            map.put("name","zhishino2.mp3");
-            map.put("path",path);
-            rabbitmqProducer.sendQueue(readyQueueId + "_exchange", readyQueueId + "_patt",
-                    map,9);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void mqTest(String sessionId){
+        ComplaintSession cs = complaintService.getComplaintSessionById(sessionId);
+        TabooSession ts = usedTabooService.getTabooSessionById(sessionId);
+        if (cs == null) {
+            System.out.println("cs == null");
+        } else {
+            System.out.println("cs : " + cs.getDataUpdateTime());
+        }
+        if (ts == null) {
+            System.out.println("ts == null");
+        } else {
+            System.out.println("ts : " + ts.getDataUpdateTime());
         }
     }
 

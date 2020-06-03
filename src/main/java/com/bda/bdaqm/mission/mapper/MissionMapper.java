@@ -19,6 +19,7 @@ public interface MissionMapper extends Mapper<InspectionMission> {
     int updateSingleMission(InspectionMission params);
     List<InspectionMission> isCreateCommonMission(@Param("userId")String userId,@Param("missionType")String missionType);
     int updateCommonMission(InspectionMission params);
+    InspectionMission updateCount(@Param("missionId") int missionId, @Param("missionRisk") int missionRisk, @Param("missionTaboo") int missionTaboo, @Param("missionNodubious") int missionNodubious);
 }
 
 

@@ -217,6 +217,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
         }
     }
 
+    //解析转写结果
     private Map<String, String> resolve(String str) {
         //客服text1,time1  客户text2,time2
         StringBuilder text1 = new StringBuilder();

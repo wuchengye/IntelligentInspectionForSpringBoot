@@ -1,8 +1,14 @@
 package com.bda.bdaqm.rabbitmq;
 
+import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
+import com.bda.bdaqm.mission.service.SessionJobService;
+import com.bda.bdaqm.risk.model.ComplaintSession;
+import com.bda.bdaqm.risk.model.TabooSession;
+import com.bda.bdaqm.risk.service.ComplaintService;
+import com.bda.bdaqm.risk.service.UsedTabooService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
@@ -22,6 +28,12 @@ public class CheckListener implements ChannelAwareMessageListener {
     private MissionJobDetailService missionJobDetailService;
     @Autowired
     private MissionService missionService;
+    @Autowired
+    private SessionJobService sessionJobService;
+    @Autowired
+    private ComplaintService complaintService;
+    @Autowired
+    private UsedTabooService usedTabooService;
 
     @Value("#{mqconfig.pythonPath}")
     private String pythonPath;
@@ -68,9 +80,11 @@ public class CheckListener implements ChannelAwareMessageListener {
                 Pattern pattern = Pattern.compile("unid=\\S*#");
                 Matcher matcher = pattern.matcher(output);
                 if (matcher.find()) {
-                    String sessionId = matcher.group();
+                    String sessionId = matcher.group().replace("unid=", "")
+                            .replace("#", "");
                     System.out.println("sessionId="+sessionId);
                     missionJobDetailService.updateInspectionStatus(jobId, 1, 5, "质检完成");
+                    saveSessionIdToDB(sessionId, jobId);
                     isMissionInspectionComplete(jobId);
                     isMissionComplete(jobId);
                 } else {
@@ -120,5 +134,34 @@ public class CheckListener implements ChannelAwareMessageListener {
         ByteArrayInputStream bi = new ByteArrayInputStream(objBytes);
         ObjectInputStream oi = new ObjectInputStream(bi);
         return oi.readObject();
+    }
+
+    //获取到sessionID后的数据库操作，建立关联表和统计个数
+    private void saveSessionIdToDB(String sessionId, int jobId) {
+        //插入关联Id
+        sessionJobService.insertSessionJob(sessionId, jobId);
+        //统计个数
+        ComplaintSession cs = complaintService.getComplaintSessionById(sessionId);
+        TabooSession ts = usedTabooService.getTabooSessionById(sessionId);
+        InspectionMissionJobDetail job = missionJobDetailService.getByJobId(jobId);
+        InspectionMission mission = missionService.getMissionByMissionId(job.getMissionId());
+        int missionRisk = mission.getMissionRisk();
+        int missionTaboo = mission.getMissionTaboo();
+        int missionNodubious = mission.getMissionNodubious();
+        if (cs == null && ts == null) {
+            //非可疑
+            missionNodubious++;
+        }
+        if (cs != null) {
+            //投诉风险
+            missionRisk++;
+            missionJobDetailService.updateIsRiskAndIsTaboo(jobId, 1, 0);
+        }
+        if (ts != null) {
+            //服务禁语
+            missionTaboo++;
+            missionJobDetailService.updateIsRiskAndIsTaboo(jobId, 0, 1);
+        }
+        missionService.updateCount(job.getMissionId(), missionRisk, missionTaboo, missionNodubious);
     }
 }

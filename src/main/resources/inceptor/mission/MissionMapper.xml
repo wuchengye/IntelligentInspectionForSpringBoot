@@ -91,4 +91,10 @@
 		mission_ftp=#{missionFtp},mission_cycle=#{missionCycle}
 		where mission_id=#{missionId}
 	</update>
+
+	<update id="updateCount" parameterType="com.bda.bdaqm.mission.model.InspectionMission">
+		update inspection_mission set mission_risk=#{missionRisk},
+		mission_taboo=#{missionTaboo},mission_nodubious=#{missionNodubious}
+		where mission_id=#{missionId}
+	</update>
 </mapper>

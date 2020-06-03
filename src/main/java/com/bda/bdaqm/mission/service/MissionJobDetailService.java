@@ -31,4 +31,8 @@ public class MissionJobDetailService {
     public void updateInspectionStatus(int jobId, int fileHasInspection, int fileStatus, String fileStatusDescribe) {
         missionJobDetailMapper.updateInspectionStatus(jobId, fileHasInspection, fileStatus, fileStatusDescribe);
     }
+
+    public void updateIsRiskAndIsTaboo(int jobId, int isRisk, int isTaboo) {
+        missionJobDetailMapper.updateIsRiskAndIsTaboo(jobId, isRisk, isTaboo);
+    }
 }

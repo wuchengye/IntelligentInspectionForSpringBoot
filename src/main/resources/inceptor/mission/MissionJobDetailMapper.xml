@@ -45,4 +45,10 @@
 		where job_id=#{jobId}
 	</update>
 
+    <update id="updateIsRiskAndIsTaboo">
+        update inspection_mission_jobdetail set is_risk=#{isRisk},
+        is_taboo=#{isTaboo}
+		where job_id=#{jobId}
+    </update>
+
 </mapper>

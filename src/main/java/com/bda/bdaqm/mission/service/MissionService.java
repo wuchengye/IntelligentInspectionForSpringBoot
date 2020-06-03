@@ -86,6 +86,11 @@ public class MissionService {
         return SchedulerUtils.isCurrentlyExe(missionId);
     }
 
+    //更新风险投诉、服务禁语、非可疑计数
+    public InspectionMission updateCount(int missionId, int missionRisk, int missionTaboo, int missionNodubious) {
+        return missionMapper.updateCount(missionId, missionRisk, missionTaboo, missionNodubious);
+    }
+
     //遍历MissionDetail状态，更新任务状态
     public boolean isMissionComplete(int missionId, List<InspectionMissionJobDetail> details) {
         for (InspectionMissionJobDetail d : details

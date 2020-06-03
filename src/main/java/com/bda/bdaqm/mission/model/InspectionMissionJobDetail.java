@@ -68,6 +68,32 @@ public class InspectionMissionJobDetail implements Serializable {
      */
     private Integer isTransferFailed;
 
+    /**
+     * is_risk
+     */
+    private Integer isRisk;
+
+    /**
+     * is_taboo
+     */
+    private Integer isTaboo;
+
+    public Integer getIsRisk() {
+        return isRisk;
+    }
+
+    public void setIsRisk(Integer isRisk) {
+        this.isRisk = isRisk;
+    }
+
+    public Integer getIsTaboo() {
+        return isTaboo;
+    }
+
+    public void setIsTaboo(Integer isTaboo) {
+        this.isTaboo = isTaboo;
+    }
+
     public Integer getJobId() {
         return jobId;
     }
