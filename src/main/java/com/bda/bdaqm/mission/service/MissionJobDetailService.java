@@ -1,6 +1,7 @@
 package com.bda.bdaqm.mission.service;
 
 import com.bda.bdaqm.mission.mapper.MissionJobDetailMapper;
+import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,12 @@ public class MissionJobDetailService {
 
     public void updateIsRiskAndIsTaboo(int jobId, int isRisk, int isTaboo) {
         missionJobDetailMapper.updateIsRiskAndIsTaboo(jobId, isRisk, isTaboo);
+    }
+	public void deleteByMissionId(int missionId){
+        missionJobDetailMapper.deleteByMissionId(missionId);
+    }
+
+    public List<InspectionMissionJobDetail> getListByMissions(List<InspectionMission> list){
+        return missionJobDetailMapper.getListByMissions(list);
     }
 }

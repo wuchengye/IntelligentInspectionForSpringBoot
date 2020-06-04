@@ -20,6 +20,9 @@ public interface MissionMapper extends Mapper<InspectionMission> {
     List<InspectionMission> isCreateCommonMission(@Param("userId")String userId,@Param("missionType")String missionType);
     int updateCommonMission(InspectionMission params);
     void updateCount(@Param("missionId") int missionId, @Param("missionRisk") int missionRisk, @Param("missionTaboo") int missionTaboo, @Param("missionNodubious") int missionNodubious);
+	void deleteMissionById(@Param("missionId") int missionId);
+    void updateRemainById(@Param("time") String time,@Param("id") int id);
+    void updateCompleteTime(@Param("missionId")int missionId,@Param("time")String time);
 }
 
 

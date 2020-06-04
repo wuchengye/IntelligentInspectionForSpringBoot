@@ -45,10 +45,24 @@
 		where job_id=#{jobId}
 	</update>
 
+    <delete id="deleteByMissionId">
+        delete from inspection_mission_jobdetail where mission_id=#{missionId}
+    </delete>
+
+    <select id="getListByMissions" resultType="com.bda.bdaqm.mission.model.InspectionMissionJobDetail">
+        select * from inspection_mission_jobdetail
+            where mission_id in
+            <foreach collection="list" item="item" index="index"
+                     open="(" close=")" separator=",">
+                    #{item.missionId}
+            </foreach>
+            order by mission_level desc ,mission_id
+    </select>
+    
     <update id="updateIsRiskAndIsTaboo">
         update inspection_mission_jobdetail set is_risk=#{isRisk},
         is_taboo=#{isTaboo}
-		where job_id=#{jobId}
+		where job_id=#{jobId}    
     </update>
 
 </mapper>
