@@ -10,6 +10,8 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,6 +49,10 @@ public class MissionService {
         missionMapper.updateMissionTransferStatus(missionId,status);
     }
 
+    //更新剩余时间
+    public void updateRemainById(String id,String time){
+        missionMapper.updateRemainById(time,Integer.valueOf(id));
+    }
 
     //定时任务
     public void addSingleJob(InspectionMission mission) throws SchedulerException {
@@ -65,6 +71,11 @@ public class MissionService {
 
     public void removeCommonJob(String missionId) throws SchedulerException{
         SchedulerUtils.removeCommonJob(missionId);
+    }
+
+    //删除任务byid
+    public void deleteMissionById(int missionId){
+        missionMapper.deleteMissionById(missionId);
     }
 
     //修改单次任务
@@ -102,6 +113,8 @@ public class MissionService {
         }
         //任务完成
         missionMapper.updateMissionStatus(missionId, 2);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        missionMapper.updateCompleteTime(missionId,df.format(new Date()));
         return true;
     }
 

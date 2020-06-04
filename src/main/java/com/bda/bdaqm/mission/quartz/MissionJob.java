@@ -97,12 +97,9 @@ public class MissionJob implements Job {
         }
         if(listSuc.size() > 0 && jobDataMap.getString("missionIstransfer").equals("1")){
             int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
-            mission = missionService.getMissionByMissionId(Integer.valueOf(jobDataMap.getString("missionId")));
-            if(mission != null){
-                mission.setMissionStatus(1);
-                missionService.updateMissionStatus(mission.getMissionId(),mission.getMissionStatus());
-            }
             if(insert > 0){
+                //任务状态进行中
+                missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
                 //插入转写等待队列
                 for (InspectionMissionJobDetail jobDetail : listSuc){
                     Map<String,String> map = new HashMap<>();
@@ -113,6 +110,8 @@ public class MissionJob implements Job {
                     rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                             map,jobDetail.getMissionLevel());
                 }
+            }else{
+                missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
             }
         }
         if(listFai.size() > 0){
@@ -122,14 +121,10 @@ public class MissionJob implements Job {
 
         if(listSuc.size() == 0){
             //没有上传成功的，任务状态直接完成
-            missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
             missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
-        }else {
-            //改变任务状态,进行中
-            missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
-            missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
         }
 
+        missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
     }
 
 }

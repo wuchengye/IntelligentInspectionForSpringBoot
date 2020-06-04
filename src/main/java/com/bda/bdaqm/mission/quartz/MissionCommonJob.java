@@ -193,6 +193,8 @@ public class MissionCommonJob implements Job {
                     System.out.println("进入任务文件插入");
                     int insert = missionJobDetailService.insertSingleJobWhenTransfer(listSuc);
                     if (insert > 0) {
+                        //任务状态：进行中
+                        missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
                         //插入转写等待队列
                         System.out.println("进入队列");
                         for (InspectionMissionJobDetail jobDetail : listSuc) {
@@ -204,13 +206,13 @@ public class MissionCommonJob implements Job {
                             rabbitmqProducer.sendQueue(queueId + "_exchange", queueId + "_patt",
                                     mq, jobDetail.getMissionLevel());
                         }
+                    }else {
+                        missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
                     }
-                    //任务状态：进行中
-                    missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),1);
                 }else {
                     missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
                 }
-                missionService.updateMissionStatus(inspectionMission.getMissionId(),2);
+                missionService.updateMissionUploadStatus(inspectionMission.getMissionId(),2);
                 //删除临时文件夹
                 deleteTemp(tempPath);
                 //添加记录

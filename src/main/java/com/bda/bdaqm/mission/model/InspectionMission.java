@@ -140,6 +140,19 @@ public class InspectionMission implements Serializable {
     * */
     private String missionCreaterRole;
 
+    /**
+     * 任务完成时间
+     * */
+    private String missionCompletetime;
+
+    public String getMissionCompletetime() {
+        return missionCompletetime;
+    }
+
+    public void setMissionCompletetime(String missionCompletetime) {
+        this.missionCompletetime = missionCompletetime;
+    }
+
     public String getMissionCreaterRole() {
         return missionCreaterRole;
     }

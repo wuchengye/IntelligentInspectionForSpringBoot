@@ -97,4 +97,16 @@
 		mission_taboo=#{missionTaboo},mission_nodubious=#{missionNodubious}
 		where mission_id=#{missionId}
 	</update>
+	
+	<delete id="deleteMissionById">
+		delete from inspection_mission where mission_id=#{missionId}
+	</delete>
+
+	<update id="updateRemainById">
+		update inspection_mission set mission_remaining=#{time} where mission_id=#{id}
+	</update>
+
+	<update id="updateCompleteTime">
+		update inspection_mission set mission_completetime=#{time} where mission_id=#{missionId}
+	</update>
 </mapper>

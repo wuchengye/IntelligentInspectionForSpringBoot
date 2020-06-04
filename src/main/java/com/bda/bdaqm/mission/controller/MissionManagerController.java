@@ -6,7 +6,9 @@ import com.bda.bdaqm.admin.model.User;
 import com.bda.bdaqm.admin.service.MyRoleService;
 import com.bda.bdaqm.admin.service.UserOprService;
 import com.bda.bdaqm.mission.model.InspectionMission;
+import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.quartz.SchedulerUtils;
+import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
 
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
@@ -56,6 +58,9 @@ public class MissionManagerController {
 
     @Autowired
     private MissionService missionService;
+
+    @Autowired
+    private MissionJobDetailService missionJobDetailService;
 
     @Autowired
     private MyRoleService myRoleService;
@@ -267,7 +272,9 @@ public class MissionManagerController {
             inspectionMission.setMissionIsnodubious(missionIsnodubious);
             inspectionMission.setMissionDescribe(missionDescribe);
             //语音文件路径,任务创建时，文件在本机上
-            inspectionMission.setMissionFilepath(uploadFilePath + dirName + "/");
+            if(!inspectionMission.getMissionFilepath().equals(dirName)) {
+                inspectionMission.setMissionFilepath(uploadFilePath + dirName + "/");
+            }
             //文件总数
             inspectionMission.setMissionTotalNum(missionTotalNum);
 
@@ -550,9 +557,52 @@ public class MissionManagerController {
 
 
     @RequestMapping("/missionCancel")
-    public void missionCancel(@RequestParam("dirName")String dirName){
+    public Result missionCancel(@RequestParam("dirName")String dirName){
         deleteTemp(dirName);
+        return Result.success();
     }
+
+    //根据任务id查找任务，用于任务详情页面
+    @RequestMapping("/getMissionDetail")
+    public Result getMissionDetail(@RequestParam("missionId")String missionId){
+        InspectionMission mission = missionService.getMissionByMissionId(Integer.valueOf(missionId));
+        if(mission == null){
+            return Result.failure();
+        }
+        if(mission.getMissionStatus() == 2 && mission.getMissionCompletetime() != null){
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                Date begin = df.parse(mission.getMissionBegintime());
+                Date end = df.parse(mission.getMissionCompletetime());
+                long time = end.getTime() - begin.getTime();
+                long day=time/(24*60*60*1000);
+                long hour=(time/(60*60*1000)-day*24);
+                long min=((time/(60*1000))-day*24*60-hour*60);
+                long s=(time/1000-day*24*60*60-hour*60*60-min*60);
+                mission.setMissionCompletetime(day+"天"+hour+"小时"+min+"分"+s+"秒");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            List<InspectionMissionJobDetail> listMissionJob = missionJobDetailService.getListByMissionId(mission.getMissionId());
+            Map<String,String> map = new HashMap<>();
+            int suc = 0;
+            int fal = 0;
+            for (InspectionMissionJobDetail job : listMissionJob){
+                if(job.getFileStatus() == 0){
+                    fal++;
+                }
+                if(job.getFileStatus() == 5){
+                    suc++;
+                }
+            }
+            map.put("质检成功",String.valueOf(suc));
+            map.put("质检失败",String.valueOf(fal));
+            return Result.success(mission,map);
+        }
+        return Result.success(mission);
+    }
+
+
 
     @RequestMapping("/mqTest")
     public void mqTest(String sessionId){
@@ -584,21 +634,80 @@ public class MissionManagerController {
         }
     }
 
+    /**
+     * 删除任务
+     * */
+    @RequestMapping("/missionDelete")
+    public Result missionDelete(String missionId){
+        int Id = Integer.valueOf(missionId);
+        InspectionMission inspectionMission = missionService.getMissionByMissionId(Id);
+        if(inspectionMission.getMissionStatus() ==  1){
+            return Result.failure();
+        }
+
+        if(inspectionMission.getMissionType() == 0){
+            //常规
+            if(missionService.isCurrentlyExe(String.valueOf(inspectionMission.getMissionId()))){
+                return Result.failure();
+            }
+            try {
+                missionService.removeCommonJob(String.valueOf(inspectionMission.getMissionId()));
+            }catch (SchedulerException e){
+                return Result.failure();
+            }
+            missionService.deleteMissionById(inspectionMission.getMissionId());
+            if(inspectionMission.getMissionStatus() != 0){
+                missionJobDetailService.deleteByMissionId(inspectionMission.getMissionId());
+            }
+        }else{
+            //单次
+            if(inspectionMission.getMissionStatus() == 0){
+                if(missionService.isCurrentlyExe(String.valueOf(inspectionMission.getMissionId()))){
+                    return Result.failure();
+                }
+                try{
+                    missionService.removeSingleJob(String.valueOf(inspectionMission.getMissionId()));
+                }catch (SchedulerException e){
+                    return Result.failure();
+                }
+                missionService.deleteMissionById(inspectionMission.getMissionId());
+            }
+            else {
+                missionService.deleteMissionById(inspectionMission.getMissionId());
+                missionJobDetailService.deleteByMissionId(inspectionMission.getMissionId());
+            }
+        }
+        return Result.success();
+    }
+
+
     //更新ready队列
     private void updateReadyQueue() {
         rabbitmqProducer.sendQueue(updateQueueId+"_exchange", updateQueueId+"_patt", null);
     }
 
-    private void deleteTemp(String id){
-        String path = uploadFilePath + id + "/";
+    private void deleteTemp(String dirName){
+        String path = uploadFilePath + dirName + "/";
         File foldor = new File(path);
         if(foldor.exists()){
             if(foldor.listFiles().length > 0){
                 for (File file : foldor.listFiles()){
-                    file.delete();
+                    deleteFile(file);
                 }
             }
             foldor.delete();
+        }
+    }
+
+    private void deleteFile(File file){
+        if (file.isFile()){
+            file.delete();
+        }else {
+            File[] chilFiles = file.listFiles();
+            for (File file1 : chilFiles){
+                deleteFile(file1);
+            }
+            file.delete();
         }
     }
 

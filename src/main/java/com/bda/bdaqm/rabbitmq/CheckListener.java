@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -85,20 +86,23 @@ public class CheckListener implements ChannelAwareMessageListener {
                     System.out.println("sessionId="+sessionId);
                     missionJobDetailService.updateInspectionStatus(jobId, 1, 5, "质检完成");
                     saveSessionIdToDB(sessionId, jobId);
-                    isMissionInspectionComplete(jobId);
+                    //isMissionInspectionComplete(jobId);
                     isMissionComplete(jobId);
+                    updateMissionRemain();
                 } else {
                     System.out.println("找不到sessionId");
                     missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
-                    isMissionInspectionComplete(jobId);
+                    //isMissionInspectionComplete(jobId);
                     isMissionComplete(jobId);
+                    updateMissionRemain();
                 }
             } else {
                 //质检失败
                 System.out.println("质检失败");
                 missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
-                isMissionInspectionComplete(jobId);
+                //isMissionInspectionComplete(jobId);
                 isMissionComplete(jobId);
+                updateMissionRemain();
             }
 
             //确认ACK
@@ -107,8 +111,9 @@ public class CheckListener implements ChannelAwareMessageListener {
             e.printStackTrace();
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
-            isMissionInspectionComplete(jobId);
+            //isMissionInspectionComplete(jobId);
             isMissionComplete(jobId);
+            updateMissionRemain();
         }
     }
 
@@ -116,14 +121,35 @@ public class CheckListener implements ChannelAwareMessageListener {
     private void isMissionComplete(int jobId) {
         InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(jobId);
         List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
+        missionService.isMissionInspectionComplete(imj.getMissionId(),detailList);
         missionService.isMissionComplete(imj.getMissionId(), detailList);
     }
 
     //判断任务的质检模型是否完成，完成了多少
-    private void isMissionInspectionComplete(int jobId){
+    /*private void isMissionInspectionComplete(int jobId){
         InspectionMissionJobDetail imj = missionJobDetailService.getByJobId(jobId);
         List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
         missionService.isMissionInspectionComplete(imj.getMissionId(),detailList);
+    }*/
+
+    //更新所有任务剩余时间
+    private void updateMissionRemain(){
+        List<InspectionMission> running = missionService.getListMissionByStatus(1);
+        List<InspectionMissionJobDetail> runningJob = missionJobDetailService.getListByMissions(running);
+        Map<String,String> map = new HashMap();
+        for (InspectionMission in : running){
+            map.put(String.valueOf(in.getMissionId()),String.valueOf(0));
+        }
+        int fal = 0;
+        for (int i = 0; i < runningJob.size(); i++){
+            if(runningJob.get(i).getFileStatus() == 0){
+                fal++;
+            }
+            map.put(String.valueOf(runningJob.get(i).getMissionId()),String.valueOf(i+1-fal));
+        }
+        for (String key : map.keySet()){
+            missionService.updateRemainById(key,map.get(key));
+        }
     }
 
     //字节码转化为对象

@@ -1,5 +1,6 @@
 package com.bda.bdaqm.mission.mapper;
 
+import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,5 +16,9 @@ public interface MissionJobDetailMapper {
                               @Param("isTransferFailed") int isTransferFailed);
     void updateInspectionStatus(@Param("jobId") int jobId, @Param("fileHasInspection") int fileHasInspection,
                               @Param("fileStatus") int fileStatus, @Param("fileStatusDescribe") String fileStatusDescribe);
+    void deleteByMissionId(@Param("missionId") int missionId);
+
     void updateIsRiskAndIsTaboo(@Param("jobId") int jobId, @Param("isRisk") int isRisk, @Param("isTaboo") int isTaboo);
+
+    List<InspectionMissionJobDetail> getListByMissions(@Param("list")List<InspectionMission> list);
 }
