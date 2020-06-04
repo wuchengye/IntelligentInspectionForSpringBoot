@@ -25,16 +25,28 @@ import com.bda.bdaqm.util.UZipFile;
 import com.bda.easyui.bean.DataGrid;
 import com.bda.easyui.bean.Page;
 import com.github.pagehelper.PageInfo;
+import jxl.Workbook;
+import jxl.format.*;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.Colour;
+import jxl.format.VerticalAlignment;
+import jxl.write.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -42,8 +54,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -562,7 +573,9 @@ public class MissionManagerController {
         return Result.success();
     }
 
-    //根据任务id查找任务，用于任务详情页面
+    /**
+     * 根据任务id查找任务，用于任务详情页面
+     * */
     @RequestMapping("/getMissionDetail")
     public Result getMissionDetail(@RequestParam("missionId")String missionId){
         InspectionMission mission = missionService.getMissionByMissionId(Integer.valueOf(missionId));
@@ -602,6 +615,104 @@ public class MissionManagerController {
         return Result.success(mission);
     }
 
+    /**
+     * 失败文件列表下载
+     * */
+    @RequestMapping("downloadFailureList")
+    public void downloadFailureList(@RequestParam("missionId")String missionId){
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletResponse response = requestAttributes.getResponse();
+        HttpServletRequest request = requestAttributes.getRequest();
+        List<InspectionMissionJobDetail> list = missionJobDetailService.getListByMissionId(Integer.valueOf(missionId));
+        String fileName = "失败列表" + "_" + new Date().toString() + ".xls";
+        String path = request.getSession().getServletContext().getRealPath("") + "/" + fileName;
+        File excel = new File(path);
+        try {
+            // 创建写工作簿对象
+            WritableWorkbook workbook = Workbook.createWorkbook(excel);
+            // 工作表
+            WritableSheet sheet = workbook.createSheet("失败列表", 0);
+            // 设置字体;
+            WritableFont font = new WritableFont(WritableFont.ARIAL, 14, WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+
+            WritableCellFormat cellFormat = new WritableCellFormat(font);
+            // 设置背景颜色;
+            cellFormat.setBackground(Colour.WHITE);
+            // 设置边框;
+            cellFormat.setBorder(Border.ALL, BorderLineStyle.DASH_DOT);
+            // 设置文字居中对齐方式;
+            cellFormat.setAlignment(Alignment.CENTRE);
+            // 设置垂直居中;
+            cellFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
+            sheet.getSettings().setDefaultColumnWidth(20);
+            cellFormat.setWrap(true);
+            Label label0 = new Label(0, 0, "ID", cellFormat);
+            Label label1 = new Label(1, 0, "文件名", cellFormat);
+            Label label2 = new Label(2, 0, "文件路径", cellFormat);
+            Label label3 = new Label(3, 0, "失败原因", cellFormat);
+            sheet.addCell(label0);
+            sheet.addCell(label1);
+            sheet.addCell(label2);
+            sheet.addCell(label3);
+            // 给第二行设置背景、字体颜色、对齐方式等等;
+            WritableFont font2 = new WritableFont(WritableFont.ARIAL, 14, WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+            WritableCellFormat cellFormat2 = new WritableCellFormat(font2);
+            // 设置文字居中对齐方式;
+            cellFormat2.setAlignment(Alignment.CENTRE);
+            // 设置垂直居中;
+            cellFormat2.setVerticalAlignment(VerticalAlignment.CENTRE);
+            cellFormat2.setBackground(Colour.WHITE);
+            cellFormat2.setBorder(Border.ALL, BorderLineStyle.THIN);
+            cellFormat2.setWrap(true);
+
+            // 记录行数
+            int n = 1;
+
+            for (InspectionMissionJobDetail jobDetail : list){
+                if(jobDetail.getFileStatus() == 0){
+                    Label lt0 = new Label(0, n, jobDetail.getJobId() + "", cellFormat2);
+                    Label lt1 = new Label(1, n, jobDetail.getFileName(), cellFormat2);
+                    Label lt2 = new Label(2, n, jobDetail.getFilePath(), cellFormat2);
+                    Label lt3 = new Label(3, n, jobDetail.getFileStatusDescribe(), cellFormat2);
+                    sheet.addCell(lt0);
+                    sheet.addCell(lt1);
+                    sheet.addCell(lt2);
+                    sheet.addCell(lt3);
+                    n++;
+                }
+            }
+            //开始执行写入操作
+            workbook.write();
+            //关闭流
+            workbook.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        // 第六步，下载excel
+        OutputStream out = null;
+        try {
+            response.addHeader("content-disposition", "attachment;filename="
+                    + java.net.URLEncoder.encode(fileName, "utf-8"));
+            // 2.下载
+            out = response.getOutputStream();
+            String path3 = request.getSession().getServletContext().getRealPath("") + "/" + fileName;
+            // inputStream：读文件，前提是这个文件必须存在，要不就会报错
+            InputStream is = new FileInputStream(path3);
+
+            byte[] b = new byte[4096];
+            int size = is.read(b);
+            while (size > 0) {
+                out.write(b, 0, size);
+                size = is.read(b);
+            }
+            out.close();
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @RequestMapping("/mqTest")
