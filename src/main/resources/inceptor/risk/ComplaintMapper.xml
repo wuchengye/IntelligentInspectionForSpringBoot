@@ -48,5 +48,12 @@
 		values(#{sessionId},#{personIsProblem},#{transferIstrue},#{problemDescribe},
 				#{checkAccounts},now())
 	</insert>
+
+	<update id="updateFileNameAndFilePath">
+		update bdaqm_complaint_risk_monitor
+		set file_name=#{fileName},
+		file_path=#{filePath}
+		where session_id = #{sessionId}
+	</update>
 	
 </mapper>

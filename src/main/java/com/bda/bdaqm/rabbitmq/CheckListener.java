@@ -8,8 +8,10 @@ import com.bda.bdaqm.mission.service.SessionJobService;
 import com.bda.bdaqm.risk.model.ComplaintSession;
 import com.bda.bdaqm.risk.model.TabooSession;
 import com.bda.bdaqm.risk.service.ComplaintService;
+import com.bda.bdaqm.risk.service.DubiousService;
 import com.bda.bdaqm.risk.service.UsedTabooService;
 import com.rabbitmq.client.Channel;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class CheckListener implements ChannelAwareMessageListener {
     private ComplaintService complaintService;
     @Autowired
     private UsedTabooService usedTabooService;
+    @Autowired
+    private DubiousService dubiousService;
 
     @Value("#{mqconfig.pythonPath}")
     private String pythonPath;
@@ -136,14 +140,17 @@ public class CheckListener implements ChannelAwareMessageListener {
         return oi.readObject();
     }
 
-    //获取到sessionID后的数据库操作，建立关联表和统计个数
+    //获取到sessionID后的数据库操作，插入关联表、统计个数和替换文件名地址
     private void saveSessionIdToDB(String sessionId, int jobId) {
-        //插入关联Id
+
+        InspectionMissionJobDetail job = missionJobDetailService.getByJobId(jobId);
+
+        //插入关联表
         sessionJobService.insertSessionJob(sessionId, jobId);
+
         //统计个数
         ComplaintSession cs = complaintService.getComplaintSessionById(sessionId);
         TabooSession ts = usedTabooService.getTabooSessionById(sessionId);
-        InspectionMissionJobDetail job = missionJobDetailService.getByJobId(jobId);
         InspectionMission mission = missionService.getMissionByMissionId(job.getMissionId());
         int missionRisk = mission.getMissionRisk();
         int missionTaboo = mission.getMissionTaboo();
@@ -163,5 +170,12 @@ public class CheckListener implements ChannelAwareMessageListener {
             missionJobDetailService.updateIsRiskAndIsTaboo(jobId, 0, 1);
         }
         missionService.updateCount(job.getMissionId(), missionRisk, missionTaboo, missionNodubious);
+
+        //替换文件名、地址
+        String fileName = job.getFileName();
+        String filePath = job.getFilePath();
+        dubiousService.updateFileNameAndFilePath(sessionId, fileName, filePath);
+        usedTabooService.updateFileNameAndFilePath(sessionId, fileName, filePath);
+        complaintService.updateFileNameAndFilePath(sessionId, fileName, filePath);
     }
 }

@@ -87,8 +87,8 @@ public class MissionService {
     }
 
     //更新风险投诉、服务禁语、非可疑计数
-    public InspectionMission updateCount(int missionId, int missionRisk, int missionTaboo, int missionNodubious) {
-        return missionMapper.updateCount(missionId, missionRisk, missionTaboo, missionNodubious);
+    public void updateCount(int missionId, int missionRisk, int missionTaboo, int missionNodubious) {
+        missionMapper.updateCount(missionId, missionRisk, missionTaboo, missionNodubious);
     }
 
     //遍历MissionDetail状态，更新任务状态

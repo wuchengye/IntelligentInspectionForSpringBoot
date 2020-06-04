@@ -200,4 +200,9 @@ public class UsedTabooService extends AbstractService<TabooSession>{
 		}
 		
 	}
+
+	public int updateFileNameAndFilePath(String sessionId, String fileName, String filePath) {
+		return usedTabooMapper.updateFileNameAndFilePath(sessionId, fileName, filePath);
+	}
+
 }
