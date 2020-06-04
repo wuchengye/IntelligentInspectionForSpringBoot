@@ -53,4 +53,11 @@
 		select *  from bdaqm_questionable_session_detail
 		where stl_session_id = #{sessionId}
 	</select>
+
+	<update id="updateFileNameAndFilePath">
+		update bdaqm_service_taboo_language
+		set file_name=#{fileName},
+		file_path=#{filePath}
+		where session_id = #{sessionId}
+	</update>
 </mapper>

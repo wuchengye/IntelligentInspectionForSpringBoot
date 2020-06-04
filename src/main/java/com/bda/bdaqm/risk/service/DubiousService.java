@@ -73,5 +73,9 @@ public class DubiousService extends AbstractService<NotDubious>{
 		os.close();
 		xssfResultWorkbook.close();
 	}
+
+	public int updateFileNameAndFilePath(String sessionId, String fileName, String filePath) {
+		return dubiousMapper.updateFileNameAndFilePath(sessionId, fileName, filePath);
+	}
 	
 }

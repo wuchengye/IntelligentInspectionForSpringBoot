@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+<<<<<<< HEAD
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
       <artifact name="bdasjs:war" />
@@ -278,4 +279,9 @@
       </map>
     </option>
   </component>
+=======
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+>>>>>>> 08e869f373a9c4fd76ba262ec90b1e175c7ca4f7
 </project>

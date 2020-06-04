@@ -14,4 +14,5 @@ public interface UsedTabooMapper extends Mapper<TabooSession> {
 	int updateTobooCheckResult(TabooSession params);
 	int insertCheckHistory(TabooSession params);
 	List<SessionDetail> selectSessionDetail(@Param("sessionId")String sessionId);
+	int updateFileNameAndFilePath(@Param("sessionId") String sessionId, @Param("fileName") String fileName, @Param("filePath") String filePath);
 }

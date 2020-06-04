@@ -125,5 +125,7 @@ public class ComplaintService extends AbstractService<TabooSession>{
 		return complaintMapper.insertCheckHistory(params);
 	}
 	
-	
+	public int updateFileNameAndFilePath(String sessionId, String fileName, String filePath) {
+		return complaintMapper.updateFileNameAndFilePath(sessionId, fileName, filePath);
+	}
 }
