@@ -32,7 +32,10 @@ public enum ResultCode {
     WRONG_PASSWORD(90001,"密码错误"),
 
     FTP_PATH_NULL(10001,"服务器地址为空"),
-    FTP_CONNECT_FAILURE(10002,"连接失败");
+    FTP_CONNECT_FAILURE(10002,"连接失败"),
+
+    COMMONJOB_RUNNING(11001,"正在运行"),
+    COMMONJOB_REMOVE_FAILURE(11002,"移除失败");
 
     private Integer code;
     private String message;

@@ -284,7 +284,7 @@ public class MissionManagerController {
             inspectionMission.setMissionDescribe(missionDescribe);
             //语音文件路径,任务创建时，文件在本机上
             if(!inspectionMission.getMissionFilepath().equals(dirName)) {
-                inspectionMission.setMissionFilepath(uploadFilePath + dirName + "/");
+                inspectionMission.setMissionFilepath(uploadFilePath + dirName + "/"+ "unZip" + "/");
             }
             //文件总数
             inspectionMission.setMissionTotalNum(missionTotalNum);
@@ -608,8 +608,8 @@ public class MissionManagerController {
                     suc++;
                 }
             }
-            map.put("质检成功",String.valueOf(suc));
-            map.put("质检失败",String.valueOf(fal));
+            map.put("InspectionSuccess",String.valueOf(suc));
+            map.put("InspectionFailure",String.valueOf(fal));
             return Result.success(mission,map);
         }
         return Result.success(mission);
@@ -759,12 +759,12 @@ public class MissionManagerController {
         if(inspectionMission.getMissionType() == 0){
             //常规
             if(missionService.isCurrentlyExe(String.valueOf(inspectionMission.getMissionId()))){
-                return Result.failure();
+                return Result.failure(ResultCode.COMMONJOB_RUNNING);
             }
             try {
                 missionService.removeCommonJob(String.valueOf(inspectionMission.getMissionId()));
             }catch (SchedulerException e){
-                return Result.failure();
+                return Result.failure(ResultCode.COMMONJOB_REMOVE_FAILURE);
             }
             missionService.deleteMissionById(inspectionMission.getMissionId());
             if(inspectionMission.getMissionStatus() != 0){

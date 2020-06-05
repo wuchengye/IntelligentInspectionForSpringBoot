@@ -91,22 +91,22 @@ public class CheckListener implements ChannelAwareMessageListener {
                     missionJobDetailService.updateInspectionStatus(jobId, 1, 5, "质检完成");
                     saveSessionIdToDB(sessionId, jobId);
                     //isMissionInspectionComplete(jobId);
-                    isMissionComplete(jobId);
                     updateMissionRemain();
+                    isMissionComplete(jobId);
                 } else {
                     System.out.println("找不到sessionId");
                     missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
                     //isMissionInspectionComplete(jobId);
-                    isMissionComplete(jobId);
                     updateMissionRemain();
+                    isMissionComplete(jobId);
                 }
             } else {
                 //质检失败
                 System.out.println("质检失败");
                 missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
                 //isMissionInspectionComplete(jobId);
-                isMissionComplete(jobId);
                 updateMissionRemain();
+                isMissionComplete(jobId);
             }
 
             //确认ACK
@@ -116,8 +116,8 @@ public class CheckListener implements ChannelAwareMessageListener {
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
             //isMissionInspectionComplete(jobId);
-            isMissionComplete(jobId);
             updateMissionRemain();
+            isMissionComplete(jobId);
         }
     }
 
@@ -146,7 +146,7 @@ public class CheckListener implements ChannelAwareMessageListener {
         }
         int fal = 0;
         for (int i = 0; i < runningJob.size(); i++){
-            if(runningJob.get(i).getFileStatus() == 0){
+            if(runningJob.get(i).getFileStatus() == 0 || runningJob.get(i).getFileStatus() == 5){
                 fal++;
             }
             map.put(String.valueOf(runningJob.get(i).getMissionId()),String.valueOf(i+1-fal));

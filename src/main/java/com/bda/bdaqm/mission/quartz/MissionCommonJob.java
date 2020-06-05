@@ -54,7 +54,7 @@ public class MissionCommonJob implements Job {
 
         if (inspectionMission.getMissionStatus() != 3) {
             //任务的文件上传状态改为1，进行中
-            missionService.updateMissionUploadStatus(inspectionMission.getMissionId(),1);
+            //missionService.updateMissionUploadStatus(inspectionMission.getMissionId(),1);
 
             String ftp = inspectionMission.getMissionFtp();
             //遍历ftp或sftp结果
@@ -158,6 +158,8 @@ public class MissionCommonJob implements Job {
             if (!lessMap.isEmpty()) {
                 //下载完成，从服务器上传到sftp服务器
                 System.out.println("进入上传阶段");
+                //任务的文件上传状态改为1，进行中
+                missionService.updateMissionUploadStatus(inspectionMission.getMissionId(),1);
                 String ip = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_IP);
                 String name = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_NAME);
                 String pwd = PropertyMgr.getPropertyByKey(PropertyMgr.FTP_CONFIG_PROP, PropertyMgr.SFTP_PWD);

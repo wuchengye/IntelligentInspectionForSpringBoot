@@ -56,7 +56,7 @@
                      open="(" close=")" separator=",">
                     #{item.missionId}
             </foreach>
-            order by mission_level desc ,mission_id
+            order by mission_level desc,mission_id
     </select>
     
     <update id="updateIsRiskAndIsTaboo">
