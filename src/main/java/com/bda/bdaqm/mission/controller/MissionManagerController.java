@@ -222,6 +222,10 @@ public class MissionManagerController {
             missionModel.setMissionInspectionStatus(0);
             missionModel.setMissionType(1);
 
+            if(isMissionNameRepeat(missionModel)){
+                return Result.failure(ResultCode.CREATE_MISSION_REPEAT_NAME);
+            }
+
             int missionId = missionService.createMission(missionModel);
             if(missionId > 0 ){
                 try {
@@ -251,13 +255,7 @@ public class MissionManagerController {
             if(missionService.isCurrentlyExe(missId)){
                 return Result.failure();
             }
-            //移除定时任务
-            try {
-                missionService.removeSingleJob(String.valueOf(missionId));
-            }catch (SchedulerException e){
-                return Result.failure();
-            }
-            inspectionMission.setMissionName(missionName);
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = null;
             long m2 = 120000;
@@ -289,6 +287,19 @@ public class MissionManagerController {
             //文件总数
             inspectionMission.setMissionTotalNum(missionTotalNum);
 
+            if(!inspectionMission.getMissionName().equals(missionName)){
+                inspectionMission.setMissionName(missionName);
+                if(isMissionNameRepeat(inspectionMission)){
+                    return Result.failure(ResultCode.CREATE_MISSION_REPEAT_NAME);
+                }
+            }
+
+            //移除定时任务
+            try {
+                missionService.removeSingleJob(String.valueOf(missionId));
+            }catch (SchedulerException e){
+                return Result.failure();
+            }
             //更新数据库
             if(missionService.updateSingleMission(inspectionMission) > 0){
                 try {
@@ -318,7 +329,7 @@ public class MissionManagerController {
             @RequestParam("missionDescribe")String missionDescribe,
             @RequestParam("ftpPath")String ftpPath,
             @RequestParam("scanTime")String scanTime,
-            @RequestParam("scanDay")String scanDay
+            @RequestParam("scanDay")List<String> scanDays
             ){
         if(missId.equals("")){
             //获取用户信息
@@ -370,8 +381,17 @@ public class MissionManagerController {
                 cycle.append(" ");
             }
             cycle.append("? * ");
-            cycle.append(scanDay);
+            for (String scanDay : scanDays){
+                cycle.append(scanDay + ",");
+            }
+            cycle.deleteCharAt(cycle.length() - 1);
+
             inspectionMission.setMissionCycle(cycle.toString());
+
+            if(isMissionNameRepeat(inspectionMission)){
+                return Result.failure(ResultCode.CREATE_MISSION_REPEAT_NAME);
+            }
+
             int missionId = missionService.createMission(inspectionMission);
             if(missionId > 0){
                 //添加定时任务
@@ -396,7 +416,6 @@ public class MissionManagerController {
                 return Result.failure();
             }
             //写入对象中
-            inspectionMission.setMissionName(missionName);
             inspectionMission.setMissionIstransfer(missionIstransfer);
             inspectionMission.setMissionIsinspection(missionIsinspection);
             inspectionMission.setMissionIstaboo(missionIstaboo);
@@ -411,7 +430,18 @@ public class MissionManagerController {
                 cycle.append(" ");
             }
             cycle.append("? * ");
-            cycle.append(scanDay);
+            for (String scanDay : scanDays){
+                cycle.append(scanDay + ",");
+            }
+            cycle.deleteCharAt(cycle.length() - 1);
+
+            if (!inspectionMission.getMissionName().equals(missionName)){
+                inspectionMission.setMissionName(missionName);
+                if(isMissionNameRepeat(inspectionMission)){
+                    return Result.failure(ResultCode.CREATE_MISSION_REPEAT_NAME);
+                }
+            }
+
             if(!inspectionMission.getMissionBegintime().equals(missionBegintime) ||
                 !inspectionMission.getMissionCycle().equals(cycle.toString())){
                 if(missionService.isCurrentlyExe(missId)){
@@ -441,6 +471,20 @@ public class MissionManagerController {
                 }
             }
         }
+    }
+
+    //判断任务名称是否重名
+    private boolean isMissionNameRepeat(InspectionMission mission){
+        List<InspectionMission> list = missionService.getMissionByCreaterId(mission.getMissionCreaterid());
+        if(list.size() == 0){
+            return false;
+        }
+        for (InspectionMission name : list){
+            if (name.getMissionName().equals(mission.getMissionName())){
+                return true;
+            }
+        }
+        return false;
     }
 
     //创建任务前调用

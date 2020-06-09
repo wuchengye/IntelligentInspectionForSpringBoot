@@ -23,6 +23,8 @@ public interface MissionMapper extends Mapper<InspectionMission> {
 	void deleteMissionById(@Param("missionId") int missionId);
     void updateRemainById(@Param("time") String time,@Param("id") int id);
     void updateCompleteTime(@Param("missionId")int missionId,@Param("time")String time);
+
+    List<InspectionMission> getMissionByCreaterId(@Param("createrId") int createrId);
 }
 
 

@@ -109,4 +109,9 @@
 	<update id="updateCompleteTime">
 		update inspection_mission set mission_completetime=#{time} where mission_id=#{missionId}
 	</update>
+
+	<select id="getMissionByCreaterId" resultType="com.bda.bdaqm.mission.model.InspectionMission">
+		 select * from inspection_mission
+        	where mission_createrid=#{createrId}
+	</select>
 </mapper>

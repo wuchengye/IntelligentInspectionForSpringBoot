@@ -91,10 +91,10 @@ public class SchedulerUtils {
                                         .usingJobData("missionId",mission.getMissionId().toString())
                                         .build();
 
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(mission.getMissionCycle() + " *");
 /*
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(mission.getMissionCycle());
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("15 * * ? * 2,3,4,5,6,7,1 *");
 */
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule("0/15 * * * * ? *");
         String startTime = mission.getMissionBegintime();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -105,8 +105,8 @@ public class SchedulerUtils {
         }
         Trigger trigger = TriggerBuilder.newTrigger()
                                         .withIdentity(mission.getMissionId().toString(),"group2")
-                                        /*.startAt(date)*/
-                                        .startNow()
+                                        .startAt(date)
+                                        /*.startNow()*/
                                         .withSchedule(cronScheduleBuilder)
                                         .build();
 

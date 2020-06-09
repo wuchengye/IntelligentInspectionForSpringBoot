@@ -141,4 +141,9 @@ public class MissionService {
         missionMapper.updateMissionInspectionStatus(missionId,(int) p);
         return true;
     }
+
+    //根据任务创建者id查找任务
+    public List getMissionByCreaterId(int createrId){
+        return missionMapper.getMissionByCreaterId(createrId);
+    }
 }

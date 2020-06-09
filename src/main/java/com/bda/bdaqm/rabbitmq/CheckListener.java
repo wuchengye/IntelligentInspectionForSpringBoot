@@ -139,20 +139,22 @@ public class CheckListener implements ChannelAwareMessageListener {
     //更新所有任务剩余时间
     private void updateMissionRemain(){
         List<InspectionMission> running = missionService.getListMissionByStatus(1);
-        List<InspectionMissionJobDetail> runningJob = missionJobDetailService.getListByMissions(running);
-        Map<String,String> map = new HashMap();
-        for (InspectionMission in : running){
-            map.put(String.valueOf(in.getMissionId()),String.valueOf(0));
-        }
-        int fal = 0;
-        for (int i = 0; i < runningJob.size(); i++){
-            if(runningJob.get(i).getFileStatus() == 0 || runningJob.get(i).getFileStatus() == 5){
-                fal++;
+        if(running.size() > 0) {
+            List<InspectionMissionJobDetail> runningJob = missionJobDetailService.getListByMissions(running);
+            Map<String, String> map = new HashMap();
+            for (InspectionMission in : running) {
+                map.put(String.valueOf(in.getMissionId()), String.valueOf(0));
             }
-            map.put(String.valueOf(runningJob.get(i).getMissionId()),String.valueOf(i+1-fal));
-        }
-        for (String key : map.keySet()){
-            missionService.updateRemainById(key,map.get(key));
+            int fal = 0;
+            for (int i = 0; i < runningJob.size(); i++) {
+                if (runningJob.get(i).getFileStatus() == 0 || runningJob.get(i).getFileStatus() == 5) {
+                    fal++;
+                }
+                map.put(String.valueOf(runningJob.get(i).getMissionId()), String.valueOf(i + 1 - fal));
+            }
+            for (String key : map.keySet()) {
+                missionService.updateRemainById(key, map.get(key));
+            }
         }
     }
 
