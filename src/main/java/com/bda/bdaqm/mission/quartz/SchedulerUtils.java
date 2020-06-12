@@ -1,14 +1,19 @@
 package com.bda.bdaqm.mission.quartz;
 
 import com.bda.bdaqm.mission.model.InspectionMission;
+import com.bda.bdaqm.mission.model.QuartzTestModel;
 import org.quartz.*;
+import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.StdScheduler;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 
 public class SchedulerUtils {
     private static StdScheduler scheduler = (StdScheduler) new ClassPathXmlApplicationContext("spring/applicationContext-quartz.xml")
@@ -55,14 +60,24 @@ public class SchedulerUtils {
 
 
     public static void removeSingleJob(String missionId) throws SchedulerException {
+        if(! scheduler.isStarted()){
+            scheduler.start();
+        }
         TriggerKey triggerKey = TriggerKey.triggerKey(missionId,"group1");
         JobKey jobKey = JobKey.jobKey(missionId,"group1");
+        System.out.println("单次暂停前");
         scheduler.pauseTrigger(triggerKey);
+        System.out.println("单次暂停后，unshedulejob前");
         scheduler.unscheduleJob(triggerKey);
+        System.out.println("unshedulejob后，delete前");
         scheduler.deleteJob(jobKey);
+        System.out.println("delete后");
     }
 
     public static void removeCommonJob(String missionId) throws SchedulerException {
+        if(! scheduler.isStarted()){
+            scheduler.start();
+        }
         TriggerKey triggerKey = TriggerKey.triggerKey(missionId,"group2");
         JobKey jobKey = JobKey.jobKey(missionId,"group2");
         scheduler.pauseTrigger(triggerKey);
@@ -138,5 +153,36 @@ public class SchedulerUtils {
         return false;
     }
 
+    //获取scheduler中的任务
+    public static List<QuartzTestModel> getListJobsInScheduler(){
+        List<QuartzTestModel> list = new ArrayList<>();
+        try {
+            //获取所有的group
+            List<String> triggerGroupNames = scheduler.getTriggerGroupNames();
+            for(String name : triggerGroupNames){
+                //组装group的匹配，为了模糊获取所有的triggerKey或者jobKey
+                GroupMatcher groupMatcher = GroupMatcher.groupEquals(name);
+                //获取所有的triggerKey
+                Set<TriggerKey> triggerKeySet = scheduler.getTriggerKeys(groupMatcher);
+                for (TriggerKey triggerKey : triggerKeySet) {
+                    //通过triggerKey在scheduler中获取trigger对象
+                    CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+                    //获取trigger拥有的Job
+                    JobKey jobKey = trigger.getJobKey();
+                    JobDetailImpl jobDetail = (JobDetailImpl) scheduler.getJobDetail(jobKey);
+
+                    QuartzTestModel quartzTestModel = new QuartzTestModel();
+                    quartzTestModel.setGroupName(name);
+                    quartzTestModel.setJobDetailName(jobDetail.getName());
+                    quartzTestModel.setJobCronExpression(trigger.getCronExpression());
+                    quartzTestModel.setTimeZone(trigger.getTimeZone().getID());
+                    list.add(quartzTestModel);
+                }
+            }
+        }catch (Exception e){
+            System.out.println("获取定时器中的任务失败：" + e.getMessage());
+        }
+        return list;
+    }
 
 }

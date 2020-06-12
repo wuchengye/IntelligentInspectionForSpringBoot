@@ -7,12 +7,11 @@ import com.bda.bdaqm.admin.service.MyRoleService;
 import com.bda.bdaqm.admin.service.UserOprService;
 import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
+import com.bda.bdaqm.mission.model.QuartzTestModel;
 import com.bda.bdaqm.mission.quartz.SchedulerUtils;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
-
 import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
-import com.bda.bdaqm.rabbitmq.model.VoiceResult;
 import com.bda.bdaqm.risk.model.ComplaintSession;
 import com.bda.bdaqm.risk.model.TabooSession;
 import com.bda.bdaqm.risk.service.ComplaintService;
@@ -21,7 +20,6 @@ import com.bda.bdaqm.util.FileUtils;
 import com.bda.bdaqm.util.FtpUtil;
 import com.bda.bdaqm.util.SFTPUtil3;
 import com.bda.bdaqm.util.UZipFile;
-
 import com.bda.easyui.bean.DataGrid;
 import com.bda.easyui.bean.Page;
 import com.github.pagehelper.PageInfo;
@@ -42,18 +40,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -337,6 +325,11 @@ public class MissionManagerController {
             User user = (User)subject.getPrincipal();
             String missionCreaterRole = myRoleService.getRoleNameByUserId(user.getUserId());
 
+            List<InspectionMission> list = missionService.isCreateCommonMission(user.getUserId(),"0");
+            if(list != null && list.size() > 0){
+                return Result.failure(ResultCode.MISSION_EXIST);
+            }
+
             InspectionMission inspectionMission = new InspectionMission();
             inspectionMission.setMissionName(missionName);
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -449,7 +442,7 @@ public class MissionManagerController {
                 }
                 try {
                     missionService.removeCommonJob(missId);
-                } catch (SchedulerException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 inspectionMission.setMissionBegintime(missionBegintime);
@@ -548,7 +541,9 @@ public class MissionManagerController {
                 return Result.success();
             }else {
                 SFTPUtil3 sftpUtil3 = new SFTPUtil3(path,account,pwd);
-                sftpUtil3.connect();
+                if(!sftpUtil3.connect()){
+                    return Result.failure(ResultCode.FTP_CONNECT_FAILURE);
+                }
                 if(sftpUtil3.getSftp().isConnected()){
                     return Result.success();
                 }else {
@@ -796,6 +791,9 @@ public class MissionManagerController {
     public Result missionDelete(String missionId){
         int Id = Integer.valueOf(missionId);
         InspectionMission inspectionMission = missionService.getMissionByMissionId(Id);
+        if(inspectionMission == null){
+            return Result.failure();
+        }
         if(inspectionMission.getMissionStatus() ==  1){
             return Result.failure();
         }
@@ -803,11 +801,14 @@ public class MissionManagerController {
         if(inspectionMission.getMissionType() == 0){
             //常规
             if(missionService.isCurrentlyExe(String.valueOf(inspectionMission.getMissionId()))){
+                System.out.println("删除任务正在运行");
                 return Result.failure(ResultCode.COMMONJOB_RUNNING);
             }
             try {
+                System.out.println("删除任务正在移除");
                 missionService.removeCommonJob(String.valueOf(inspectionMission.getMissionId()));
-            }catch (SchedulerException e){
+            }catch (Exception e){
+                System.out.println("常规移除失败");
                 return Result.failure(ResultCode.COMMONJOB_REMOVE_FAILURE);
             }
             missionService.deleteMissionById(inspectionMission.getMissionId());
@@ -818,11 +819,14 @@ public class MissionManagerController {
             //单次
             if(inspectionMission.getMissionStatus() == 0){
                 if(missionService.isCurrentlyExe(String.valueOf(inspectionMission.getMissionId()))){
+                    System.out.println("单次正在执行");
                     return Result.failure();
                 }
                 try{
+                    System.out.println("单次正在移除");
                     missionService.removeSingleJob(String.valueOf(inspectionMission.getMissionId()));
-                }catch (SchedulerException e){
+                }catch (Exception e){
+                    System.out.println("单次移除失败");
                     return Result.failure();
                 }
                 missionService.deleteMissionById(inspectionMission.getMissionId());
@@ -931,6 +935,11 @@ public class MissionManagerController {
             result.addAll(users);
         }
         return result;
+    }
+
+    @RequestMapping("/testGetJobs")
+    public List<QuartzTestModel> testGetJobs(){
+        return SchedulerUtils.getListJobsInScheduler();
     }
 
 

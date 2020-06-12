@@ -37,7 +37,9 @@ public enum ResultCode {
     COMMONJOB_RUNNING(11001,"正在运行"),
     COMMONJOB_REMOVE_FAILURE(11002,"移除失败"),
 
-    CREATE_MISSION_REPEAT_NAME(12001,"任务名重复");
+    CREATE_MISSION_REPEAT_NAME(12001,"任务名重复"),
+
+    MISSION_EXIST(130001,"任务存在");
 
     private Integer code;
     private String message;

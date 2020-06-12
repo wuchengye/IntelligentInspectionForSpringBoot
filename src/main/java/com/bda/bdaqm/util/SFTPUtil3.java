@@ -54,7 +54,7 @@ public class SFTPUtil3 {
 	    /**
 	     * 通过SFTP连接服务器
 	     */
-	    public void connect()
+	    public boolean connect()
 	    {
 	        try
 	        {
@@ -69,10 +69,12 @@ public class SFTPUtil3 {
 	            Channel channel = sshSession.openChannel("sftp");
 	            channel.connect();
 	            sftp = (ChannelSftp) channel;
+	            return true;
 	        }
 	        catch (Exception e)
 	        {
 	            e.printStackTrace();
+	            return false;
 	        }
 	    }
 
