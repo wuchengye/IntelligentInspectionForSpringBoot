@@ -364,4 +364,37 @@ public class InspectionMission implements Serializable {
     public void setMissionCycle(String missionCycle) {
         this.missionCycle = missionCycle;
     }
+
+    @Override
+    public String toString() {
+        return "InspectionMission{" +
+                "missionId=" + missionId +
+                ", missionName='" + missionName + '\'' +
+                ", missionDescribe='" + missionDescribe + '\'' +
+                ", missionType=" + missionType +
+                ", missionStatus=" + missionStatus +
+                ", missionBegintime='" + missionBegintime + '\'' +
+                ", missionTaboo=" + missionTaboo +
+                ", missionIstaboo=" + missionIstaboo +
+                ", missionRisk=" + missionRisk +
+                ", missionIsrisk=" + missionIsrisk +
+                ", missionNodubious=" + missionNodubious +
+                ", missionIsnodubious=" + missionIsnodubious +
+                ", missionRemaining='" + missionRemaining + '\'' +
+                ", missionUploadStatus=" + missionUploadStatus +
+                ", missionTransferStatus=" + missionTransferStatus +
+                ", missionInspectionStatus=" + missionInspectionStatus +
+                ", missionLevel=" + missionLevel +
+                ", missionIstransfer=" + missionIstransfer +
+                ", missionIsinspection=" + missionIsinspection +
+                ", missionFilepath='" + missionFilepath + '\'' +
+                ", missionCreaterid=" + missionCreaterid +
+                ", missionTotalNum=" + missionTotalNum +
+                ", missionPhasedCompletionNum=" + missionPhasedCompletionNum +
+                ", missionFtp='" + missionFtp + '\'' +
+                ", missionCycle='" + missionCycle + '\'' +
+                ", missionCreaterRole='" + missionCreaterRole + '\'' +
+                ", missionCompletetime='" + missionCompletetime + '\'' +
+                '}';
+    }
 }

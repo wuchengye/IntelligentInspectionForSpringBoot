@@ -8,7 +8,7 @@ public enum ResultCode {
 
     NO_PREMISSION(403,"403"),
     NOT_LOGIN(500,"500"),
-    OVERRIDE_NOT_LOGIN_CODE(404,"暂未登录"),
+    OVERRIDE_NOT_LOGIN_CODE(404,"用户名或密码错误!"),
     OVERRIDE_LOGIN_CODE(200,"已经登录过了"),
 
     NO_PREMISSION_TO_OPRATION(101,"没有添加或者删除任何权限"),

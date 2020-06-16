@@ -10,6 +10,7 @@ import com.bda.bdaqm.risk.model.TabooSession;
 import com.bda.bdaqm.risk.service.ComplaintService;
 import com.bda.bdaqm.risk.service.DubiousService;
 import com.bda.bdaqm.risk.service.UsedTabooService;
+import com.bda.bdaqm.websocket.WebsocketController;
 import com.rabbitmq.client.Channel;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.amqp.core.Message;
@@ -93,12 +94,18 @@ public class CheckListener implements ChannelAwareMessageListener {
                     //isMissionInspectionComplete(jobId);
                     updateMissionRemain();
                     isMissionComplete(jobId);
+                    //websocket
+                    WebsocketController.updateMission(missionService.getMissionByMissionId(missionJobDetailService.getByJobId(jobId).getMissionId()));
+                    WebsocketController.updateMission(missionService.getListMissionByStatus(1));
                 } else {
                     System.out.println("找不到sessionId");
                     missionJobDetailService.updateInspectionStatus(jobId, 0, 0, "质检失败");
                     //isMissionInspectionComplete(jobId);
                     updateMissionRemain();
                     isMissionComplete(jobId);
+                    //websocket
+                    WebsocketController.updateMission(missionService.getMissionByMissionId(missionJobDetailService.getByJobId(jobId).getMissionId()));
+                    WebsocketController.updateMission(missionService.getListMissionByStatus(1));
                 }
             } else {
                 //质检失败
@@ -107,6 +114,9 @@ public class CheckListener implements ChannelAwareMessageListener {
                 //isMissionInspectionComplete(jobId);
                 updateMissionRemain();
                 isMissionComplete(jobId);
+                //websocket
+                WebsocketController.updateMission(missionService.getMissionByMissionId(missionJobDetailService.getByJobId(jobId).getMissionId()));
+                WebsocketController.updateMission(missionService.getListMissionByStatus(1));
             }
 
             //确认ACK
@@ -118,6 +128,9 @@ public class CheckListener implements ChannelAwareMessageListener {
             //isMissionInspectionComplete(jobId);
             updateMissionRemain();
             isMissionComplete(jobId);
+            //websocket
+            WebsocketController.updateMission(missionService.getMissionByMissionId(missionJobDetailService.getByJobId(jobId).getMissionId()));
+            WebsocketController.updateMission(missionService.getListMissionByStatus(1));
         }
     }
 

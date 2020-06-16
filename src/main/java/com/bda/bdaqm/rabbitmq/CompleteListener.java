@@ -5,6 +5,7 @@ import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
 import com.bda.bdaqm.rabbitmq.model.VoiceResult;
+import com.bda.bdaqm.websocket.WebsocketController;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
@@ -68,6 +69,8 @@ public class CompleteListener implements ChannelAwareMessageListener {
             if (state.equals("0")) {
                 missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 2, "转写中", 0);
                 missionService.updateMissionTransferStatus(imj.getMissionId(),1);
+                //websocket
+                WebsocketController.updateMission(missionService.getMissionByMissionId(imj.getMissionId()));
             }
 
             //转写完
@@ -107,6 +110,8 @@ public class CompleteListener implements ChannelAwareMessageListener {
                 }
                 //更新任务表的转写状态跟任务状态
                 isMissionTransferComplete(imj);
+                //websocket
+                WebsocketController.updateMission(missionService.getMissionByMissionId(imj.getMissionId()));
             }
 
             //确认ACK
@@ -118,6 +123,8 @@ public class CompleteListener implements ChannelAwareMessageListener {
             isMissionComplete(imj);
             //更新任务表的转写状态跟任务状态
             isMissionTransferComplete(imj);
+            //websocket
+            WebsocketController.updateMission(missionService.getMissionByMissionId(imj.getMissionId()));
         }
     }
 

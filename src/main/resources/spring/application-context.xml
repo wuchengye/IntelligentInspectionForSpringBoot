@@ -190,6 +190,8 @@
 				/usermanage/user/login = authc
 				/admin/logout = logout
 				/** = user-->
+				/websocket = anon
+				/websocket/** = anon
 				/usermanage/user/login = authc
 				/admin/logout = logout
 				/** = login

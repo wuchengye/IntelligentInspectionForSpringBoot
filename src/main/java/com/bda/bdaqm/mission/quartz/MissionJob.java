@@ -9,6 +9,7 @@ import com.bda.bdaqm.rabbitmq.RabbitmqProducer;
 import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.bdaqm.util.SFTPUtil3;
 import com.bda.bdaqm.util.StringUtils;
+import com.bda.bdaqm.websocket.WebsocketController;
 import io.swagger.models.auth.In;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -125,6 +126,9 @@ public class MissionJob implements Job {
         }
 
         missionService.updateMissionUploadStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
+
+        //websocket
+        WebsocketController.updateMission(missionService.getMissionByMissionId(Integer.valueOf(jobDataMap.getString("missionId"))));
     }
 
 }

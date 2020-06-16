@@ -9,6 +9,7 @@ import com.bda.bdaqm.util.FtpUtil;
 import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.bdaqm.util.SFTPUtil3;
 import com.bda.bdaqm.util.StringUtils;
+import com.bda.bdaqm.websocket.WebsocketController;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import org.apache.commons.net.ftp.FTPClient;
@@ -215,6 +216,9 @@ public class MissionCommonJob implements Job {
                     missionService.updateMissionStatus(Integer.valueOf(jobDataMap.getString("missionId")),2);
                 }
                 missionService.updateMissionUploadStatus(inspectionMission.getMissionId(),2);
+
+                //websocket
+                WebsocketController.updateMission(missionService.getMissionByMissionId(inspectionMission.getMissionId()));
                 //删除临时文件夹
                 deleteTemp(tempPath);
                 //添加记录
