@@ -1,18 +1,20 @@
 package com.bda.bdaqm.rabbitmq;
 
+import com.bda.bdaqm.mission.model.BdaqmTotal;
 import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
 import com.bda.bdaqm.mission.service.SessionJobService;
+import com.bda.bdaqm.mission.service.TotalService;
 import com.bda.bdaqm.risk.model.ComplaintSession;
+import com.bda.bdaqm.risk.model.NotDubious;
 import com.bda.bdaqm.risk.model.TabooSession;
 import com.bda.bdaqm.risk.service.ComplaintService;
 import com.bda.bdaqm.risk.service.DubiousService;
 import com.bda.bdaqm.risk.service.UsedTabooService;
 import com.bda.bdaqm.websocket.WebsocketController;
 import com.rabbitmq.client.Channel;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class CheckListener implements ChannelAwareMessageListener {
 
@@ -34,6 +35,8 @@ public class CheckListener implements ChannelAwareMessageListener {
     private MissionService missionService;
     @Autowired
     private SessionJobService sessionJobService;
+    @Autowired
+    private TotalService totalService;
     @Autowired
     private ComplaintService complaintService;
     @Autowired
@@ -181,42 +184,115 @@ public class CheckListener implements ChannelAwareMessageListener {
         return oi.readObject();
     }
 
-    //获取到sessionID后的数据库操作，插入关联表、统计个数和替换文件名地址
+    //获取到sessionID后的数据库操作，插入总表、统计个数和替换文件名地址
     private void saveSessionIdToDB(String sessionId, int jobId) {
 
         InspectionMissionJobDetail job = missionJobDetailService.getByJobId(jobId);
 
-        //插入关联表
-        sessionJobService.insertSessionJob(sessionId, jobId);
+        //替换FileName和FilePath
+        replaceFileNameAndPath(sessionId, job);
 
-        //统计个数
         ComplaintSession cs = complaintService.getComplaintSessionById(sessionId);
         TabooSession ts = usedTabooService.getTabooSessionById(sessionId);
+
+        //插入总表
+        BdaqmTotal total = new BdaqmTotal();
+        total.setSessionId(sessionId);
+        total.setMissionId(job.getMissionId());
+        total.setJobId(jobId);
+        insertTotal(dubiousService.getDubiousById(sessionId), total);
+        insertTotal(cs, total);
+        insertTotal(ts, total);
+
+        //统计个数
+        Statistics(job, cs, ts);
+    }
+
+    //统计非可疑、投诉、禁语个数，更新到数据库
+    private void Statistics(InspectionMissionJobDetail job, ComplaintSession cs, TabooSession ts) {
         InspectionMission mission = missionService.getMissionByMissionId(job.getMissionId());
         int missionRisk = mission.getMissionRisk();
         int missionTaboo = mission.getMissionTaboo();
         int missionNodubious = mission.getMissionNodubious();
-        if (cs == null && ts == null) {
-            //非可疑
-            missionNodubious++;
-        }
         if (cs != null) {
-            //投诉风险
             missionRisk++;
-            missionJobDetailService.updateIsRiskAndIsTaboo(jobId, 1, 0);
+            missionJobDetailService.updateIsRiskAndIsTaboo(job.getJobId(), 1, 0);
         }
         if (ts != null) {
-            //服务禁语
             missionTaboo++;
-            missionJobDetailService.updateIsRiskAndIsTaboo(jobId, 0, 1);
+            missionJobDetailService.updateIsRiskAndIsTaboo(job.getJobId(), 0, 1);
+        }
+        if (cs == null && ts == null) {
+            missionNodubious++;
         }
         missionService.updateCount(job.getMissionId(), missionRisk, missionTaboo, missionNodubious);
+    }
 
-        //替换文件名、地址
+    //替换FileName和FilePath，更新到数据库
+    private void replaceFileNameAndPath(String sessionId, InspectionMissionJobDetail job) {
         String fileName = job.getFileName();
         String filePath = job.getFilePath();
         dubiousService.updateFileNameAndFilePath(sessionId, fileName, filePath);
         usedTabooService.updateFileNameAndFilePath(sessionId, fileName, filePath);
         complaintService.updateFileNameAndFilePath(sessionId, fileName, filePath);
+    }
+
+    private void insertTotal(NotDubious ns, BdaqmTotal total) {
+        if (ns == null) {
+            return;
+        }
+        total.setType(0);
+        total.setFileName(ns.getFileName());
+        total.setFilePath(ns.getFilePath());
+        total.setContactTime(ns.getContactTime());
+        total.setRecordDate(ns.getRecordDate()!=null ? ns.getRecordDate() : "1997-01-01");
+        total.setDataUpdateTime(ns.getDataUpdateTime());
+        total.setIsmute45s("否");//默认否
+        totalService.insertTotal(total);
+    }
+
+    private void insertTotal(ComplaintSession cs, BdaqmTotal total) {
+        if (cs == null) {
+            return;
+        }
+        total.setType(1);
+        total.setFileName(cs.getFileName());
+        total.setFilePath(cs.getFilePath());
+        total.setKeyword(cs.getKeyword());
+        total.setContactTime(cs.getContactTime());
+        total.setRecordDate(cs.getRecordDate());
+        total.setCheckStatus(cs.getCheckStatus());
+        total.setCheckAccounts(cs.getCheckAccounts());
+        total.setPersonIsProblem(cs.getPersonIsProblem());
+        total.setTransferIstrue(cs.getTransferIstrue());
+        total.setProblemDescribe(cs.getProblemDescribe());
+        total.setTrueTransferContent(cs.getTrueTransferContent());
+        total.setRemark(cs.getRemark());
+        total.setDataUpdateTime(cs.getDataUpdateTime());
+        total.setIsmute45s("否");//默认否
+        totalService.insertTotal(total);
+    }
+
+    private void insertTotal(TabooSession ts, BdaqmTotal total) {
+        if (ts == null) {
+            return;
+        }
+        total.setType(2);
+        total.setFileName(ts.getFileName());
+        total.setFilePath(ts.getFilePath());
+        total.setKeyword(ts.getKeyword());
+        total.setContactTime(ts.getContactTime());
+        total.setIsmute45s(ts.getIsmute45s());
+        total.setMuteLocation(ts.getMuteLocation());
+        total.setRecordDate(ts.getRecordDate());
+        total.setCheckStatus(ts.getCheckStatus());
+        total.setCheckAccounts(ts.getCheckAccounts());
+        total.setPersonIsProblem(ts.getPersonIsProblem());
+        total.setTransferIstrue(ts.getTransferIstrue());
+        total.setProblemDescribe(ts.getProblemDescribe());
+        total.setTrueTransferContent(ts.getTrueTransferContent());
+        total.setRemark(ts.getRemark());
+        total.setDataUpdateTime(ts.getDataUpdateTime());
+        totalService.insertTotal(total);
     }
 }

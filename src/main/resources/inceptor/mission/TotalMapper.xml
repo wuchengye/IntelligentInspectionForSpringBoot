@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.mission.mapper.TotalMapper">
+    <insert id="insertTotal" keyProperty="sessionId" parameterType="com.bda.bdaqm.mission.model.BdaqmTotal">
+		insert into bdaqm_total(session_id, mission_id, job_id, type, file_name, file_path,
+								keyword, record_date, ismute_45s, mute_location, contact_time,
+								check_status, check_accounts, person_is_problem, transfer_istrue,
+								problem_describe, true_transfer_content, remark, data_update_time)
+		values(#{sessionId},#{missionId},#{jobId},#{type},#{fileName},#{filePath},#{keyword},#{recordDate},
+				#{ismute45s},#{muteLocation},#{contactTime},#{checkStatus},#{checkAccounts},
+				#{personIsProblem},#{transferIstrue},#{problemDescribe},#{trueTransferContent},
+				#{remark},#{dataUpdateTime})
+	</insert>
+
+</mapper>
