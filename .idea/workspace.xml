@@ -7,19 +7,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c1d9b2b-83d9-4399-bad4-10a4e9e8ebfb" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_websocket_javax_websocket_api_1_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/bdasjs_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/bdasjs_war_exploded.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_websocket_4_3_5_RELEASE.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bdasjs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/bdasjs.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/RESTful/ResultCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/RESTful/ResultCode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/model/InspectionMission.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/model/InspectionMission.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionCommonJob.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionCommonJob.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionJob.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/quartz/MissionJob.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CheckListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CheckListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CompleteListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CompleteListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/spring/application-context.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/spring/application-context.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/websocket/WebsocketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/websocket/WebsocketController.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,6 +35,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -274,7 +265,10 @@
       <workItem from="1591579431340" duration="4140000" />
       <workItem from="1591665852060" duration="25404000" />
       <workItem from="1591840546823" duration="26387000" />
-      <workItem from="1592186492717" duration="27011000" />
+      <workItem from="1592186492717" duration="37514000" />
+      <workItem from="1592356993891" duration="38000" />
+      <workItem from="1592357304570" duration="22768000" />
+      <workItem from="1592462126344" duration="13911000" />
     </task>
     <servers />
   </component>

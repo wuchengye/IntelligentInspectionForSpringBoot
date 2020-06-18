@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.risk.mapper.AllMapper">
+    <select id="getNoJugeDetail" resultType = "com.bda.bdaqm.risk.model.NotDubious">
+        select session_id,file_name,file_path,contact_time,record_date,data_update_time from
+            bdaqm_total where 1=1
+            <if test="type != null">
+                and result_type=#{type}
+            </if>
+            <if test="missionId != null">
+                and mission_id=#{missionId}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name like CONCAT('%',#{fileName},'%')
+            </if>
+            <if test="recordStartDate != null and recordStartDate != ''">
+                and record_date <![CDATA[>=]]> #{recordStartDate}
+            </if>
+            <if test="recordEndDate != null and recordEndDate != ''">
+                and record_date <![CDATA[<=]]> #{recordEndDate}
+            </if>
+        order by record_date desc
+    </select>
+
+    <select id="getNoJugeDetail2" resultType = "com.bda.bdaqm.risk.model.NotDubious">
+        select session_id,file_name,file_path,contact_time,record_date,data_update_time from
+            bdaqm_total where
+        mission_id in (select mission_id from inspection_mission
+        where mission_createrid in
+        <foreach collection="allUserIds" item="userId" index="index" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+        )
+        <if test="type != null">
+            and result_type=#{type}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            and file_name like CONCAT('%',#{fileName},'%')
+        </if>
+        <if test="recordStartDate != null and recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{recordStartDate}
+        </if>
+        <if test="recordEndDate != null and recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{recordEndDate}
+        </if>
+        order by record_date desc
+    </select>
+
+    <select id="getComJugeDetail" resultType="com.bda.bdaqm.risk.model.ComplaintSession">
+        select session_id,file_name,file_path,keyword,record_date,contact_time,check_status,check_accounts,
+            person_is_problem,transfer_istrue,problem_describe,true_transfer_content,remark,data_update_time
+        from bdaqm_total where 1=1
+        <if test="type != null">
+            and result_type=#{type}
+        </if>
+        <if test="missionId != null">
+            and mission_id=#{missionId}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            and file_name like CONCAT('%',#{fileName},'%')
+        </if>
+        <if test="recordStartDate != null and recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{recordStartDate}
+        </if>
+        <if test="recordEndDate != null and recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{recordEndDate}
+        </if>
+        <if test="checkStatus != null and checkStatus != ''">
+            and check_status = #{checkStatus}
+        </if>
+        <if test="personIsProblem != null and personIsProblem != ''">
+            and person_is_problem = #{personIsProblem}
+        </if>
+        order by record_date desc
+    </select>
+
+    <select id="getComJugeDetail2" resultType="com.bda.bdaqm.risk.model.ComplaintSession">
+        select session_id,file_name,file_path,keyword,record_date,contact_time,check_status,check_accounts,
+            person_is_problem,transfer_istrue,problem_describe,true_transfer_content,remark,data_update_time
+        from bdaqm_total where
+        mission_id in (select mission_id from inspection_mission
+        where mission_createrid in
+        <foreach collection="allUserIds" item="userId" index="index" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+        )
+        <if test="type != null">
+            and result_type=#{type}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            and file_name like CONCAT('%',#{fileName},'%')
+        </if>
+        <if test="recordStartDate != null and recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{recordStartDate}
+        </if>
+        <if test="recordEndDate != null and recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{recordEndDate}
+        </if>
+        <if test="checkStatus != null and checkStatus != ''">
+            and check_status = #{checkStatus}
+        </if>
+        <if test="personIsProblem != null and personIsProblem != ''">
+            and person_is_problem = #{personIsProblem}
+        </if>
+        order by record_date desc
+    </select>
+
+    <select id="getTabJugeDetail" resultType="com.bda.bdaqm.risk.model.TabooSession">
+        select session_id,file_name,file_path,keyword,record_date,ismute_45s,mute_location,contact_time,
+            check_status,check_accounts,person_is_problem,transfer_istrue,problem_describe,
+            true_transfer_content,remark,data_update_time
+        from bdaqm_total where 1=1
+        <if test="type != null">
+            and result_type=#{type}
+        </if>
+        <if test="missionId != null">
+            and mission_id=#{missionId}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            and file_name like CONCAT('%',#{fileName},'%')
+        </if>
+        <if test="recordStartDate != null and recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{recordStartDate}
+        </if>
+        <if test="recordEndDate != null and recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{recordEndDate}
+        </if>
+        <if test="checkStatus != null and checkStatus != ''">
+            and check_status = #{checkStatus}
+        </if>
+        <if test="personIsProblem != null and personIsProblem != ''">
+            and person_is_problem = #{personIsProblem}
+        </if>
+        order by record_date desc
+    </select>
+
+    <select id="getTabJugeDetail2" resultType="com.bda.bdaqm.risk.model.TabooSession">
+        select session_id,file_name,file_path,keyword,record_date,ismute_45s,mute_location,contact_time,
+            check_status,check_accounts,person_is_problem,transfer_istrue,problem_describe,
+            true_transfer_content,remark,data_update_time
+        from bdaqm_total where
+        mission_id in (select mission_id from inspection_mission
+        where mission_createrid in
+        <foreach collection="allUserIds" item="userId" index="index" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+        )
+        <if test="type != null">
+            and result_type=#{type}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            and file_name like CONCAT('%',#{fileName},'%')
+        </if>
+        <if test="recordStartDate != null and recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{recordStartDate}
+        </if>
+        <if test="recordEndDate != null and recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{recordEndDate}
+        </if>
+        <if test="checkStatus != null and checkStatus != ''">
+            and check_status = #{checkStatus}
+        </if>
+        <if test="personIsProblem != null and personIsProblem != ''">
+            and person_is_problem = #{personIsProblem}
+        </if>
+        order by record_date desc
+    </select>
+
+    <update id="updateComplaintCheckResult">
+        update bdaqm_total
+		set person_is_problem = #{personIsProblem},
+		transfer_istrue = #{transferIstrue},
+		problem_describe = #{problemDescribe},
+		true_transfer_content = #{trueTransferContent},
+		remark = #{remark},
+		check_accounts=#{checkAccounts},
+		check_status = '已复核'
+		where session_id=#{sessionId} and result_type=#{type}
+    </update>
+
+    <insert id="insertCheckHistory">
+		insert into bdaqm_service_check_history
+		values(#{sessionId},#{personIsProblem},#{transferIstrue},#{problemDescribe},
+				#{checkAccounts},now())
+	</insert>
+
+    <select id="selectQuestionSessionDetail" resultType="com.bda.bdaqm.risk.model.SessionDetail">
+		select *  from bdaqm_questionable_session_detail
+		where stl_session_id = #{sessionId}
+    </select>
+
+    <select id="selectNoquestionSessionDetail" resultType="com.bda.bdaqm.risk.model.SessionDetail">
+		select *  from bdaqm_not_dubious_session_detail
+		where stl_session_id = #{sessionId}
+    </select>
+</mapper>
