@@ -54,7 +54,7 @@ public class WebsocketController {
                         if(String.valueOf(mission.getMissionId()).equals(id)){
                             try {
                                 onlineUser.get(entry.getKey()).getBasicRemote().sendText(JSONArray.toJSON(mission).toString());
-                                System.out.println("websocket发送消息---" + entry.getKey() + ":" + mission.toString());
+                                System.out.println("websocket发送消息---" + entry.getKey() + ":" + mission.getMissionId());
                             } catch (IOException e) {
                                 System.out.println("websocket发送错误---" + e.getMessage());
                             }
@@ -73,7 +73,7 @@ public class WebsocketController {
                     if(String.valueOf(inspectionMission.getMissionId()).equals(id)){
                         try {
                             onlineUser.get(entry.getKey()).getBasicRemote().sendText(JSONArray.toJSON(inspectionMission).toString());
-                            System.out.println("websocket发送消息---" + entry.getKey() + ":" + inspectionMission.toString());
+                            System.out.println("websocket发送消息---" + entry.getKey() + ":" + inspectionMission.getMissionId());
                         } catch (IOException e) {
                             System.out.println("websocket发送错误---" + e.getMessage());
                         }

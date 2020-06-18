@@ -364,4 +364,6 @@ public class InspectionMission implements Serializable {
     public void setMissionCycle(String missionCycle) {
         this.missionCycle = missionCycle;
     }
+
+
 }
