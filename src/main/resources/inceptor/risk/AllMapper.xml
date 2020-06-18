@@ -33,17 +33,17 @@
             #{userId}
         </foreach>
         )
-        <if test="type != null">
-            and result_type=#{type}
+        <if test="requestModel.type != null">
+            and result_type=#{requestModel.type}
         </if>
-        <if test="fileName != null and fileName != ''">
-            and file_name like CONCAT('%',#{fileName},'%')
+        <if test="requestModel.fileName != null and requestModel.fileName != ''">
+            and file_name like CONCAT('%',#{requestModel.fileName},'%')
         </if>
-        <if test="recordStartDate != null and recordStartDate != ''">
-            and record_date <![CDATA[>=]]> #{recordStartDate}
+        <if test="requestModel.recordStartDate != null and requestModel.recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{requestModel.recordStartDate}
         </if>
-        <if test="recordEndDate != null and recordEndDate != ''">
-            and record_date <![CDATA[<=]]> #{recordEndDate}
+        <if test="requestModel.recordEndDate != null and requestModel.recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{requestModel.recordEndDate}
         </if>
         order by record_date desc
     </select>
@@ -86,23 +86,23 @@
             #{userId}
         </foreach>
         )
-        <if test="type != null">
-            and result_type=#{type}
+        <if test="requestModel.type != null">
+            and result_type=#{requestModel.type}
         </if>
-        <if test="fileName != null and fileName != ''">
-            and file_name like CONCAT('%',#{fileName},'%')
+        <if test="requestModel.fileName != null and requestModel.fileName != ''">
+            and file_name like CONCAT('%',#{requestModel.fileName},'%')
         </if>
-        <if test="recordStartDate != null and recordStartDate != ''">
-            and record_date <![CDATA[>=]]> #{recordStartDate}
+        <if test="requestModel.recordStartDate != null and requestModel.recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{requestModel.recordStartDate}
         </if>
-        <if test="recordEndDate != null and recordEndDate != ''">
-            and record_date <![CDATA[<=]]> #{recordEndDate}
+        <if test="requestModel.recordEndDate != null and requestModel.recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{requestModel.recordEndDate}
         </if>
-        <if test="checkStatus != null and checkStatus != ''">
-            and check_status = #{checkStatus}
+        <if test="requestModel.checkStatus != null and requestModel.checkStatus != ''">
+            and check_status = #{requestModel.checkStatus}
         </if>
-        <if test="personIsProblem != null and personIsProblem != ''">
-            and person_is_problem = #{personIsProblem}
+        <if test="requestModel.personIsProblem != null and requestModel.personIsProblem != ''">
+            and person_is_problem = #{requestModel.personIsProblem}
         </if>
         order by record_date desc
     </select>
@@ -147,23 +147,23 @@
             #{userId}
         </foreach>
         )
-        <if test="type != null">
-            and result_type=#{type}
+        <if test="requestModel.type != null">
+            and result_type=#{requestModel.type}
         </if>
-        <if test="fileName != null and fileName != ''">
-            and file_name like CONCAT('%',#{fileName},'%')
+        <if test="requestModel.fileName != null and requestModel.fileName != ''">
+            and file_name like CONCAT('%',#{requestModel.fileName},'%')
         </if>
-        <if test="recordStartDate != null and recordStartDate != ''">
-            and record_date <![CDATA[>=]]> #{recordStartDate}
+        <if test="requestModel.recordStartDate != null and requestModel.recordStartDate != ''">
+            and record_date <![CDATA[>=]]> #{requestModel.recordStartDate}
         </if>
-        <if test="recordEndDate != null and recordEndDate != ''">
-            and record_date <![CDATA[<=]]> #{recordEndDate}
+        <if test="requestModel.recordEndDate != null and requestModel.recordEndDate != ''">
+            and record_date <![CDATA[<=]]> #{requestModel.recordEndDate}
         </if>
-        <if test="checkStatus != null and checkStatus != ''">
-            and check_status = #{checkStatus}
+        <if test="requestModel.checkStatus != null and requestModel.checkStatus != ''">
+            and check_status = #{requestModel.checkStatus}
         </if>
-        <if test="personIsProblem != null and personIsProblem != ''">
-            and person_is_problem = #{personIsProblem}
+        <if test="requestModel.personIsProblem != null and requestModel.personIsProblem != ''">
+            and person_is_problem = #{requestModel.personIsProblem}
         </if>
         order by record_date desc
     </select>

@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface AllMapper {
     List<NotDubious> getNoJugeDetail(RequestModel requestModel);
-    List<NotDubious> getNoJugeDetail2(RequestModel requestModel,@Param("allUserIds") List<String> allUserIds);
+    List<NotDubious> getNoJugeDetail2(@Param("requestModel") RequestModel requestModel,@Param("allUserIds") List<String> allUserIds);
 
     List<ComplaintSession> getComJugeDetail(RequestModel requestModel);
-    List<ComplaintSession> getComJugeDetail2(RequestModel requestModel,@Param("allUserIds") List<String> allUserIds);
+    List<ComplaintSession> getComJugeDetail2(@Param("requestModel") RequestModel requestModel,@Param("allUserIds") List<String> allUserIds);
 
     List<TabooSession> getTabJugeDetail(RequestModel requestModel);
-    List<TabooSession> getTabJugeDetail2(RequestModel requestModel,@Param("allUserIds") List<String> allUserIds);
+    List<TabooSession> getTabJugeDetail2(@Param("requestModel") RequestModel requestModel,@Param("allUserIds") List<String> allUserIds);
 
     void updateComplaintCheckResult(RequestModel requestModel);
     void insertCheckHistory(RequestModel requestModel);
