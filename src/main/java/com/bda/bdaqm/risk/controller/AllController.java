@@ -7,6 +7,7 @@ import com.bda.bdaqm.admin.service.UserOprService;
 import com.bda.bdaqm.risk.model.RequestModel;
 import com.bda.bdaqm.risk.model.SessionDetail;
 import com.bda.bdaqm.risk.service.AllService;
+import com.bda.bdaqm.util.FileUtils;
 import com.bda.bdaqm.util.PropertyMgr;
 import com.bda.common.bean.OperaterResult;
 import com.bda.common.controller.BaseController;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -130,7 +132,7 @@ public class AllController extends BaseController {
                 e.printStackTrace();
                 return Result.failure();
             }
-            return Result.success();
+            return Result.success(downloadPath);
         }else {
             return Result.failure();
         }
@@ -171,6 +173,34 @@ public class AllController extends BaseController {
             return Result.success(new OperaterResult<>(true, "", localRelateWAVpath + fileName));
         }
 
+    }
+
+    @RequestMapping("/cleanRecordDir")
+    public Result cleanRecordDir(){
+        //本地V3文件相对路径
+        String localRelateV3path = "/upload/dataManage/v3/";
+        //本地WAV文件相对路径
+        String localRelateWAVpath = "/upload/dataManage/wav/";
+
+        //根据相对路径获取绝对路径
+        URL v3url = this.getClass().getClassLoader().getResource("../.."+localRelateV3path);
+        if(null != v3url){
+            String localV3path = v3url.getPath();
+            logger.info("删除V3文件"+localV3path);
+            FileUtils.delAllFile(localV3path);
+            logger.info("删除V3文件"+localV3path+"成功");
+        }
+
+        //根据相对路径获取绝对路径
+        URL WAVurl = this.getClass().getClassLoader().getResource("../.."+localRelateWAVpath);
+        if(null != WAVurl){
+            String localWAVpath = WAVurl.getPath();
+            logger.info("删除WAV文件"+localWAVpath);
+            FileUtils.delAllFile(localWAVpath);
+            logger.info("删除WAV文件"+localWAVpath+"成功");
+        }
+        //return new OperaterResult<>(true,"","清除缓存文件夹成功！");
+        return Result.success("清除缓存文件夹成功");
     }
 
     //获取任务列表用；查询当前用户所创建的用户

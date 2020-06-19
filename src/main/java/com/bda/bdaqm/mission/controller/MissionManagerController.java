@@ -66,10 +66,6 @@ public class MissionManagerController {
 
     @Autowired
     private UserOprService userService;
-    @Autowired
-    private ComplaintService complaintService;
-    @Autowired
-    private UsedTabooService usedTabooService;
 
     @Autowired
     private RabbitmqProducer rabbitmqProducer;
@@ -750,23 +746,6 @@ public class MissionManagerController {
             is.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-
-    @RequestMapping("/mqTest")
-    public void mqTest(String sessionId){
-        ComplaintSession cs = complaintService.getComplaintSessionById(sessionId);
-        TabooSession ts = usedTabooService.getTabooSessionById(sessionId);
-        if (cs == null) {
-            System.out.println("cs == null");
-        } else {
-            System.out.println("cs : " + cs.getDataUpdateTime());
-        }
-        if (ts == null) {
-            System.out.println("ts == null");
-        } else {
-            System.out.println("ts : " + ts.getDataUpdateTime());
         }
     }
 

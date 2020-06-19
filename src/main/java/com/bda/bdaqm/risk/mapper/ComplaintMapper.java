@@ -9,9 +9,6 @@ import com.bda.bdaqm.risk.model.TabooSession;
 import tk.mybatis.mapper.common.Mapper;
 
 public interface ComplaintMapper extends Mapper<ComplaintSession> {
-	List<ComplaintSession> getComplaintJudgeDetail(ComplaintSession params);
 	ComplaintSession getComplaintSessionById(@Param("sessionId")String sessionId);
-	int updateComplaintCheckResult(ComplaintSession params);
-	int insertCheckHistory(ComplaintSession params);
 	int updateFileNameAndFilePath(@Param("sessionId") String sessionId, @Param("fileName") String fileName, @Param("filePath") String filePath);
 }

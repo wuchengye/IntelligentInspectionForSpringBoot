@@ -10,8 +10,6 @@ import com.bda.bdaqm.risk.model.SessionDetail;
 import tk.mybatis.mapper.common.Mapper;
 
 public interface DubiousMapper extends Mapper<NotDubious> {
-	List<NotDubious> getDubiousData(NotDubious params);
-	List<SessionDetail> getSessionDetail(@Param("sessionId")String sessionId);
 	NotDubious getDubiousById(@Param("sessionId")String sessionId);
 	int updateFileNameAndFilePath(@Param("sessionId") String sessionId, @Param("fileName") String fileName, @Param("filePath") String filePath);
 }
