@@ -1,6 +1,7 @@
 package com.bda.bdaqm.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bda.bdaqm.mission.model.InspectionMission;
 import com.bda.bdaqm.mission.model.InspectionMissionJobDetail;
 import com.bda.bdaqm.mission.service.MissionJobDetailService;
 import com.bda.bdaqm.mission.service.MissionService;
@@ -106,6 +107,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
                 } else {
                     System.out.println("转写失败，原因："+data);
                     missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
+                    updateMissionRemain();
                     isMissionComplete(imj);
                 }
                 //更新任务表的转写状态跟任务状态
@@ -120,6 +122,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             e.printStackTrace();
             missionJobDetailService.updateTransferStatus(imj.getJobId(), 0, 0, "转写失败", 1);
+            updateMissionRemain();
             isMissionComplete(imj);
             //更新任务表的转写状态跟任务状态
             isMissionTransferComplete(imj);
@@ -131,6 +134,7 @@ public class CompleteListener implements ChannelAwareMessageListener {
     //判断任务是否完成，若完成则更新数据库状态
     private void isMissionComplete(InspectionMissionJobDetail imj) {
         List<InspectionMissionJobDetail> detailList = missionJobDetailService.getListByMissionId(imj.getMissionId());
+        missionService.isMissionInspectionComplete(imj.getMissionId(),detailList);
         missionService.isMissionComplete(imj.getMissionId(), detailList);
     }
     //判断任务的转写是否完成，若完成则更新任务表的转写状态为已完成
@@ -265,5 +269,28 @@ public class CompleteListener implements ChannelAwareMessageListener {
         map.put("text2", text2.toString().trim());
         map.put("time2", time2.toString().trim());
         return map;
+    }
+
+
+    //更新所有任务剩余时间
+    private void updateMissionRemain(){
+        List<InspectionMission> running = missionService.getListMissionByStatus(1);
+        if(running.size() > 0) {
+            List<InspectionMissionJobDetail> runningJob = missionJobDetailService.getListByMissions(running);
+            Map<String, String> map = new HashMap();
+            for (InspectionMission in : running) {
+                map.put(String.valueOf(in.getMissionId()), String.valueOf(0));
+            }
+            int fal = 0;
+            for (int i = 0; i < runningJob.size(); i++) {
+                if (runningJob.get(i).getFileStatus() == 0 || runningJob.get(i).getFileStatus() == 5) {
+                    fal++;
+                }
+                map.put(String.valueOf(runningJob.get(i).getMissionId()), String.valueOf(i + 1 - fal));
+            }
+            for (String key : map.keySet()) {
+                missionService.updateRemainById(key, map.get(key));
+            }
+        }
     }
 }
