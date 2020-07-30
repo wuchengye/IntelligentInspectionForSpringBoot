@@ -5,7 +5,8 @@ import java.util.*;
 import com.bda.admin.model.Resource;
 import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.RESTful.ResultCode;
-import com.bda.bdaqm.admin.service.UserOprService;
+import com.bda.bdaqm.admin.model.DepartmentModel;
+import com.bda.bdaqm.admin.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.SecurityUtils;
@@ -21,9 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bda.admin.model.view.VRoleUser;
 import com.bda.bdaqm.admin.model.Role;
 import com.bda.bdaqm.admin.model.User;
-import com.bda.bdaqm.admin.service.MyRolePermissionService;
-import com.bda.bdaqm.admin.service.MyRoleService;
-import com.bda.bdaqm.admin.service.MyUserRoleService;
 import com.bda.bdaqm.util.DateUtils;
 import com.bda.common.bean.OperaterResult;
 import com.bda.easyui.bean.DataGrid;
@@ -42,91 +40,64 @@ public class RoleManageController {
 	private MyUserRoleService userRoleService;
 	@Autowired
 	private UserOprService userService;
+	@Autowired
+	private DepartmentService departmentService;
 
 	@ResponseBody
 	@RequestMapping("/getRoles")
-	public Result getRoles(Page page/*, @RequestParam(required = false) String keyword*/){
+	public Result getRoles(Page page,
+						   @RequestParam(value = "keyword",defaultValue = "",required = false) String keyword,
+						   @RequestParam(value = "departmentId",defaultValue = "",required = false)String departmentId) {
 		Subject subject = SecurityUtils.getSubject();
-		User user = (User)subject.getPrincipal();
-		//查询当前用户是否创建过角色
-		List<Role> createList = roleService.getRolesByAccount(user.getAccount());
+		User user = (User) subject.getPrincipal();
 		//返回result
 		List<Role> result = new ArrayList<>();
-		if(createList != null){
-			result.addAll(createList);
-			//获取表中所有角色和用户
-			List<Role> allRoles = roleService.getAllRole();
-			List<User> allUsers = userService.getAllUsers();
-			//被创建角色都有哪些用户
-			for (Role role : createList){
-				List<String> userIdList = userRoleService.getUserIdByRoleId(role.getRoleId());
-				if(userIdList.size() == 0){
-					continue;
+		if (keyword.equals("")) {
+			if(departmentId.equals("")){
+				return Result.failure();
+			}
+			result = roleService.getRolesByDepartmentIdOrName(departmentId,"");
+		}else {
+			List<Role> keywords = roleService.getRolesByDepartmentIdOrName("", keyword);
+			if (keywords.size() > 0) {
+				Role role = roleService.selectRoleByUserId(user.getUserId());
+				if (role != null) {
+					List<DepartmentModel> departments = new ArrayList<>();
+					if (role.getAbility() == 3) {
+						departments = departmentService.getDepartmentAndChildren(user.getDepartmentId());
+					}
+					if (role.getAbility() == 2) {
+						departments.add(departmentService.selectDepartmentById(user.getDepartmentId()));
+					}
+					for (Role role1 : keywords) {
+						for (DepartmentModel d : departments) {
+							if (role1.getDepartmentId() == d.getDepartmentId()) {
+								result.add(role1);
+								break;
+							}
+						}
+					}
 				}
-				result.addAll(selectAllRolesByUser(allRoles,allUsers,userIdList));
 			}
 		}
 		List<Role> resList = new ArrayList<Role>();
-		if( result!=null && !result.isEmpty() ) {
+		if (result != null && !result.isEmpty()) {
 			int pageSize = page.getPageSize();
 			int pageNo = page.getPageNum();
-			int start = (pageNo-1) * pageSize;
+			int start = (pageNo - 1) * pageSize;
 			int max = 0;
-			if( start+pageSize > result.size() ) {
+			if (start + pageSize > result.size()) {
 				max = result.size();
 			} else {
-				max = start+pageSize;
+				max = start + pageSize;
 			}
-			for(int i=start; i<max; i++) {
+			for (int i = start; i < max; i++) {
 				resList.add(result.get(i));
 			}
 		}
 		PageInfo<Role> pager = new PageInfo<Role>(result);
 		return Result.success(new DataGrid(resList, pager.getTotal()));
-
-		/*List<Role> data = this.roleService.selectRoleExceoptAdmin("y", keyword);
-		List<Role> resList = new ArrayList<Role>();
-		if( data!=null && !data.isEmpty() ) {
-			int pageSize = page.getPageSize();
-			int pageNo = page.getPageNum();
-			int start = (pageNo-1) * pageSize;
-			int max = 0;
-			if( start+pageSize > data.size() ) {
-				max = data.size();
-			} else {
-				max = start+pageSize;
-			}
-			for(int i=start; i<max; i++) {
-				resList.add(data.get(i));
-			}
-		}
-		PageInfo<Role> pager = new PageInfo<Role>(data);
-		//return new DataGrid(resList, pager.getTotal());
-		return Result.success(new DataGrid(resList, pager.getTotal()));*/
 	}
-	//递归用户创建的查询角色
-	private List<Role> selectAllRolesByUser(List<Role> allRoles, List<User> allUsers,List<String> userIds){
-		List<Role> result = new ArrayList<>();
-		for(String uId : userIds){
-			for(User u : allUsers){
-				if(uId.equals(u.getUserId())){
-					for(Role role : allRoles){
-						if(role.getCreateUserAccount()!= null && u.getAccount().equals(role.getCreateUserAccount())){
-							List<String> userIdList = userRoleService.getUserIdByRoleId(role.getRoleId());
-							if (userIdList.size() != 0){
-								result.addAll(selectAllRolesByUser(allRoles,allUsers,userIdList));
-							}
-							result.add(role);
-						}
-					}
-					break;
-				}
-			}
-		}
-		return result;
-	}
-
-
 
 	@RequestMapping("/edit")
 	@ResponseBody
@@ -148,7 +119,6 @@ public class RoleManageController {
 				}
 			}
 		}
-
 		return Result.success(map);
 	}
 	
@@ -177,8 +147,6 @@ public class RoleManageController {
 			role.setUpdateUserAccount(curAccount);
 			ret1 = this.roleService.updateRole(role);
 		}
-
-		//return new OperaterResult<Object>(ret1 > 0, "");
 		return ret1 > 0 ? Result.success() : Result.failure();
 	}
 
@@ -199,8 +167,6 @@ public class RoleManageController {
 		} catch (Exception arg4) {
 			arg4.printStackTrace();
 		}
-
-		//return new OperaterResult<Object>(ret > 0, "");
 		return ret > 0 ? Result.success() : Result.failure();
 	}
 
@@ -215,82 +181,71 @@ public class RoleManageController {
 		return Result.success(list);
 	}
 
-	/*@ResponseBody
-	@RequestMapping("/searchUsers")
-	public Result searchUsers(String roleId, @RequestParam(required = false) String keyword,
-			@RequestParam(defaultValue = "all") String filter, Page page) {
-		List<VRoleUser> list = this.roleService.searchUsers(roleId, keyword, filter, page.getPageNum(), page.getPageSize());
-		PageInfo<VRoleUser> pageInfo = new PageInfo<VRoleUser>(list);
-		//return new DataGrid(list, pageInfo.getTotal());
-		return Result.success(new DataGrid(list,pageInfo.getTotal()));
-	}*/
 	@ResponseBody
 	@RequestMapping("/searchUsers")
 	public Result searchUsers(@RequestParam(value = "keyword" ,defaultValue = "",required = false)String keyword,
 							  @RequestParam(value = "select" ,defaultValue = "",required = false)String select,
 							  @RequestParam(value = "roleId",required = true)String roleId,
 							  Page page){
+		//确定角色详情，获取部门id,查找该部门下的用户
+		Role role = roleService.getRoleById(roleId);
+		List<Map<String,Object>> users = userService.selectUsersByDepartmentIdOrName(String.valueOf(role.getDepartmentId()),"");
 		//查找角色对应的用户
 		List<String> userIds = userRoleService.getUserIdByRoleId(roleId);
 		//结果集
 		List<Map<String,Object>> result = new ArrayList<>();
-		switch (select){
+		switch (select) {
 			case "isRole"://已分配
-				List<User> list = userService.getUserWithUserRole(keyword);
-				if(list == null || list.size() == 0){
-					return Result.success(result);
-				}
-				for(User user : list){
-					if(user.getUserId().equals("10001")){
-						continue;
-					}
-					Map<String,Object> map = new HashMap<>();
-					map.put("isCurrentRole",false);
-					for (String role : userIds){
-						if(user.getUserId().equals(role)){
-							map.put("isCurrentRole",true);
-							break;
+				for (Map u : users) {
+					if (((String) u.get("roleId")) != null && !((String) u.get("roleId")).equals("")) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("isCurrentRole", false);
+						map.put("userId", u.get("userId"));
+						map.put("userName", u.get("userName"));
+						if (((String) u.get("roleId")).equals(roleId)) {
+							map.put("isCurrentRole", true);
 						}
+						result.add(map);
 					}
-					map.put("userId",user.getUserId());
-					map.put("userName",user.getUserName());
-					result.add(map);
 				}
-				return Result.success(result);
+				break;
 			case "noRole"://未分配
-				List<User> list1 = userService.getUserWithoutUserRole(keyword);
-				if(list1 == null || list1.size() == 0){
-					return Result.success(result);
-				}
-				for(User user : list1) {
-					if(user.getUserId().equals("10001")){
-						continue;
+				for (Map u : users) {
+					if (((String) u.get("roleId")) == null || ((String) u.get("roleId")).equals("")) {
+						Map<String, Object> map = new HashMap<>();
+						map.put("isCurrentRole", null);
+						map.put("userId", u.get("userId"));
+						map.put("userName", u.get("userName"));
+						result.add(map);
 					}
-					Map<String,Object> map = new HashMap<>();
-					map.put("userId",user.getUserId());
-					map.put("userName",user.getUserName());
-					map.put("isCurrentRole",null);
-					result.add(map);
 				}
-				return Result.success(result);
+				break;
 			default://全部
-				List<Map<String,Object>> listAll = userService.getUserAndUserRole(keyword);
-				for (Map<String,Object> map : listAll){
-					if(map.get("userId").toString().equals("10001")){
-						continue;
-					}
-					if (map.get("roleId") == null){
-						map.put("isCurrentRole",null);
-					}else {
-						if(map.get("roleId").toString().equals(roleId)){
-							map.put("isCurrentRole",true);
-						}else {
-							map.put("isCurrentRole",false);
+				for (Map u : users) {
+					Map<String, Object> map = new HashMap<>();
+					map.put("userId", u.get("userId"));
+					map.put("userName", u.get("userName"));
+					if (((String) u.get("roleId")) != null && !((String) u.get("roleId")).equals("")) {
+						map.put("isCurrentRole", false);
+						if (((String) u.get("roleId")).equals(roleId)) {
+							map.put("isCurrentRole", true);
 						}
+					} else {
+						map.put("isCurrentRole", null);
 					}
-					map.remove("roleId");
 					result.add(map);
 				}
+		}
+		if(!keyword.equals("")){
+			List<Map<String,Object>> tempMap = new ArrayList<>();
+			for(Map m : result){
+				if(((String)m.get("userName")).equals(keyword)){
+					tempMap.add(m);
+				}
+			}
+			result.clear();
+			result.addAll(tempMap);
+		}
 				List<Map<String,Object>> resList = new ArrayList<>();
 				if( result!=null && !result.isEmpty() ) {
 					int pageSize = page.getPageSize();
@@ -307,7 +262,6 @@ public class RoleManageController {
 					}
 				}
 				return Result.success(resList,result.size());
-		}
 	}
 
 	@ResponseBody
@@ -317,7 +271,6 @@ public class RoleManageController {
 			@RequestParam(value = "confirm", defaultValue = "",required = false) List<String> confirm) {
 		int ret = 0;
 		if (cancel.isEmpty() && confirm.isEmpty()) {
-			//return new OperaterResult<Object>(true, "没有任何更新");
 			return Result.failure(ResultCode.NO_UPDATE);
 		} else {
 			if (!cancel.isEmpty()) {
@@ -327,8 +280,6 @@ public class RoleManageController {
 			if (!confirm.isEmpty()) {
 				ret += this.roleService.addUsers(roleId, confirm);
 			}
-
-			//return new OperaterResult<Object>(ret > 0, "完成更新");
 			return ret > 0 ? Result.success(ret) : Result.failure(ResultCode.UPDATE_FAILURE);
 		}
 	}

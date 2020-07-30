@@ -74,17 +74,35 @@
 	</select>
 
 	<insert id="addRole">
-		insert into bda_auth_role (role_name,description,create_time,create_user_account)
-		values (#{roleName},#{roleDescription},#{createTime},#{createUserAccount})
+		insert into bda_auth_role (role_name,description,create_time,create_user_account,department_id,ability)
+		values (#{roleName},#{roleDescription},#{createTime},#{createUserAccount},#{departmentId},#{ability})
 	</insert>
 
 	<update id="updateRole">
 		update bda_auth_role set role_name=#{roleName},description=#{roleDescription},
-		update_time=#{updateTime},update_user_account=#{updateUserAccount}
+		update_time=#{updateTime},update_user_account=#{updateUserAccount},ability=#{ability}
 		where role_id=#{roleId}
 	</update>
 
 	<select id="getRoleNameByUserId" resultType="java.lang.String">
 		select role_name from bda_auth_role where role_id=(select role_id from bda_auth_user_role where user_id=#{userId})
+	</select>
+
+	<select id="selectRoleByUserId" resultType="com.bda.bdaqm.admin.model.Role">
+		select * from bda_auth_role where role_id=(select role_id from bda_auth_user_role where user_id=#{userId})
+	</select>
+
+	<select id="getRolesByDepartmentIdOrName" resultType="com.bda.bdaqm.admin.model.Role">
+		select * from bda_auth_role
+		<if test="keyword != null and keyword != ''">
+			where role_name like "%"#{keyword}"%"
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			where department_id=#{departmentId}
+		</if>
+	</select>
+
+	<select id="getRoleById" resultType="com.bda.bdaqm.admin.model.Role">
+		select * from bda_auth_role where role_id = #{roleId}
 	</select>
 </mapper>

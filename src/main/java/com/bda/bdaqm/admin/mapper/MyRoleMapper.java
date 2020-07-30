@@ -47,9 +47,15 @@ public interface MyRoleMapper extends Mapper<Role>{
 	List<Role> getRolesByAccount(@Param("createUserAccount")String account);
 	List<Role> getAllRole();
 	int addRole(@Param("roleName") String name,@Param("roleDescription")String desctiption,
-					 @Param("createUserAccount") String account,@Param("createTime") String time);
+					 @Param("createUserAccount") String account,@Param("createTime") String time,
+				@Param("departmentId") int departmentId,@Param("ability") int ability);
 	int updateRole(@Param("roleId")String id,@Param("roleName") String name,@Param("roleDescription")String desctiption,
-				   @Param("updateUserAccount") String account,@Param("updateTime") String time);
+				   @Param("updateUserAccount") String account,@Param("updateTime") String time,
+				   @Param("ability") int ability);
 
 	String getRoleNameByUserId(@Param("userId")String userId);
+
+	Role selectRoleByUserId(@Param("userId") String userId);
+	List<Role> getRolesByDepartmentIdOrName(@Param("departmentId")String departmentId,@Param("keyword")String keyword);
+	Role getRoleById (String roleId);
 }

@@ -32,6 +32,16 @@ public class User implements Serializable{
 	private String updateTime;
 	private String updateUserAccount;
 
+	private Integer departmentId;
+
+	public Integer getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Integer departmentId) {
+		this.departmentId = departmentId;
+	}
+
 	public String toString() {
 		return this.account;
 	}

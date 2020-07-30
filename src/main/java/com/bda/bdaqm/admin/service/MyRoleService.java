@@ -181,15 +181,30 @@ public class MyRoleService  extends AbstractService<Role>{
 
 	public int addRole(Role role){
 		return roleMapper.addRole(role.getRoleName(),role.getDescription(),role.getCreateUserAccount()
-		,role.getCreateTime());
+		,role.getCreateTime(),role.getDepartmentId(),role.getAbility());
 	}
 
 	public int updateRole(Role role){
 		return roleMapper.updateRole(role.getRoleId(),role.getRoleName(),role.getDescription(),role.getUpdateUserAccount(),
-				role.getUpdateTime());
+				role.getUpdateTime(),role.getAbility());
 	}
 
 	public String getRoleNameByUserId(String userId){
 		return roleMapper.getRoleNameByUserId(userId);
 	}
+
+
+
+	public Role selectRoleByUserId(String userId){
+		return roleMapper.selectRoleByUserId(userId);
+	}
+
+	public List<Role> getRolesByDepartmentIdOrName(String departmentId,String keyword){
+		return roleMapper.getRolesByDepartmentIdOrName(departmentId,keyword);
+	}
+
+	public Role getRoleById(String roleId){
+		return roleMapper.getRoleById(roleId);
+	}
+
 }

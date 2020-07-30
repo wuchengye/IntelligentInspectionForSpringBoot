@@ -2,7 +2,10 @@ package com.bda.bdaqm.mission.controller;
 
 import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.RESTful.ResultCode;
+import com.bda.bdaqm.admin.model.DepartmentModel;
+import com.bda.bdaqm.admin.model.Role;
 import com.bda.bdaqm.admin.model.User;
+import com.bda.bdaqm.admin.service.DepartmentService;
 import com.bda.bdaqm.admin.service.MyRoleService;
 import com.bda.bdaqm.admin.service.UserOprService;
 import com.bda.bdaqm.mission.model.InspectionMission;
@@ -69,6 +72,9 @@ public class MissionManagerController {
 
     @Autowired
     private RabbitmqProducer rabbitmqProducer;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     @Value("#{mqconfig.mq_ready_queue}")
     private String readyQueueId;
@@ -163,7 +169,7 @@ public class MissionManagerController {
             //获取用户信息
             Subject subject = SecurityUtils.getSubject();
             User user = (User)subject.getPrincipal();
-            String missionCreaterRole = myRoleService.getRoleNameByUserId(user.getUserId());
+            String missionCreaterRole = departmentService.selectDepartmentById(user.getDepartmentId()).getDepartmentName();
 
             InspectionMission missionModel = new InspectionMission();
             missionModel.setMissionName(missionName);
@@ -319,7 +325,7 @@ public class MissionManagerController {
             //获取用户信息
             Subject subject = SecurityUtils.getSubject();
             User user = (User)subject.getPrincipal();
-            String missionCreaterRole = myRoleService.getRoleNameByUserId(user.getUserId());
+            String missionCreaterRole = departmentService.selectDepartmentById(user.getDepartmentId()).getDepartmentName();
 
             List<InspectionMission> list = missionService.isCreateCommonMission(user.getUserId(),"0");
             if(list != null && list.size() > 0){
@@ -557,21 +563,16 @@ public class MissionManagerController {
         //获取用户信息
         Subject subject = SecurityUtils.getSubject();
         User user = (User)subject.getPrincipal();
-        List<Map<String,Object>> resList = new ArrayList<>();
-        resList.addAll(haveSonUsers(user.getAccount()));
+        List<String> tempList = haveSonUsers(user);
         List<String> allUserIds = new ArrayList<>();
-        for (Map<String,Object> map : resList){
-            allUserIds.add(map.get("userId").toString());
+        if (tempList == null){
+            return Result.failure();
         }
-        allUserIds.add(user.getUserId());
-
+        allUserIds.addAll(tempList);
         List<InspectionMission> listMission = missionService.getListMission(page,allUserIds,companyName,planName,recordStartDate,recordEndDate);
         PageInfo<InspectionMission> pageInfo = new PageInfo<>(listMission);
         return Result.success(new DataGrid(listMission, pageInfo.getTotal()));
 
-
-        //List<InspectionMission> list = missionService.getListMission(Integer.valueOf(user.getUserId()));
-        //return Result.success(list);
     }
 
     @RequestMapping("/missionPause")
@@ -900,20 +901,30 @@ public class MissionManagerController {
         return Result.success(SchedulerUtils.getTriggerState(missionId));
     }
 
-    //获取任务列表用；查询当前用户所创建的用户
-    private List<Map<String,Object>> haveSonUsers(String create){
-        List<Map<String,Object>> result = new ArrayList<>();
-        List<Map<String,Object>> users = userService.selectUsersAndRoleByCreate(create,"");
-        if(users != null && users.size() > 0){
-            for(Map map : users){
-                //向下递归，查找当前用户所创建的用户及其子用户
-                if(map.get("account") != null && !map.get("account").toString().equals("")){
-                    result.addAll(haveSonUsers(map.get("account").toString()));
-                }
+    //获取任务列表用；查询当前用户能浏览的权限
+    private List<String> haveSonUsers(User user){
+        List<String> results = new ArrayList<>();
+        Role role = myRoleService.selectRoleByUserId(user.getUserId());
+        List<DepartmentModel> departments = new ArrayList<>();
+        if(role != null){
+            if(role.getAbility() == 3){
+                departments.addAll(departmentService.getDepartmentAndChildren(user.getDepartmentId()));
             }
-            result.addAll(users);
+            if(role.getAbility() == 2){
+                departments.add(departmentService.selectDepartmentById(user.getDepartmentId()));
+            }else {
+
+            }
+            if(departments.size() == 0){
+                results.add(user.getUserId());
+            }
+            for (DepartmentModel d : departments){
+                results.addAll(userService.selectUserIdsByDepartmentId(d.getDepartmentId()));
+            }
+            return results;
+        }else {
+            return null;
         }
-        return result;
     }
 
     @RequestMapping("/testGetJobs")

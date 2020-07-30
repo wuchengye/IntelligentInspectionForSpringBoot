@@ -36,6 +36,9 @@
         <if test="requestModel.type != null">
             and result_type=#{requestModel.type}
         </if>
+        <if test="requestModel.missionId != null">
+            and mission_id=#{requestModel.missionId}
+        </if>
         <if test="requestModel.fileName != null and requestModel.fileName != ''">
             and file_name like CONCAT('%',#{requestModel.fileName},'%')
         </if>
@@ -88,6 +91,9 @@
         )
         <if test="requestModel.type != null">
             and result_type=#{requestModel.type}
+        </if>
+        <if test="requestModel.missionId != null">
+            and mission_id=#{requestModel.missionId}
         </if>
         <if test="requestModel.fileName != null and requestModel.fileName != ''">
             and file_name like CONCAT('%',#{requestModel.fileName},'%')
@@ -149,6 +155,9 @@
         )
         <if test="requestModel.type != null">
             and result_type=#{requestModel.type}
+        </if>
+        <if test="requestModel.missionId != null">
+            and mission_id=#{requestModel.missionId}
         </if>
         <if test="requestModel.fileName != null and requestModel.fileName != ''">
             and file_name like CONCAT('%',#{requestModel.fileName},'%')

@@ -2,7 +2,11 @@ package com.bda.bdaqm.risk.controller;
 
 import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.RESTful.ResultCode;
+import com.bda.bdaqm.admin.model.DepartmentModel;
+import com.bda.bdaqm.admin.model.Role;
 import com.bda.bdaqm.admin.model.User;
+import com.bda.bdaqm.admin.service.DepartmentService;
+import com.bda.bdaqm.admin.service.MyRoleService;
 import com.bda.bdaqm.admin.service.UserOprService;
 import com.bda.bdaqm.risk.model.RequestModel;
 import com.bda.bdaqm.risk.model.SessionDetail;
@@ -36,23 +40,24 @@ public class AllController extends BaseController {
     private AllService allService;
     @Autowired
     private UserOprService userService;
+    @Autowired
+    private DepartmentService departmentService;
+    @Autowired
+    private MyRoleService roleService;
 
 
     @RequestMapping("/getJudgeDetail")
     public Result getJugeDetail(Page page, RequestModel requestModel){
         if(requestModel != null && requestModel.getType() != null) {
             List<String> allUserIds = new ArrayList<>();
-            if(requestModel.getMissionId() == null) {
-                //获取用户信息
-                Subject subject = SecurityUtils.getSubject();
-                User user = (User) subject.getPrincipal();
-                List<Map<String, Object>> resList = new ArrayList<>();
-                resList.addAll(haveSonUsers(user.getAccount()));
-                for (Map<String, Object> map : resList) {
-                    allUserIds.add(map.get("userId").toString());
-                }
-                allUserIds.add(user.getUserId());
+            //获取用户信息
+            Subject subject = SecurityUtils.getSubject();
+            User user = (User) subject.getPrincipal();
+            List<String> tempList = haveSonUsers(user);
+            if (tempList == null){
+                return Result.failure();
             }
+            allUserIds.addAll(tempList);
             List list = allService.getJugeDetail(page,requestModel,allUserIds);
             PageInfo pageInfo = new PageInfo(list);
             return Result.success(new DataGrid(pageInfo.getList(), pageInfo.getTotal()));
@@ -93,17 +98,14 @@ public class AllController extends BaseController {
         String downloadPath = "";
         if(requestModel != null && requestModel.getType() != null) {
             List<String> allUserIds = new ArrayList<>();
-            if (requestModel.getMissionId() == null) {
-                //获取用户信息
-                Subject subject = SecurityUtils.getSubject();
-                User user = (User) subject.getPrincipal();
-                List<Map<String, Object>> resList = new ArrayList<>();
-                resList.addAll(haveSonUsers(user.getAccount()));
-                for (Map<String, Object> map : resList) {
-                    allUserIds.add(map.get("userId").toString());
-                }
-                allUserIds.add(user.getUserId());
+            //获取用户信息
+            Subject subject = SecurityUtils.getSubject();
+            User user = (User) subject.getPrincipal();
+            List<String> tempList = haveSonUsers(user);
+            if (tempList == null){
+                return Result.failure();
             }
+            allUserIds.addAll(tempList);
             List list = allService.getJugeDetail(requestModel,allUserIds);
             try {
                 if (requestModel.getType() == 0) {
@@ -203,19 +205,29 @@ public class AllController extends BaseController {
         return Result.success("清除缓存文件夹成功");
     }
 
-    //获取任务列表用；查询当前用户所创建的用户
-    private List<Map<String,Object>> haveSonUsers(String create){
-        List<Map<String,Object>> result = new ArrayList<>();
-        List<Map<String,Object>> users = userService.selectUsersAndRoleByCreate(create,"");
-        if(users != null && users.size() > 0){
-            for(Map map : users){
-                //向下递归，查找当前用户所创建的用户及其子用户
-                if(map.get("account") != null && !map.get("account").toString().equals("")){
-                    result.addAll(haveSonUsers(map.get("account").toString()));
-                }
+    //获取任务列表用；查询当前用户能浏览的权限
+    private List<String> haveSonUsers(User user){
+        List<String> results = new ArrayList<>();
+        Role role = roleService.selectRoleByUserId(user.getUserId());
+        List<DepartmentModel> departments = new ArrayList<>();
+        if(role != null){
+            if(role.getAbility() == 3){
+                departments.addAll(departmentService.getDepartmentAndChildren(user.getDepartmentId()));
             }
-            result.addAll(users);
+            if(role.getAbility() == 2){
+                departments.add(departmentService.selectDepartmentById(user.getDepartmentId()));
+            }else {
+
+            }
+            if(departments.size() == 0){
+                results.add(user.getUserId());
+            }
+            for (DepartmentModel d : departments){
+                results.addAll(userService.selectUserIdsByDepartmentId(d.getDepartmentId()));
+            }
+            return results;
+        }else {
+            return null;
         }
-        return result;
     }
 }

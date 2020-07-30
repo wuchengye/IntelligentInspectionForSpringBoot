@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bda.bdaqm.admin.mapper.DepartmentMapper">
+    <select id="selectDepartmentById" resultType="com.bda.bdaqm.admin.model.DepartmentModel">
+        select * from bda_auth_department
+            where department_id=#{id}
+    </select>
+
+    <select id="getDepartmentAndChildren" resultType="com.bda.bdaqm.admin.model.DepartmentModel"
+            parameterType="com.bda.bdaqm.admin.model.DepartmentModel">
+        select * from bda_auth_department
+            where `left` between #{left} and #{right} order by `left`
+    </select>
+    
+    <update id="updateRightWhenInsert">
+        update bda_auth_department set `right`=`right`+2 where `right`<![CDATA[ >= ]]>#{right}
+    </update>
+
+    <update id="updateLeftWhenInsert">
+        update bda_auth_department set `left`=`left`+2 where `left`<![CDATA[ >= ]]>#{right}
+    </update>
+    
+    <insert id="insertDepartment" parameterType="com.bda.bdaqm.admin.model.DepartmentModel" useGeneratedKeys="true"
+            keyProperty="departmentId">
+        insert into bda_auth_department(department_name,`left`,`right`,`describe`,update_user_name,update_time)
+                    values (#{departmentName},#{left},#{right},#{describe},#{updateUserName},NOW())
+    </insert>
+    
+    <delete id="deleteDepartment" parameterType="com.bda.bdaqm.admin.model.DepartmentModel">
+        delete from bda_auth_department where `left`<![CDATA[ >= ]]>#{left} and `right`<![CDATA[ <= ]]>#{right}
+    </delete>
+    
+    <update id="updateLeftWhenDelete" parameterType="com.bda.bdaqm.admin.model.DepartmentModel">
+        update bda_auth_department set `left`=`left`-(#{right}-#{left}+1) where `left` &gt; #{left}
+    </update>
+
+    <update id="updateRightWhenDelete" parameterType="com.bda.bdaqm.admin.model.DepartmentModel">
+        update bda_auth_department set `right`=`right`-(#{right}-#{left}+1) where `right` &gt; #{right}
+    </update>
+</mapper>

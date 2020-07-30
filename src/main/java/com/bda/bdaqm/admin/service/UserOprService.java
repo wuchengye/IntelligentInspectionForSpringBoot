@@ -20,7 +20,6 @@ import com.bda.bdaqm.admin.mapper.UserOprMapper;
 @Service
 public class UserOprService extends AbstractService<User>{
 
-	//b2d0a88d799f91ecd97b31ad09c7093cae459dfbb33081a6b08eb5b1f59053b6  gzj@123
 	private final static String DEFAULT_PWD = "4a6297761baff57f294a95aa9e4ef30ea2d4dec4ca920dac51fb1804eb0c7e21";//明文：sjs@1234
 	private final static String DEFAULT_STATUS = "1";
 	
@@ -154,5 +153,13 @@ public class UserOprService extends AbstractService<User>{
 
 	public List<Map<String,Object>> selectUsersAndRoleByCreate(String create,String keyword){
 		return userMapper.selectUsersAndRoleByCreate(create,keyword);
+	}
+
+	public List<Map<String,Object>> selectUsersByDepartmentIdOrName(String departmentId,String keyword){
+		return userMapper.selectUsersByDepartmentIdOrName(departmentId,keyword);
+	}
+
+	public List<String> selectUserIdsByDepartmentId(int departmentId){
+		return userMapper.selectUserIdsByDepartmentId(departmentId);
 	}
 }

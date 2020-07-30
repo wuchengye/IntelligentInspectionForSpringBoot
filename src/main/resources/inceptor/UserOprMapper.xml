@@ -58,10 +58,10 @@
 	</update>
 	<insert id="addSelective" parameterType="com.bda.bdaqm.admin.model.User" useGeneratedKeys="true" keyProperty="user.userId"  >
 		insert into bda_auth_user(account,user_name,password,org_id,status,create_time,create_user_account,
-		update_time,update_user_account)
+		update_time,update_user_account,department_id)
 		values(#{user.account},#{user.userName},#{user.password},#{user.orgId},#{user.status},
 		#{user.createTime},#{user.createUserAccount},
-		#{user.updateTime},#{user.updateUserAccount})
+		#{user.updateTime},#{user.updateUserAccount},#{user.departmentId})
 	</insert>
 	
 	<delete id="deleteByPrimaryKeys">
@@ -121,6 +121,7 @@
 
 	<resultMap id="getUsersResult"   type="HashMap">
 		<result property="userId" column="user_id" jdbcType="VARCHAR" />
+		<result property="departmentId" column="department_id" jdbcType="INTEGER"/>
 		<result property="userName" column="user_name" jdbcType="VARCHAR"/>
 		<result property="account" column="account" jdbcType="VARCHAR"/>
 		<result property="status" column="status" jdbcType="VARCHAR"/>
@@ -128,7 +129,7 @@
 		<result property="roleId" column="role_id" jdbcType="VARCHAR"/>
 	</resultMap>
 	<select id="selectUsersAndRoleByCreate" resultMap="getUsersResult">
-		select bda_auth_user.user_id,bda_auth_user.user_name,bda_auth_user.account,
+		select bda_auth_user.user_id,bda_auth_user.department_id,bda_auth_user.user_name,bda_auth_user.account,
 		bda_auth_user.status,bda_auth_user.create_user_account,bda_auth_user_role.role_id
 		 from bda_auth_user
 		 left join bda_auth_user_role
@@ -139,5 +140,23 @@
 		 <if test="create != null and create != ''">
 			 where bda_auth_user.create_user_account=#{create}
 		 </if>
+	</select>
+
+	<select id="selectUsersByDepartmentIdOrName" resultMap="getUsersResult">
+		select bda_auth_user.user_id,bda_auth_user.department_id,bda_auth_user.user_name,bda_auth_user.account,
+		bda_auth_user.status,bda_auth_user.create_user_account,bda_auth_user_role.role_id
+		 from bda_auth_user
+		 left join bda_auth_user_role
+		 on bda_auth_user.user_id=bda_auth_user_role.user_id
+		<if test="keyword != null and keyword != ''">
+			where bda_auth_user.user_name like "%"#{keyword}"%"
+		</if>
+		<if test="departmentId != null and departmentId != ''">
+			where bda_auth_user.department_id=#{departmentId}
+		</if>
+	</select>
+
+	<select id="selectUserIdsByDepartmentId" resultType="java.lang.String">
+		select user_id from bda_auth_user where department_id=#{departmentId}
 	</select>
 </mapper>

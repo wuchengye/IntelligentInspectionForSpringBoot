@@ -4,29 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import afu.org.checkerframework.checker.oigj.qual.O;
 import com.bda.bdaqm.RESTful.Result;
 import com.bda.bdaqm.RESTful.ResultCode;
+import com.bda.bdaqm.admin.model.DepartmentModel;
 import com.bda.bdaqm.admin.model.Menu;
 import com.bda.bdaqm.admin.service.*;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.bda.bdaqm.admin.model.Role;
 import com.bda.bdaqm.admin.model.User;
 import com.bda.common.bean.OperaterResult;
-import com.bda.easyui.bean.DataGrid;
 import com.bda.easyui.bean.Page;
 import com.github.pagehelper.PageInfo;
 
@@ -43,54 +37,45 @@ public class UserManageController {
 	private MyMenuService myMenuService;
 	@Autowired
 	private PermisService permisService;
-	
-	/*@ResponseBody
-	@RequestMapping("/getUsers")
-	public Result getUsers(Page page,@RequestParam(required = false) String keyword){
-		List<User> data = this.userService.getUsers(keyword);
-		List<User> resList = new ArrayList<User>();
-		if( data!=null && !data.isEmpty() ) {
-			int pageSize = page.getPageSize();
-			int pageNo = page.getPageNum();
-			int start = (pageNo-1) * pageSize;
-			int max = 0;
-			if( start+pageSize > data.size() ) {
-				max = data.size();
-			} else {
-				max = start+pageSize;
-			}
-			for(int i=start; i<max; i++) {
-				resList.add(data.get(i));
-			}
-		}
-		PageInfo<User> pager = new PageInfo<User>(data);
-		//return new DataGrid(resList, pager.getTotal());
-		return Result.success(new DataGrid(resList, pager.getTotal()));
-	}*/
+	@Autowired
+	private DepartmentService departmentService;
 
-	@ResponseBody
 	@RequestMapping("/getUsers")
 	public Result getUsers(Page page,
-		   @RequestParam(value = "keyword",defaultValue = "",required = false)String keyword){
+						   @RequestParam(value = "keyword",defaultValue = "",required = false)String keyword,
+						   @RequestParam(value = "departmentId",defaultValue = "",required = false)String departmentId){
 		Subject subject = SecurityUtils.getSubject();
 		User user = (User)subject.getPrincipal();
 		//结果集
 		List<Map<String,Object>> resList = new ArrayList<>();
 		//判断keyword
-		if(!keyword.equals("")){
-			List<Map<String,Object>> keyUsers = userService.selectUsersAndRoleByCreate("",keyword);
-			if(keyUsers != null && keyUsers.size() > 0){
-				//向上递归，判断当前用户是否有权限查看此人信息
-				for (Map map : keyUsers){
-					if(map.get("createUserAccount") != null){
-						if(isPermisGetUser(map.get("createUserAccount").toString(),user)){
-							resList.add(map);
+		if(keyword.equals("")){
+			if(departmentId.equals("")){
+				return Result.failure();
+			}
+			resList = userService.selectUsersByDepartmentIdOrName(departmentId,"");
+		}else{
+			List<Map<String,Object>> keywords = userService.selectUsersByDepartmentIdOrName("",keyword);
+			if(keywords.size() > 0){
+				Role role = roleService.selectRoleByUserId(user.getUserId());
+				if (role != null) {
+					List<DepartmentModel> departments = new ArrayList<>();
+					if(role.getAbility() == 3) {
+						departments = departmentService.getDepartmentAndChildren(user.getDepartmentId());
+					}
+					if(role.getAbility() == 2){
+						departments.add(departmentService.selectDepartmentById(user.getDepartmentId()));
+					}
+					for (Map map : keywords) {
+						for (DepartmentModel d : departments) {
+							if ((int) map.get("departmentId") == d.getDepartmentId()) {
+								resList.add(map);
+								break;
+							}
 						}
 					}
 				}
 			}
-		}else{
-			resList.addAll(haveSonUsers(user.getAccount()));
 		}
 		List<Map<String,Object>> results = new ArrayList<>();
 		if( resList!=null && !resList.isEmpty() ) {
@@ -107,41 +92,7 @@ public class UserManageController {
 				results.add(resList.get(i));
 			}
 		}
-
 		return Result.success(results,resList.size());
-	}
-
-	/**
-	 * 向上递归
-	 */
-	private boolean isPermisGetUser(String create,User user){
-		if(create.equals(user.getAccount())){
-			return true;
-		}else {
-			User u = userService.getUserByAccount(create);
-			if(u.getCreateUserAccount() == null){
-				return false;
-			}else {
-				return isPermisGetUser(u.getCreateUserAccount(),user);
-			}
-		}
-	}
-	/**
-	 * 向下递归
-	 */
-	private List<Map<String,Object>> haveSonUsers(String create){
-		List<Map<String,Object>> result = new ArrayList<>();
-		List<Map<String,Object>> users = userService.selectUsersAndRoleByCreate(create,"");
-		if(users != null && users.size() > 0){
-			for(Map map : users){
-				//向下递归，查找当前用户所创建的用户及其子用户
-				if(map.get("account") != null && !map.get("account").toString().equals("")){
-					result.addAll(haveSonUsers(map.get("account").toString()));
-				}
-			}
-			result.addAll(users);
-		}
-		return result;
 	}
 
 	/**
@@ -153,20 +104,14 @@ public class UserManageController {
 	public Result edit(@RequestParam(required = false) String userId,
 							 @RequestParam(required = false) String editPasFlag,
 							 @RequestParam(required = false) String indexEditPasFlag) {
-		//ModelAndView mav = new ModelAndView("admin/user/edit");
 		Map<String,Object> map = new HashMap<>();
 		if (!StringUtils.isEmpty(userId)) {
 			User user = userService.selectByPrimaryKey(userId);
-			//UserDetail userDetail = userDetailService.selectOneByEqField("userAccount", user.getAccount());
-			//mav.addObject("userDetail", userDetail);
-			//mav.addObject("user", user);
 			map.put("user",user);
 			if (!StringUtils.isEmpty(editPasFlag)) {
-				//mav.setViewName("admin/user/editPas");
 				map.put("edit","editPas");
 			}
 		}else if(!StringUtils.isEmpty(indexEditPasFlag)){
-			//mav.setViewName("admin/user/editPas");	//由主页面直接进来的修改密码的
 			map.put("edit","editPas");
 		}
 		return Result.success(map);
@@ -183,7 +128,6 @@ public class UserManageController {
 		// 在新增或保存前检查用户是否已经存在
 		User userCheck = userService.getUserByAccount(user.getAccount());
 		if (userCheck != null) {
-			//return new OperaterResult<String>(false, "账户已存在");
 			if(user.getStatus().equals("3")){
 				int flag = userService.deleteByPrimaryKeys(user.getUserId());
 				userService.deleteUserRoleByUserId(user.getUserId());
@@ -196,9 +140,7 @@ public class UserManageController {
 				return i == 1 ? Result.success() : Result.failure();
 			}
 		}
-		
 		user = userService.save(user, roleIds);
-		//return new OperaterResult<String>(user != null);
 		return user != null ? Result.success() : Result.failure();
 	}
 	
@@ -232,7 +174,6 @@ public class UserManageController {
 			ret += userService.deleteByPrimaryKeys(ids.get(i));
 			userService.deleteUserRoleByUserId(ids.get(i));
 		}
-		//return new OperaterResult<String>(ret > 0);
 		return Result.success(new OperaterResult<String>(ret > 0));
 	}
 	
@@ -245,26 +186,20 @@ public class UserManageController {
 							) {
 		int ret = 0;
 		if(!StringUtils.isEmpty(indexEditPasFlag) && (userId==null || "".equals(userId))){
-			//主页面进来修改密码的所以需要获取当前登录用户
 			Subject subject = SecurityUtils.getSubject();
 			User currentUser = (User) subject.getPrincipal();
-			//User User = userService.selectOneByEqField("USER_ID",currentUser.getUserId());
 			if(oldPas!=null && oldPas.equals(currentUser.getPassword())){
 				ret = userService.editUserPas(currentUser.getUserId()+"", newPas);
-				//return new OperaterResult<String>(ret>0);
 				return ret > 0 ? Result.success() : Result.failure();
 			}else{
-				//return new OperaterResult<String>(false);
 				return Result.failure();
 			}
 		}else{
-//			newPas = UserUtil.Sha256(newPas);
 			User targetUser = userService.selectByPrimaryKey( userId);
 			if(targetUser!=null && oldPas.equals(targetUser.getPassword())){
 				ret = userService.editUserPas(userId, newPas);
 			}
 		}
-		//return new OperaterResult<String>(ret > 0);
 		return ret > 0 ? Result.success() : Result.failure(ResultCode.WRONG_PASSWORD);
 	}
 	
@@ -276,9 +211,7 @@ public class UserManageController {
 	@RequestMapping("/resetUser")
 	@ResponseBody
 	public Result resetUser(@RequestParam("ids[]") List<String> ids){
-		//userService.update(entity)
 		int result = userService.resetUserPasswordByUserIds(ids);
-		//return new OperaterResult<>(result>0,"info","msg");
 		return Result.success(new OperaterResult<>(result>0,"info","msg"));
 	}
 

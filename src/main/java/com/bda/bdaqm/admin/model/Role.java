@@ -29,6 +29,25 @@ public class Role implements Serializable{
 	private String updateTime;
 	private String updateUserAccount;
 
+	private Integer departmentId;
+	private Integer ability;
+
+	public Integer getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(Integer departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public Integer getAbility() {
+		return ability;
+	}
+
+	public void setAbility(Integer ability) {
+		this.ability = ability;
+	}
+
 	public String getCreateTime() {
 		return this.createTime;
 	}

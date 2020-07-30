@@ -39,4 +39,6 @@ public interface UserOprMapper extends Mapper<User>{
 	List<User> getUserWithoutUserRole(@Param("keyword")String keyword);
 	List<Map<String,Object>> getUserAndUserRole(@Param("keyword")String keyword);
 	List<Map<String,Object>> selectUsersAndRoleByCreate(@Param("create")String create,@Param("keyword")String keyword);
+	List<Map<String,Object>> selectUsersByDepartmentIdOrName(@Param("departmentId") String departmentId,@Param("keyword")String keyword);
+	List<String> selectUserIdsByDepartmentId(@Param("departmentId") int departmentId);
 }

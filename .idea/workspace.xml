@@ -8,7 +8,20 @@
   <component name="ChangeListManager">
     <list default="true" id="0c1d9b2b-83d9-4399-bad4-10a4e9e8ebfb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CompleteListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/rabbitmq/CompleteListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/RESTful/ResultCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/RESTful/ResultCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/controller/RoleManageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/controller/RoleManageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/controller/UserManageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/controller/UserManageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/mapper/MyRoleMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/mapper/MyRoleMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/mapper/UserOprMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/mapper/UserOprMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/model/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/service/MyRoleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/service/MyRoleService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/service/UserOprService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/admin/service/UserOprService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/mission/controller/MissionManagerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/risk/controller/AllController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bda/bdaqm/risk/controller/AllController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/inceptor/UserOprMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/inceptor/UserOprMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/inceptor/manage/MyRoleMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/inceptor/manage/MyRoleMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/inceptor/risk/AllMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/inceptor/risk/AllMapper.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -332,6 +345,7 @@
       <workItem from="1592529489922" duration="147000" />
       <workItem from="1592529658199" duration="10586000" />
       <workItem from="1592788601063" duration="2997000" />
+      <workItem from="1596098819653" duration="1045000" />
     </task>
     <servers />
   </component>

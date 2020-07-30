@@ -39,7 +39,12 @@ public enum ResultCode {
 
     CREATE_MISSION_REPEAT_NAME(12001,"任务名重复"),
 
-    MISSION_EXIST(130001,"任务存在");
+    MISSION_EXIST(130001,"任务存在"),
+
+    DEPARTMENT_NO_ROLE(14001,"用户角色出错"),
+    DEPARTMENT_NO_PERMISSION(14002,"没有权限"),
+    DEPARTMENT_INSERT_ERROR(14003,"新增失败"),
+    DEPARTMENT_DELETE_ERROR(14004,"删除失败");
 
     private Integer code;
     private String message;
